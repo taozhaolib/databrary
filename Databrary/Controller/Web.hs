@@ -13,20 +13,21 @@ import Data.Maybe (fromMaybe)
 import Data.Monoid ((<>))
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
-import System.Posix.FilePath (joinPath, splitDirectories, (</>))
+import System.Posix.FilePath (joinPath, splitFileName, splitDirectories, splitExtension, (</>))
 
+import Databrary.Iso.Prim (invMap)
 import Databrary.Ops
 import Databrary.Store
 import Databrary.Model.Format
 import Databrary.Action.Route
 import Databrary.Action
 import Databrary.HTTP.File
-import qualified Databrary.HTTP.Route as R
+import Databrary.HTTP.Route.PathParser (PathParser(..), (>/>))
 import Databrary.Web.Types
 import Databrary.Web.Files
 import Databrary.Web.Cache
 
-newtype StaticPath = StaticPath RawFilePath
+newtype StaticPath = StaticPath { staticFilePath :: RawFilePath }
 
 ok :: Char -> Bool
 ok '.' = True
@@ -44,18 +45,24 @@ parseStaticPath :: [T.Text] -> Maybe StaticPath
 parseStaticPath = fmap (StaticPath . joinPath) . mapM component where
   component c = TE.encodeUtf8 c <? (not (T.null c) && T.head c /= '.' && T.all ok c)
 
-instance R.Routable StaticPath where
-  route = R.maybe . parseStaticPath =<< R.path
-  toRoute (StaticPath p) = map TE.decodeLatin1 $ splitDirectories p
+pathStatic :: PathParser (Maybe StaticPath)
+pathStatic = invMap parseStaticPath (maybe [] $ map TE.decodeLatin1 . splitDirectories . staticFilePath) PathAll
 
-webFile :: StaticPath -> AppRAction
-webFile sp@(StaticPath p) = action GET ("public" :: T.Text, sp) $ do
+webFile :: AppRoute (Maybe StaticPath)
+webFile = action GET ("public" >/> pathStatic) $ \sp -> do
+  StaticPath p <- maybeAction sp
   wf <- maybeAction =<< lookupWebFile p
   let f = webDir </> p
   serveFile f (fromMaybe unknownFormat $ getFormatByFilename p) Nothing (digestToHexByteString $ webFileTag wf)
 
-formatIcon :: Format -> AppRAction
-formatIcon f = webFile $ staticPath
-  [ "images", "filetype"
-  , case formatExtension f of { e:_ -> e ; _ -> "_blank" } <> ".svg"
-  ]
+formatIcon :: AppRoute Format
+formatIcon = invMap pf fp webFile where
+  fp f = Just $ staticPath
+    [ "images", "filetype"
+    , case formatExtension f of { e:_ -> e ; _ -> "_blank" } <> ".svg"
+    ]
+  pf (Just (StaticPath p))
+    | ("images/filetype/", i) <- splitFileName p
+    , (e, ".svg") <- splitExtension i
+    , Just f <- getFormatByExtension e = f
+  pf _ = unknownFormat

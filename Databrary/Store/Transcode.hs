@@ -7,7 +7,9 @@ module Databrary.Store.Transcode
 import Control.Monad (guard, unless, void)
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Char8 as BSC
+import qualified Data.ByteString.Lazy.Char8 as BSLC
 import Data.Maybe (fromMaybe, isNothing)
 import Data.Monoid ((<>))
 import System.Exit (ExitCode(..))
@@ -20,11 +22,11 @@ import Databrary.Service.DB
 import Databrary.Service.Types
 import Databrary.Service.ResourceT
 import Databrary.HTTP.Request
+import Databrary.HTTP.Route (routeURL)
 import Databrary.Model.Audit
 import Databrary.Model.Segment
 import Databrary.Model.Asset
 import Databrary.Model.Transcode
-import Databrary.Action.Route (actionRoute)
 import Databrary.Store
 import Databrary.Store.Types
 import Databrary.Store.Temp
@@ -45,7 +47,7 @@ transcodeArgs t@Transcode{..} = do
   auth <- transcodeAuth t
   return $
     [ "-f", unRawFilePath f
-    , "-r", BSC.unpack $ requestHost req <> actionRoute (remoteTranscode (transcodeId t)) <> "?auth=" <> auth
+    , "-r", BSLC.unpack $ BSB.toLazyByteString $ routeURL (Just req) remoteTranscode (transcodeId t) <> BSB.string7 "?auth=" <> BSB.byteString auth
     , "--" ]
     ++ maybe [] (\l -> ["-ss", show l]) lb
     ++ maybe [] (\u -> ["-t", show $ u - fromMaybe 0 lb]) (upperBound rng)

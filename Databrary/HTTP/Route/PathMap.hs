@@ -42,10 +42,14 @@ pathCheckDynamic t (PathDynamicRep p) = ok p (pathDynamic t) where
 
 type DynamicMap a = M.Map PathDynamicRep (PathMap a)
 
-data PathMap a = PathMap
+data PathMap a
+  = PathMap
   { pathMapNull :: !(Maybe a)
   , pathMapFixed :: !(HM.HashMap T.Text (PathMap a))
   , pathMapDynamic :: !(DynamicMap a)
+  }
+  | PathMapAll
+  { _pathMapAll :: a
   }
 
 empty :: PathMap a
@@ -63,6 +67,7 @@ lookup [] (PathMap n _ _) = n
 lookup (e:p) m@(PathMap _ f d) 
   | T.null e = lookup p $ fromMaybe m $ HM.lookup e f
   | otherwise = lookup p =<< HM.lookup e f <|> lookupDynamic e d
+lookup _ (PathMapAll a) = Just a
 
 singleton :: [PathElement] -> a -> PathMap a
 singleton [] a = PathMap (Just a) HM.empty M.empty
@@ -72,6 +77,7 @@ singleton (PathElementDynamic e:l) a = PathMap Nothing HM.empty (M.singleton (Pa
 union :: PathMap a -> PathMap a -> PathMap a
 union (PathMap n1 f1 d1) (PathMap n2 f2 d2) =
   PathMap (n1 <|> n2) (HM.unionWith union f1 f2) (M.unionWith union d1 d2)
+union m _ = m
 
 insert :: [PathElement] -> a -> PathMap a -> PathMap a
 insert [] a p = p{ pathMapNull = Just a }

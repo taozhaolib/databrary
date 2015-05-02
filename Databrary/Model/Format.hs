@@ -5,6 +5,7 @@ module Databrary.Model.Format
   , allFormats
   , getFormat
   , getFormat'
+  , getFormatByExtension
   , getFormatByFilename
   , dropFormatExtension
   , videoFormat

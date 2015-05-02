@@ -1,6 +1,7 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, QuasiQuotes #-}
 module Databrary.Controller.Party
   ( PartyTarget(..)
+  , pathPartyTarget
   , getParty
   , viewParty
   , viewEditParty
@@ -10,26 +11,26 @@ module Databrary.Controller.Party
   , viewAvatar
   ) where
 
-import Control.Applicative (Applicative, (<*>), pure, (<|>), optional)
+import Control.Applicative (Applicative, (<*>), pure, optional)
 import Control.Monad (unless, when, liftM2, void)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import Data.Maybe (fromMaybe, isJust, fromJust)
 import Data.Monoid (mempty)
-import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Data.Traversable as Trav
 import qualified Network.Wai as Wai
 import Network.Wai.Parse (FileInfo(..))
 
 import Databrary.Ops
+import qualified Databrary.Iso as I
+import Databrary.Iso.TH
 import Databrary.Has (view, peek, peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.Action.Route
 import Databrary.Action
 import Databrary.Service.DB
 import Databrary.Model.Enum
-import Databrary.Model.Kind
 import Databrary.Model.Id
 import Databrary.Model.Permission
 import Databrary.Model.Release
@@ -42,7 +43,7 @@ import Databrary.Model.Asset
 import Databrary.Model.Format
 import Databrary.Store.Temp
 import Databrary.Store.Asset
-import qualified Databrary.HTTP.Route as R
+import Databrary.HTTP.Route.PathParser
 import Databrary.HTTP.Form.Deform
 import Databrary.HTTP.File
 import Databrary.Controller.Permission
@@ -55,10 +56,11 @@ data PartyTarget
   = TargetProfile
   | TargetParty (Id Party)
 
-instance R.Routable PartyTarget where
-  route = TargetParty <$> R.route <|> TargetProfile <$ "profile"
-  toRoute (TargetParty i) = R.toRoute i
-  toRoute TargetProfile = ["profile"]
+pathPartyTarget :: PathParser PartyTarget
+pathPartyTarget = [iso|
+    Left () <-> TargetProfile
+    Right i <-> TargetParty i
+  |] I.<$> ("profile" |/| pathId)
 
 getParty :: Maybe Permission -> PartyTarget -> AuthActionM Party
 getParty (Just p) (TargetParty i) =
@@ -90,8 +92,8 @@ partyJSONField _ _ _ = return Nothing
 partyJSONQuery :: (MonadDB m, MonadHasIdentity c m) => Party -> JSON.Query -> m JSON.Object
 partyJSONQuery p = JSON.jsonQuery (partyJSON p) (partyJSONField p)
 
-viewParty :: API -> PartyTarget -> AppRAction
-viewParty api i = action GET (api, i) $ withAuth $ do
+viewParty :: AppRoute (API, PartyTarget)
+viewParty = action GET (pathAPI </> pathPartyTarget) $ \(api, i) -> withAuth $ do
   when (api == HTML) angular
   p <- getParty (Just PermissionNONE) i
   case api of
@@ -128,14 +130,14 @@ processParty api p = do
   return (p', a')
   where maxAvatarSize = 10*1024*1024
 
-viewEditParty :: PartyTarget -> AppRAction
-viewEditParty i = action GET (HTML, i, "edit" :: T.Text) $ withAuth $ do
+viewEditParty :: AppRoute PartyTarget
+viewEditParty = action GET (pathHTML >/> pathPartyTarget </< "edit") $ \i -> withAuth $ do
   angular
   p <- getParty (Just PermissionADMIN) i
   blankForm $ htmlPartyForm $ Just p
 
-postParty :: API -> PartyTarget -> AppRAction
-postParty api i = multipartAction $ action POST (api, i) $ withAuth $ do
+postParty :: AppRoute (API, PartyTarget)
+postParty = multipartAction $ action POST (pathAPI </> pathPartyTarget) $ \(api, i) -> withAuth $ do
   p <- getParty (Just PermissionADMIN) i
   (p', a) <- processParty api (Just p)
   changeParty p'
@@ -143,10 +145,10 @@ postParty api i = multipartAction $ action POST (api, i) $ withAuth $ do
     void $ changeAvatar p' a
   case api of
     JSON -> okResponse [] $ partyJSON p'
-    HTML -> redirectRouteResponse [] $ viewParty api i
+    HTML -> redirectRouteResponse [] viewParty (api, i)
 
-createParty :: API -> AppRAction
-createParty api = multipartAction $ action POST (api, kindOf blankParty :: T.Text) $ withAuth $ do
+createParty :: AppRoute API
+createParty = multipartAction $ action POST (pathAPI </< "party") $ \api -> withAuth $ do
   perm <- peeks accessPermission'
   _ <- checkPermission PermissionADMIN perm
   (bp, a) <- processParty api Nothing
@@ -155,7 +157,7 @@ createParty api = multipartAction $ action POST (api, kindOf blankParty :: T.Tex
     void $ changeAvatar p a
   case api of
     JSON -> okResponse [] $ partyJSON p
-    HTML -> redirectRouteResponse [] $ viewParty api $ TargetParty $ partyId p
+    HTML -> redirectRouteResponse [] viewParty (api, TargetParty $ partyId p)
 
 partySearchForm :: (Applicative m, Monad m) => DeformT m PartyFilter
 partySearchForm = PartyFilter
@@ -165,8 +167,8 @@ partySearchForm = PartyFilter
   <*> pure Nothing
   <*> pure Nothing
 
-queryParties :: API -> AppRAction
-queryParties api = action GET (api, "party" :: T.Text) $ withAuth $ do
+queryParties :: AppRoute API
+queryParties = action GET (pathAPI </< "party") $ \api -> withAuth $ do
   when (api == HTML) angular
   (pf, (limit, offset)) <- runForm (api == HTML ?> htmlPartySearchForm mempty) $
     liftM2 (,) partySearchForm paginationForm
@@ -175,10 +177,10 @@ queryParties api = action GET (api, "party" :: T.Text) $ withAuth $ do
     JSON -> okResponse [] $ JSON.toJSON $ map partyJSON p
     HTML -> blankForm $ htmlPartySearchForm pf
 
-viewAvatar :: Id Party -> AppRAction
-viewAvatar i = action GET (i, "avatar" :: T.Text) $
+viewAvatar :: AppRoute (Id Party)
+viewAvatar = action GET (pathId </< "avatar") $ \i ->
   maybe
-    (redirectRouteResponse [] $ webFile $ staticPath ["images", "avatar.png"])
+    (redirectRouteResponse [] webFile $ Just $ staticPath ["images", "avatar.png"])
     (\a -> do
       -- elsewhere? size <- runForm Nothing $ "size" .:> optional deform
       store <- maybeAction =<< getAssetFile a

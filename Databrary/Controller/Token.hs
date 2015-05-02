@@ -14,6 +14,7 @@ import qualified Databrary.JSON as JSON
 import Databrary.Model.Id
 import Databrary.Model.Token
 import Databrary.Model.Party
+import Databrary.HTTP.Route.PathParser
 import Databrary.Action
 import Databrary.Action.Auth
 import Databrary.Controller.Form
@@ -21,8 +22,8 @@ import Databrary.Controller.Login
 import Databrary.Controller.Angular
 import Databrary.View.Token
 
-viewLoginToken :: API -> Id LoginToken -> AppRAction
-viewLoginToken api ti = action GET (api, ti) $ withoutAuth $ do
+viewLoginToken :: AppRoute (API, Id LoginToken)
+viewLoginToken = action GET (pathAPI </> pathId) $ \(api, ti) -> withoutAuth $ do
   when (api == HTML) angular
   tok <- maybeAction =<< lookupLoginToken ti
   if loginPasswordToken tok
@@ -35,8 +36,8 @@ viewLoginToken api ti = action GET (api, ti) $ withoutAuth $ do
       _ <- removeLoginToken tok
       withReaderT authApp $ loginAccount api (view tok) False
 
-postPasswordToken :: API -> Id LoginToken -> AppRAction
-postPasswordToken api ti = action POST (api, ti) $ withoutAuth $ do
+postPasswordToken :: AppRoute (API, Id LoginToken)
+postPasswordToken = action POST (pathAPI </> pathId) $ \(api, ti) -> withoutAuth $ do
   tok <- maybeAction =<< lookupLoginToken ti
   guardAction (loginPasswordToken tok) notFoundResponse
   let acct = view tok

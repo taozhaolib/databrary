@@ -39,14 +39,14 @@ byteStringValue = H.unsafeLazyByteStringValue . BSB.toLazyByteString . fromHtmlE
 builderValue :: BSB.Builder -> H.AttributeValue
 builderValue = lazyByteStringValue . BSB.toLazyByteString
 
-actionLink :: Route a r -> a -> H.Attribute
-actionLink r a = HA.href $ byteStringValue $ actionURL r a Nothing
+actionLink :: Route r a -> a -> H.Attribute
+actionLink r a = HA.href $ builderValue $ actionURL Nothing r a
 
-actionForm :: Route a r -> a -> H.Html -> H.Html
+actionForm :: Route r a -> a -> H.Html -> H.Html
 actionForm r@Route{ routeMethod = g, routeMultipart = p } a = H.form
   H.! HA.method (H.unsafeByteStringValue g)
   H.!? (p, HA.enctype $ H.toValue "multipart/form-data")
-  H.! HA.action (builderValue $ renderRoute r a)
+  H.! HA.action (builderValue $ routeURL Nothing r a)
 
 (!?) :: Markup.Attributable h => h -> Maybe H.Attribute -> h
 h !? Nothing = h

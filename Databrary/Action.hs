@@ -24,24 +24,22 @@ module Databrary.Action
   , guardAction
   , maybeAction
 
-  , StdMethod(GET, POST)
-  , API(..)
-  , actionURL
+  , module Databrary.Action.Route
   , AppRoute
-  , action
-  , withAuth
 
+  , withAuth
   , runAppRoute
   ) where
 
 import Control.Monad.IO.Class (MonadIO)
 import qualified Data.ByteString.Builder as BSB
+import qualified Data.ByteString.Lazy as BSL
 import Data.Maybe (fromMaybe)
 import Data.Monoid (mempty)
 import Network.HTTP.Types (Status, ok200, seeOther303, forbidden403, notFound404, ResponseHeaders, hLocation)
 import qualified Network.Wai as Wai
 
-import Databrary.Has (peeks)
+import Databrary.Has (peek)
 import Databrary.HTTP.Request
 import Databrary.Action.Types
 import Databrary.Action.Response
@@ -54,10 +52,10 @@ import Databrary.HTTP.Route
 emptyResponse :: MonadAction q m => Status -> ResponseHeaders -> m Response
 emptyResponse s h = returnResponse s h (mempty :: BSB.Builder)
 
-redirectRouteResponse :: MonadAction c m => ResponseHeaders -> Route a r -> a -> m Response
+redirectRouteResponse :: MonadAction c m => ResponseHeaders -> Route r a -> a -> m Response
 redirectRouteResponse h r a = do
-  url <- peeks $ actionURL r a . Just
-  emptyResponse seeOther303 ((hLocation, url) : h)
+  req <- peek
+  emptyResponse seeOther303 ((hLocation, BSL.toStrict $ BSB.toLazyByteString $ actionURL (Just req) r a) : h)
 
 forbiddenResponse :: MonadAction q m => m Response
 forbiddenResponse = emptyResponse forbidden403 []
@@ -76,7 +74,7 @@ maybeAction :: (MonadAction q m, MonadIO m) => Maybe a -> m a
 maybeAction (Just a) = return a
 maybeAction Nothing = result =<< notFoundResponse
 
-type AppRoute a = Route a (Action AppRequest)
+type AppRoute a = Route (Action AppRequest) a
 
 runAppRoute :: RouteMap (Action AppRequest) -> Service -> Wai.Application
 runAppRoute rm rc req = runApp rc

@@ -2,11 +2,16 @@
 module Databrary.Iso
   ( module Databrary.Iso.Prim
   
-  , constant
+  , not
   , swap
-  , switch
+  , constant
   , first
   , second
+  , isJust
+  , isNothing
+  , switch
+  , isLeft
+  , isRight
   , left
   , right
   , cons
@@ -14,21 +19,24 @@ module Databrary.Iso
   , defaultEq
   ) where
 
+import Prelude hiding (not)
+
+import qualified Control.Category as Cat
 import Data.Maybe (fromMaybe)
 
 import Databrary.Ops ((?!>))
 import Databrary.Iso.Prim
 import Databrary.Iso.TH
 
+not :: Bool <-> Bool
+not =
+  [iso|
+    False <-> True
+    True <-> False
+  |]
+
 swap :: (a, b) <-> (b, a)
 swap = [iso|(a, b) <-> (b, a)|]
-
-switch :: Either a b <-> Either b a
-switch =
-  [iso|
-    Left a <-> Right a
-    Right a <-> Left a
-  |]
 
 constant :: a -> () <-> a
 constant a = const a :<->: const ()
@@ -38,6 +46,33 @@ first = [iso|(a, ()) <-> a|]
 
 second :: ((), a) <-> a
 second = [iso|((), a) <-> a|]
+
+isJust :: Maybe () <-> Bool
+isJust =
+  [iso|
+    Just () <-> True
+    Nothing <-> False
+  |]
+
+isNothing :: Maybe () <-> Bool
+isNothing = not Cat.. isJust
+
+switch :: Either a b <-> Either b a
+switch =
+  [iso|
+    Left a <-> Right a
+    Right a <-> Left a
+  |]
+
+isLeft :: Either () () <-> Bool
+isLeft =
+  [iso|
+    Left () <-> True
+    Right () <-> False
+  |]
+
+isRight :: Either () () <-> Bool
+isRight = not Cat.. isLeft
 
 left :: Either a () <-> Maybe a
 left =

@@ -5,15 +5,13 @@ module Databrary.Action.Route
   , action
   , multipartAction
   , API(..)
+  , pathHTML
   , pathJSON
   , pathAPI
   ) where
 
-import qualified Data.ByteString as BS
 import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Char8 as BSC
-import qualified Data.ByteString.Lazy as BSL
-import Data.Monoid ((<>))
 import Network.HTTP.Types (methodGet, StdMethod(..), renderStdMethod)
 
 import qualified Databrary.Iso as I
@@ -22,22 +20,24 @@ import Databrary.Action.Types
 import Databrary.HTTP.Route.PathParser
 import Databrary.HTTP.Route
 
-actionURL :: Route a r -> a -> Maybe Request -> BS.ByteString
-actionURL r@Route{ routeMethod = g } a req
-  | g == methodGet = BSL.toStrict $ BSB.toLazyByteString
-    $ maybe id ((<>) . BSB.byteString . requestHost) req $ renderRoute r a
+actionURL :: Maybe Request -> Route r a -> a -> BSB.Builder
+actionURL req r@Route{ routeMethod = g }
+  | g == methodGet = routeURL req r
   | otherwise = error $ "actionURL: " ++ BSC.unpack g
 
-action :: StdMethod -> PathParser a -> (a -> Action q) -> Route a (Action q)
+action :: StdMethod -> PathParser a -> (a -> Action q) -> Route (Action q) a
 action m = Route (renderStdMethod m) False
 
-multipartAction :: Route a q -> Route a q
+multipartAction :: Route q a -> Route q a
 multipartAction r = r{ routeMultipart = True }
 
 data API
   = HTML
   | JSON
   deriving (Eq)
+
+pathHTML :: PathParser ()
+pathHTML = PathEmpty
 
 pathJSON :: PathParser ()
 pathJSON = "api"

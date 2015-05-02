@@ -15,9 +15,10 @@ import Databrary.Controller.Party
 import {-# SOURCE #-} Databrary.Controller.Authorize
 
 htmlAuthorizeForm :: Authorize -> AuthRequest -> FormHtml
-htmlAuthorizeForm a req = htmlForm ("Authorize " `T.append` partyName child)
-  (postAuthorize HTML (TargetParty (partyId parent)) (AuthorizeTarget False (partyId child))) req
-  $ do
+htmlAuthorizeForm a req = htmlForm
+  ("Authorize " `T.append` partyName child)
+  postAuthorize (HTML, TargetParty (partyId parent), AuthorizeTarget False (partyId child))
+  req $ do
   field "site" $ inputEnum $ Just $ accessSite a
   field "member" $ inputEnum $ Just $ accessMember a
   field "expires" $ inputText $ Just $ show $ authorizeExpires a

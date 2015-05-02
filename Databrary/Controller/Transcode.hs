@@ -13,6 +13,7 @@ import Data.Word (Word8)
 import Databrary.Ops
 import Databrary.Service.Crypto
 import Databrary.HTTP.Form.Deform
+import Databrary.HTTP.Route.PathParser
 import Databrary.Action
 import Databrary.Action.Auth
 import Databrary.Model.Id
@@ -35,8 +36,8 @@ sha1Form = do
   deformGuard "Invalid SHA1 hex string" (length b == 40)
   maybe (deformError "Invalid hex string" >> return BS.empty) (return . BS.pack) $ unHex b
 
-remoteTranscode :: Id Transcode -> AppRAction
-remoteTranscode ti = action POST (JSON, ti) $ do
+remoteTranscode :: AppRoute (Id Transcode)
+remoteTranscode = action POST (pathJSON >/> pathId) $ \ti -> do
   t <- maybeAction =<< lookupTranscode ti
   withReAuth (transcodeOwner t) $ do
     auth <- transcodeAuth t

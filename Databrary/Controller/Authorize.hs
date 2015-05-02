@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, QuasiQuotes, TypeOperators #-}
 module Databrary.Controller.Authorize
   ( AuthorizeTarget(..)
   , viewAuthorize
@@ -17,6 +17,8 @@ import Data.Time (UTCTime(..), fromGregorian, addGregorianYearsRollOver)
 import Network.HTTP.Types (noContent204, StdMethod(DELETE))
 
 import Databrary.Ops
+import qualified Databrary.Iso as I
+import Databrary.Iso.TH
 import Databrary.Has (peek, peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.Service.DB
@@ -26,7 +28,7 @@ import Databrary.Model.Party
 import Databrary.Model.Permission
 import Databrary.Model.Identity
 import Databrary.Model.Authorize
-import qualified Databrary.HTTP.Route as R
+import Databrary.HTTP.Route.PathParser
 import Databrary.HTTP.Form.Deform
 import Databrary.Action
 import Databrary.Action.Route
@@ -40,12 +42,16 @@ data AuthorizeTarget = AuthorizeTarget
   , authorizeTarget :: Id Party
   }
 
-instance R.Routable AuthorizeTarget where
-  route = AuthorizeTarget <$> (False <$ "authorize" <|> True <$ "apply") <*> (Id <$> R.route)
-  toRoute (AuthorizeTarget a (Id i)) = (if a then "apply" else "authorize") : R.toRoute i
+authorizeTargetIso :: (Bool, Id Party) I.<-> AuthorizeTarget
+authorizeTargetIso = [iso|(a, t) <-> AuthorizeTarget a t|]
 
-viewAuthorize :: API -> PartyTarget -> AuthorizeTarget -> AppRAction
-viewAuthorize api i at@(AuthorizeTarget app oi) = action GET (api, toRoute i ++ toRoute at) $ withAuth $ do
+pathAuthorizeTarget :: PathParser AuthorizeTarget
+pathAuthorizeTarget = authorizeTargetIso I.<$>
+  (I.isRight I.<$> ("authorize" |/| "apply")
+   </> idIso I.<$> PathDynamic)
+
+viewAuthorize :: AppRoute (API, PartyTarget, AuthorizeTarget)
+viewAuthorize = action GET (pathAPI </> pathPartyTarget </> pathAuthorizeTarget) $ \api i at@(AuthorizeTarget app oi) -> withAuth $ do
   angular
   p <- getParty (Just PermissionADMIN) i
   o <- maybeAction =<< lookupParty oi
@@ -69,8 +75,8 @@ partyDelegates p =
 authorizeAddr :: [Either T.Text Account]
 authorizeAddr = [Left "authorize@databrary.org"]
 
-postAuthorize :: API -> PartyTarget -> AuthorizeTarget -> AppRAction
-postAuthorize api i at@(AuthorizeTarget app oi) = action POST (api, i, at) $ withAuth $ do
+postAuthorize :: AppRoute (API, PartyTarget, AuthorizeTarget)
+postAuthorize = action POST (pathAPI </> pathPartyTarget </> pathAuthorizeTarget) $ \api i at@(AuthorizeTarget app oi) -> withAuth $ do
   p <- getParty (Just PermissionADMIN) i
   o <- maybeAction =<< lookupParty oi
   let (child, parent) = if app then (p, o) else (o, p)
@@ -118,8 +124,8 @@ postAuthorize api i at@(AuthorizeTarget app oi) = action POST (api, i, at) $ wit
     JSON -> maybe (emptyResponse noContent204 []) (okResponse [] . JSON.Object . authorizeJSON) a
     HTML -> redirectRouteResponse [] $ viewAuthorize api i at
 
-deleteAuthorize :: API -> PartyTarget -> AuthorizeTarget -> AppRAction
-deleteAuthorize api i at@(AuthorizeTarget app oi) = action DELETE (api, i, at) $ withAuth $ do
+deleteAuthorize :: AppRoute (API, PartyTarget, AuthorizeTarget)
+deleteAuthorize = action DELETE (pathAPI </> pathPartyTarget </> pathAuthorizeTarget) $ \api i at@(AuthorizeTarget app oi) -> withAuth $ do
   p <- getParty (Just PermissionADMIN) i
   o <- maybeAction =<< lookupParty oi
   let (child, parent) = if app then (p, o) else (o, p)

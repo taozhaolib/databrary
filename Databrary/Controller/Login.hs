@@ -16,19 +16,19 @@ import qualified Crypto.BCrypt as BCrypt
 import qualified Data.ByteString as BS
 import qualified Data.Foldable as Fold
 import Data.Maybe (fromMaybe)
-import qualified Data.Text as T
 
 import Databrary.Ops
 import Databrary.Has (view, peek)
-import Databrary.Action
-import Databrary.Action.Auth
-import Databrary.HTTP.Cookie
 import Databrary.Model.Id.Types
 import Databrary.Model.Party
 import Databrary.Model.Identity
 import Databrary.Model.Permission
 import Databrary.Model.Token
+import Databrary.HTTP.Cookie
 import Databrary.HTTP.Form.Deform
+import Databrary.HTTP.Route.PathParser
+import Databrary.Action
+import Databrary.Action.Auth
 import Databrary.Controller.Form
 import Databrary.Controller.Permission
 import Databrary.Controller.Angular
@@ -44,20 +44,20 @@ loginAccount api auth su = do
   cook <- setSignedCookie "session" tok ex
   case api of
     JSON -> okResponse [cook] $ identityJSON (Identified sess)
-    HTML -> redirectRouteResponse [cook] $ viewParty HTML TargetProfile
+    HTML -> redirectRouteResponse [cook] viewParty (HTML, TargetProfile)
 
-viewLogin :: AppRAction
-viewLogin = action GET ["user", "login" :: T.Text] $ withAuth $ do
+viewLogin :: AppRoute ()
+viewLogin = action GET ("user" >/> "login") $ \() -> withAuth $ do
   angular
   maybeIdentity
     (blankForm htmlLogin)
-    (\_ -> redirectRouteResponse [] $ viewParty HTML TargetProfile)
+    (\_ -> redirectRouteResponse [] viewParty (HTML, TargetProfile))
 
 checkPassword :: BS.ByteString -> Account -> Bool
 checkPassword p = Fold.any (`BCrypt.validatePassword` p) . accountPasswd
 
-postLogin :: API -> AppRAction
-postLogin api = action POST (api, ["user", "login" :: T.Text]) $ withoutAuth $ do
+postLogin :: AppRoute API
+postLogin = action POST (pathAPI </< "user" </< "login") $ \api -> withoutAuth $ do
   (Just auth, su) <- runForm (api == HTML ?> htmlLogin) $ do
     email <- "email" .:> emailTextForm
     password <- "password" .:> deform
@@ -75,20 +75,20 @@ postLogin api = action POST (api, ["user", "login" :: T.Text]) $ withoutAuth $ d
     return (auth, su)
   withReaderT authApp $ loginAccount api auth su
 
-postLogout :: API -> AppRAction
-postLogout api = action POST (api, ["user", "logout" :: T.Text]) $ withAuth $ do
+postLogout :: AppRoute API
+postLogout = action POST (pathAPI </< "user" </< "logout") $ \api -> withAuth $ do
   _ <- maybeIdentity (return False) removeSession
   case api of
     JSON -> okResponse [cook] $ identityJSON UnIdentified
-    HTML -> redirectRouteResponse [cook] $ viewRoot HTML
+    HTML -> redirectRouteResponse [cook] viewRoot HTML
   where cook = clearCookie "session"
 
-viewUser :: AppRAction
-viewUser = action GET (JSON, "user" :: T.Text) $ withAuth $
+viewUser :: AppRoute ()
+viewUser = action GET (pathJSON </< "user") $ \() -> withAuth $
   okResponse [] . identityJSON =<< peek
 
-postUser :: API -> AppRAction
-postUser api = action POST (api, "user" :: T.Text) $ withAuth $ do
+postUser :: AppRoute API
+postUser = action POST (pathAPI </< "user") $ \api -> withAuth $ do
   acct <- authAccount
   acct' <- runForm (api == HTML ?> htmlUserForm acct) $ do
     "auth" .:> do
@@ -103,4 +103,4 @@ postUser api = action POST (api, "user" :: T.Text) $ withAuth $ do
   changeAccount acct'
   case api of
     JSON -> okResponse [] $ partyJSON $ accountParty acct'
-    HTML -> redirectRouteResponse [] $ viewParty api TargetProfile
+    HTML -> redirectRouteResponse [] viewParty (api, TargetProfile)

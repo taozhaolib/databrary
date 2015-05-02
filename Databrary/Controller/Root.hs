@@ -6,9 +6,9 @@ module Databrary.Controller.Root
 
 import Control.Monad (when)
 import qualified Data.Aeson.Types as JSON
-import qualified Data.Text as T
 
 import Databrary.Has (peek)
+import Databrary.HTTP.Route.PathParser
 import Databrary.Action
 import Databrary.Controller.Angular
 import Databrary.View.Root
@@ -22,5 +22,5 @@ viewRoot = action GET pathAPI $ \api -> withAuth $ do
     HTML -> okResponse [] . htmlRoot =<< peek
 
 viewConstants :: AppRoute ()
-viewConstants = action GET (pathJSON </> "constants") $ \() ->
+viewConstants = action GET (pathJSON >/> "constants") $ \() ->
   okResponse [] constantsJSON

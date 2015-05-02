@@ -29,6 +29,7 @@ proxy _ = Proxy
 
 data PathParser a where
   PathEmpty :: PathParser ()
+  PathAll :: PathParser Path
   PathFixed :: !T.Text -> PathParser ()
   PathDynamic :: PathDynamic a => PathParser a
   PathTrans :: (a -> b) -> (b -> a) -> PathParser a -> PathParser b
@@ -41,6 +42,7 @@ instance I.Invariant PathParser where
 
 pathElements :: PathParser a -> [[PathElement]]
 pathElements PathEmpty = [[]]
+pathElements PathAll = [[]]
 pathElements (PathFixed t) = [[PathElementFixed t]]
 pathElements d@PathDynamic = [[PathElementDynamic (proxy d)]]
 pathElements (PathTrans _ _ p) = pathElements p
@@ -52,6 +54,7 @@ instance IsString (PathParser ()) where
 
 pathParse :: PathParser a -> Path -> Maybe (a, Path)
 pathParse PathEmpty l = Just ((), l)
+pathParse PathAll l = Just (l, [])
 pathParse (PathFixed t) (a:l) = (, l) <$> guard (a == t)
 pathParse PathDynamic (a:l) = (, l) <$> pathDynamic a
 pathParse (PathTrans f _ p) a = first f <$> pathParse p a
@@ -68,6 +71,7 @@ pathParser p l = do
 
 pathGenerate :: PathParser a -> a -> Path
 pathGenerate PathEmpty () = []
+pathGenerate PathAll l = l
 pathGenerate (PathFixed t) () = [t]
 pathGenerate PathDynamic a = [dynamicPath a]
 pathGenerate (PathTrans _ g p) a = pathGenerate p $ g a

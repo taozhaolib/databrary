@@ -13,9 +13,9 @@ import Databrary.Model.Party
 baseMail :: Mail
 baseMail = emptyMail (Address (Just "Databrary") "help@databrary.org")
 
-sendMail :: MonadIO m => [Either T.Text Account] -> T.Text -> [T.Text] -> m ()
+sendMail :: MonadIO m => [Either T.Text Account] -> T.Text -> TL.Text -> m ()
 sendMail to subj body =
-  liftIO $ renderSendMail $ addPart [plainPart (TL.fromChunks body)] $ baseMail
+  liftIO $ renderSendMail $ addPart [plainPart body] $ baseMail
     { mailTo = map addr to
     , mailHeaders = [("Subject", subj)]
     }
