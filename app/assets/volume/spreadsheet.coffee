@@ -62,6 +62,10 @@ app.directive 'spreadsheet', [
       info
 
     pseudoCategory =
+      slot:
+        id: 'slot'
+        name: 'materials/session'
+        template: ['name', 'date', 'release']
       0:
         id: 0
         name: 'record'
@@ -71,18 +75,37 @@ app.directive 'spreadsheet', [
         id: 'asset'
         name: 'file'
         not: 'No file'
+        template: ['name', 'classification', 'excerpt']
     constants.deepFreeze(pseudoCategory)
     getCategory = (c) ->
       pseudoCategory[c || 0] || constants.category[c]
 
     pseudoMetric =
-      id:
+      name: # slot, asset
+        id: 'name'
+        name: 'name'
+        display: ' '
+        type: 'text'
+      date: # slot
+        id: 'date'
+        name: 'test date'
+        type: 'date'
+      release: # slot
+        id: 'release'
+        name: 'release'
+      classification: # asset
+        id: 'classification'
+        name: 'classification'
+      excerpt: # asset
+        id: 'excerpt'
+        name: 'excerpt'
+      id: # record
         id: 'id'
         name: 'id'
         display: ' '
         type: 'number'
         release: constants.release.PUBLIC
-      age:
+      age: # record
         id: 'age'
         name: 'age'
         type: 'number'
@@ -102,7 +125,7 @@ app.directive 'spreadsheet', [
 
         editing = $scope.editing = $attrs.edit != undefined
         top = $scope.top = 'top' of $attrs
-        assets = if $scope.assets = 'assets' of $attrs then []
+        assets = $scope.assets = 'assets' of $attrs
         id = $scope.id = $attrs.id ? if top then 'sst' else 'ss'
         limit = $attrs.limit
 
@@ -160,7 +183,17 @@ app.directive 'spreadsheet', [
           populateMeasure = (m, v) ->
             arr(arr(r, m), n)[i] = v
             return
-          count = counts[i] = {}
+
+          count = counts[i] = {slot: 1}
+          c = 'slot'
+          r = records[c]
+          n = 0
+          populateMeasure('id', slot.id)
+          populateMeasure('name', slot.name)
+          if !slot.top || slot.date
+            populateMeasure('date', slot.date)
+          if !slot.top || slot.release
+            populateMeasure('release', slot.release)
 
           for rr in slot.records
             record = rr.record
@@ -191,10 +224,14 @@ app.directive 'spreadsheet', [
             depends[record.id][i] = n
 
           if assets
-            ### jshint ignore:start #### fixed in jshint 2.5.7
-            assets[i] = (asset for assetId, asset of slot.assets)
-            ### jshint ignore:end ###
-            count.asset = assets[i].length
+            c = 'asset'
+            r = records[c]
+            for assetId, asset of slot.assets
+              n = inc(count, c)
+              populateMeasure('id', asset.id)
+              populateMeasure('name', asset.name)
+              populateMeasure('classification', asset.release)
+              populateMeasure('excerpt', asset.excerpt?)
 
           return
 
@@ -206,7 +243,7 @@ app.directive 'spreadsheet', [
             if editing
               for m in category.template
                 arr(records[c], m)
-            metrics = _.map Object.keys(records[c]), maybeInt
+            metrics = Object.keys(records[c]).map(maybeInt)
                     .sort(byType)
             metrics.pop() # remove 'id' (necessarily last)
             metrics = _.map metrics, getMetric
@@ -226,7 +263,7 @@ app.directive 'spreadsheet', [
               start: si
             }
           $scope.metricCols = metricCols
-          $scope.totalCols = 1 + 2*!top + metricCols.length + 3*!!assets
+          $scope.totalCols = 1 + 2*!top + metricCols.length + 3*assets
           if editing
             ### jshint ignore:start #### fixed in jshint 2.5.7
             $scope.categories = (c for ci, c of constants.category when ci not of records)
@@ -238,6 +275,8 @@ app.directive 'spreadsheet', [
         # Call all populate functions
         populate = ->
           records = {}
+          records.slot = {id: []}
+          records.asset = {id: []} if assets
           depends = {}
           for s, i in slots
             populateSlot(i)
@@ -258,7 +297,12 @@ app.directive 'spreadsheet', [
 
         # Add or replace the text contents of cell c for measure/type m with value v
         generateText = (c, m, v, assumed) ->
-          if m == 'release'
+          if m == 'name'
+            a = c.insertBefore(document.createElement('a'), c.firstChild)
+            #a.setAttribute('href', if editing then slot.editRoute() else slot.route())
+            a.className = "session icon hint-action-slot"
+            #v ?= constants.message('materials.top') if stop
+          else if m == 'release'
             cn = constants.release[v || 0]
             c.className = cn + ' release icon hint-release-' + cn
             v = ''
@@ -409,8 +453,8 @@ app.directive 'spreadsheet', [
             generateCell(row, 'release', slot.release, id + '-release_' + i)
           for c in recordCols
             generateRecord(row, i, c)
-          if assets
-            generateAsset(row, i)
+          #if assets
+          #  generateAsset(row, i)
           return
 
         # Update all age displays.
