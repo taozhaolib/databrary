@@ -15,7 +15,7 @@ import Language.Haskell.Meta.Parse (parsePat)
 import qualified Language.Haskell.TH as TH
 import Language.Haskell.TH.Quote (QuasiQuoter(..))
 
-import Databrary.Iso.Prim
+import Databrary.Iso.Types
 
 split :: Eq a => [a] -> [a] -> [[a]]
 split _ [] = []

@@ -16,7 +16,7 @@ import {-# SOURCE #-} Databrary.Controller.VolumeAccess
 htmlVolumeAccessForm :: VolumeAccess -> AuthRequest -> FormHtml
 htmlVolumeAccessForm a@VolumeAccess{ volumeAccessVolume = vol, volumeAccessParty = p } req = htmlForm
   ("Access to " <> volumeName vol <> " for " <> partyName p)
-  postVolumeAccess (HTML, volumeId vol, VolumeAccessTarget (partyId p))
+  postVolumeAccess (HTML, (volumeId vol, VolumeAccessTarget (partyId p)))
   req $ do
   field "individual" $ inputEnum $ Just $ volumeAccessIndividual a
   field "children" $ inputEnum $ Just $ volumeAccessChildren a

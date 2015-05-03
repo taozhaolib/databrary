@@ -36,6 +36,7 @@ import Databrary.Model.AssetSegment
 import Databrary.Store.Asset
 import Databrary.HTTP.File
 import Databrary.HTTP.Request
+import Databrary.HTTP.Route.PathParser
 import Databrary.Media.AV
 import Databrary.Action
 import Databrary.Controller.Angular
@@ -52,8 +53,8 @@ assetSegmentJSONField _ _ _ = return Nothing
 assetSegmentJSONQuery :: (MonadDB m, MonadHasIdentity c m) => AssetSegment -> JSON.Query -> m JSON.Object
 assetSegmentJSONQuery vol = JSON.jsonQuery (assetSegmentJSON vol) (assetSegmentJSONField vol)
 
-viewAssetSegment :: API -> Id Slot -> Id Asset -> AppRAction
-viewAssetSegment api si ai = action GET (api, si, ai) $ withAuth $ do
+viewAssetSegment :: AppRoute (API, Id Slot, Id Asset)
+viewAssetSegment = action GET (pathAPI </>> pathSlotId </> pathId) $ \(api, si, ai) -> withAuth $ do
   when (api == HTML) angular
   as <- getAssetSegment PermissionPUBLIC si ai
   case api of
@@ -96,14 +97,14 @@ serveAssetSegment as = do
     <> (if isJust point then mempty else BSB.char7 '-' <> sb (Range.upperBound clip)))
     where sb = maybe mempty (BSB.integerDec . offsetMillis) . Range.bound
 
-downloadAssetSegment :: Id Slot -> Id Asset -> AppRAction
-downloadAssetSegment si ai = action GET (si, ai, "download" :: T.Text) $ withAuth $ do
+downloadAssetSegment :: AppRoute (Id Slot, Id Asset)
+downloadAssetSegment = action GET (pathSlotId </> pathId </< "download") $ \(si, ai) -> withAuth $ do
   as <- getAssetSegment PermissionREAD si ai
   inline <- peeks $ lookupQueryParameters "inline"
   serveAssetSegment as
 
-thumbAssetSegment :: Id Slot -> Id Asset -> AppRAction
-thumbAssetSegment si ai = action GET (si, ai, "thumb" :: T.Text) $ withAuth $ do
+thumbAssetSegment :: AppRoute (Id Slot, Id Asset)
+thumbAssetSegment = action GET (pathSlotId </> pathId </< "thumb") $ \(si, ai) -> withAuth $ do
   as <- getAssetSegment PermissionREAD si ai
   let afmt = view as
   if formatIsImage (fromMaybe afmt (formatSample afmt))
@@ -112,4 +113,4 @@ thumbAssetSegment si ai = action GET (si, ai, "thumb" :: T.Text) $ withAuth $ do
       -- redirectRouteResponse [] $ downloadAssetSegment (view as') (view as') -- loses size
       serveAssetSegment as'
     else
-      redirectRouteResponse [] $ formatIcon afmt
+      redirectRouteResponse [] formatIcon afmt

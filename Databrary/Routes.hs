@@ -1,18 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Routes
-  ( routes
+  ( routeMap
   ) where
 
-import qualified Data.ByteString as BS
-import Control.Applicative ((<|>))
-import Control.Monad (msum, guard)
-import Control.Monad.Reader (ask)
-import Network.HTTP.Types (methodGet, movedPermanently301, hLocation)
-import qualified Network.Wai as Wai
-
-import qualified Databrary.HTTP.Route as R
+import Databrary.HTTP.Route
 import Databrary.Action
-import Databrary.Action.Types
 import Databrary.Controller.Root
 import Databrary.Controller.Login
 import Databrary.Controller.Register
@@ -35,113 +27,85 @@ import Databrary.Controller.Comment
 import Databrary.Controller.Transcode
 import Databrary.Controller.Web
 
-act :: ActionData q => RouteAction q -> R.RouteM (Action q)
-act ra = do
-  R.final
-  req <- ask
-  guard $ actionMethod ra == Wai.requestMethod req
-  return $
+routeMap :: RouteMap AppAction
+routeMap = fromRouteList
+  [ AnyRoute viewRoot
+
+  , AnyRoute viewUser
+  , AnyRoute postUser
+  , AnyRoute viewLogin
+  , AnyRoute postLogin
+  , AnyRoute postLogout
+  , AnyRoute viewRegister
+  , AnyRoute postRegister
+  , AnyRoute viewPasswordReset
+  , AnyRoute postPasswordReset
+  , AnyRoute viewLoginToken
+  , AnyRoute postPasswordToken
+
+  , AnyRoute viewParty
+  , AnyRoute postParty
+  , AnyRoute viewEditParty
+  , AnyRoute viewAuthorize
+  , AnyRoute postAuthorize
+  , AnyRoute deleteAuthorize
+  , AnyRoute viewAvatar
+  , AnyRoute createParty
+  , AnyRoute queryParties
+
+  , AnyRoute viewVolume
+  , AnyRoute postVolume
+  , AnyRoute viewVolumeForm
+  , AnyRoute viewVolumeAccess
+  , AnyRoute postVolumeAccess
+  , AnyRoute viewVolumeLinks
+  , AnyRoute postVolumeLinks
+  , AnyRoute postVolumeFunding
+  , AnyRoute deleteVolumeFunder
+  , AnyRoute createVolume
+  , AnyRoute queryVolumes
+
+  , AnyRoute createContainer
+  , AnyRoute viewSlot
+  , AnyRoute postContainer
+
+  , AnyRoute viewAsset
+  , AnyRoute postAsset
+  , AnyRoute viewEditAsset
+  , AnyRoute deleteAsset
+  , AnyRoute downloadAsset
+  , AnyRoute viewCreateAsset
+  , AnyRoute createAsset
+  , AnyRoute createSlotAsset
+  , AnyRoute viewCreateSlotAsset
+
+  , AnyRoute viewAssetSegment
+  , AnyRoute downloadAssetSegment
+  , AnyRoute thumbAssetSegment
+  , AnyRoute postExcerpt
+  , AnyRoute deleteExcerpt
+
+  , AnyRoute createRecord
+  , AnyRoute viewRecord
+  , AnyRoute postRecordMeasure
+
+  , AnyRoute postTag
+  , AnyRoute deleteTag
+  , AnyRoute postComment
+
+  , AnyRoute uploadStart
+  , AnyRoute uploadChunk
+  , AnyRoute testChunk
+  , AnyRoute viewConstants
+  , AnyRoute getCitation
+  , AnyRoute queryFunder
+  , AnyRoute remoteTranscode
+
+  , AnyRoute webFile
+  ]
+
+{-
     if actionMethod ra == methodGet && Wai.rawPathInfo req /= actionRoute ra
       then emptyResponse movedPermanently301 [(hLocation, actionURL ra (Just req) `BS.append` Wai.rawQueryString req)]
       else routeAction ra
-
-routes :: R.RouteM AppAction
-routes = do
-  api <- R.route
-  let
-    json = guard (api == JSON)
-    html = guard (api == HTML)
-  msum 
-    [                                 act (viewRoot api)
-    , "user" >> msum                  -- /user
-      [                      (html >> act viewUser)
-      ,                               act (postUser api)
-      , "login" >>           (html >> act viewLogin)
-                                  <|> act (postLogin api)
-      , "logout" >>                   act (postLogout api)
-      , "register" >>        (html >> act viewRegister)
-                                  <|> act (postRegister api)
-      , "password" >>        (html >> act viewPasswordReset)
-                                  <|> act (postPasswordReset api)
-      ]
-    , R.route >>= \t ->               -- /token/ID
-                                      act (viewLoginToken api t)
-                                  <|> act (postPasswordToken api t)
-    , R.route >>= \p -> msum          -- /party/ID
-      [                               act (viewParty api p)
-      ,                               act (postParty api p)
-      , html >> "edit" >>             act (viewEditParty p)
-      , R.route >>= \a -> msum        --          /authorize/ID
-        [                             act (viewAuthorize api p a)
-        ,                             act (postAuthorize api p a)
-        ,                             act (deleteAuthorize api p a)
-        ]
-      ]
-    , R.route >>= \p ->
-                  html >> "avatar" >> act (viewAvatar p)
-    , "party" >>                      act (createParty api)
-                                  <|> act (queryParties api)
-    , R.route >>= \v -> msum          -- /vo/ume/ID
-      [                               act (viewVolume api v)
-      ,                               act (postVolume api v)
-      , html >> "edit" >>             act (viewVolumeForm v)
-      , R.route >>= \p ->             --           /access/ID
-                             (html >> act (viewVolumeAccess v p))
-                                  <|> act (postVolumeAccess api v p)
-      , "link" >>            (html >> act (viewVolumeLinks v))
-                                  <|> act (postVolumeLinks api v)
-      , R.route >>= \f ->     json >> --           /funder/ID
-                                      act (postVolumeFunding v f)
-                                  <|> act (deleteVolumeFunder v f)
-      , "slot" >>                     act (createContainer api v)
-      , "record" >>                   act (createRecord api v)
-      , "asset" >>           (html >> act (viewCreateAsset v))
-                                  <|> act (createAsset api v)
-      , json >> "upload" >>           act (uploadStart v)
-      ]
-    , "volume" >>                     act (createVolume api)
-                                  <|> act (queryVolumes api)
-
-    , R.route >>= \s -> msum          -- /slot/ID/SEG
-      [                               act (viewSlot api s)
-      ,                               act (postContainer api s)
-      , R.route >>= \a -> msum        --             /asset/ID
-        [                             act (viewAssetSegment api s a)
-        , html >> "download" >>       act (downloadAssetSegment s a)
-        , html >> "thumb" >>          act (thumbAssetSegment s a)
-        , "excerpt" >>        json >> act (postExcerpt s a)
-                                  <|> act (deleteExcerpt s a)
-        ]
-      , "asset" >>           (html >> act (viewCreateSlotAsset s))
-                                  <|> act (createSlotAsset api s)
-      , R.route >>= \t ->             act (postTag api s t)
-                                  <|> act (deleteTag api s t)
-      , "comment" >>                  act (postComment api s)
-      ]
-
-    , R.route >>= \r -> msum          -- /record/ID
-      [                               act (viewRecord api r)
-      , R.route >>= \m ->             act (postRecordMeasure api r m)
-      ]
-
-    , R.route >>= \a -> msum          -- /asset/ID
-      [                               act (viewAsset api a)
-      ,                               act (postAsset api a)
-      , html >> "edit" >>             act (viewEditAsset a)
-      ,                               act (deleteAsset api a)
-      , html >> "download" >>         act (downloadAsset a)
-      ]
-
-    , json >> msum                    -- /api
-      [ "constants" >>                act viewConstants
-      , "cite" >>                     act getCitation
-      , "upload" >>                   act uploadChunk
-                                  <|> act testChunk
-      , "funder" >>                   act queryFunder
-      , R.route >>= \t ->             act (remoteTranscode t)
-      ]
-
-    , html >> msum                    -- /
-      [ "public" >> R.route >>=       act . webFile
-      ]
-    ]
+-}

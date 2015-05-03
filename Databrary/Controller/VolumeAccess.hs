@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, QuasiQuotes #-}
 module Databrary.Controller.VolumeAccess
   ( VolumeAccessTarget(..)
   , viewVolumeAccess
@@ -6,6 +6,8 @@ module Databrary.Controller.VolumeAccess
   ) where
 
 import Databrary.Ops
+import qualified Databrary.Iso as I
+import Databrary.Iso.TH
 import Databrary.Has (peek)
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Id
@@ -14,10 +16,9 @@ import Databrary.Model.Permission
 import Databrary.Model.Identity
 import Databrary.Model.Volume
 import Databrary.Model.VolumeAccess
-import qualified Databrary.HTTP.Route as R
 import Databrary.HTTP.Form.Deform
+import Databrary.HTTP.Route.PathParser
 import Databrary.Action
-import Databrary.Action.Route
 import Databrary.Controller.Form
 import Databrary.Controller.Volume
 import Databrary.Controller.Angular
@@ -27,19 +28,18 @@ newtype VolumeAccessTarget = VolumeAccessTarget
   { volumeAccessTarget :: Id Party
   }
 
-instance R.Routable VolumeAccessTarget where
-  route = "access" >> VolumeAccessTarget . Id <$> R.route
-  toRoute (VolumeAccessTarget (Id i)) = "access" : R.toRoute i
+pathVolumeAccessTarget :: PathParser VolumeAccessTarget
+pathVolumeAccessTarget = "access" >/> [iso|i <-> VolumeAccessTarget (Id i)|] I.<$> PathDynamic
 
-viewVolumeAccess :: Id Volume -> VolumeAccessTarget -> AppRAction
-viewVolumeAccess vi at@(VolumeAccessTarget ap) = action GET (HTML, toRoute vi ++ toRoute at) $ withAuth $ do
+viewVolumeAccess :: AppRoute (Id Volume, VolumeAccessTarget)
+viewVolumeAccess = action GET (pathHTML >/> pathId </> pathVolumeAccessTarget) $ \(vi, VolumeAccessTarget ap) -> withAuth $ do
   angular
   v <- getVolume PermissionADMIN vi
   a <- maybeAction =<< lookupVolumeAccessParty v ap
   blankForm (htmlVolumeAccessForm a)
 
-postVolumeAccess :: API -> Id Volume -> VolumeAccessTarget -> AppRAction
-postVolumeAccess api vi at@(VolumeAccessTarget ap) = action POST (api, vi, at) $ withAuth $ do
+postVolumeAccess :: AppRoute (API, (Id Volume, VolumeAccessTarget))
+postVolumeAccess = action POST (pathAPI </> pathId </> pathVolumeAccessTarget) $ \(api, arg@(vi, VolumeAccessTarget ap)) -> withAuth $ do
   v <- getVolume PermissionADMIN vi
   a <- maybeAction =<< lookupVolumeAccessParty v ap
   u <- peek
@@ -63,4 +63,4 @@ postVolumeAccess api vi at@(VolumeAccessTarget ap) = action POST (api, vi, at) $
   _ <- changeVolumeAccess a'
   case api of
     JSON -> okResponse [] $ JSON.Object $ volumeAccessJSON a
-    HTML -> redirectRouteResponse [] $ viewVolumeAccess vi at
+    HTML -> redirectRouteResponse [] viewVolumeAccess arg

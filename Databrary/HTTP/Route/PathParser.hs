@@ -1,7 +1,8 @@
-{-# LANGUAGE GADTs, KindSignatures, DataKinds, TypeOperators, TupleSections #-}
+{-# LANGUAGE GADTs, KindSignatures, DataKinds, TypeOperators, TupleSections, QuasiQuotes #-}
 module Databrary.HTTP.Route.PathParser
   ( PathParser(..)
   , (</>)
+  , (</>>)
   , (>/>)
   , (</<)
   , (|/|)
@@ -21,6 +22,7 @@ import Data.String (IsString(..))
 import qualified Data.Text as T
 
 import qualified Databrary.Iso as I
+import Databrary.Iso.TH
 import Databrary.Ops
 import Databrary.HTTP.Route.Path
 
@@ -79,22 +81,25 @@ pathGenerate (PathTuple p q) (a, b) = pathGenerate p a ++ pathGenerate q b
 pathGenerate (PathEither p _) (Left a) = pathGenerate p a
 pathGenerate (PathEither _ q) (Right b) = pathGenerate q b
 
-infixr 2 </>, >/>, </<
+infixr 2 </>, </>>, >/>, </<
 (</>) :: PathParser a -> PathParser b -> PathParser (a, b)
 (</>) = PathTuple
 
+(</>>) :: PathParser a -> PathParser (b, c) -> PathParser (a, b, c)
+(</>>) l r = [iso|(a, (b, c)) <-> (a, b, c)|] I.<$> PathTuple l r
+
 (>/>) :: PathParser () -> PathParser a -> PathParser a
-(>/>) a b = I.second I.<$> PathTuple a b
+(>/>) a b = I.snd I.<$> PathTuple a b
 
 (</<) :: PathParser a -> PathParser () -> PathParser a
-(</<) a b = I.first I.<$> PathTuple a b
+(</<) a b = I.fst I.<$> PathTuple a b
 
 infix 3 |/|, =/=
 (|/|) :: PathParser a -> PathParser b -> PathParser (Either a b)
 (|/|) = PathEither
 
 pathMaybe :: PathParser a -> PathParser (Maybe a)
-pathMaybe p = I.right I.<$> (PathEmpty |/| p)
+pathMaybe p = I.rgt I.<$> (PathEmpty |/| p)
 
 (=/=) :: Eq a => a -> PathParser a -> PathParser a
 (=/=) a p = I.defaultEq a I.<$> pathMaybe p

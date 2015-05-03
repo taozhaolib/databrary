@@ -17,13 +17,14 @@ import Databrary.Model.Volume
 import Databrary.Model.Funding
 import Databrary.Model.Funding.FundRef
 import Databrary.HTTP.Form.Deform
+import Databrary.HTTP.Route.PathParser
 import Databrary.Action
 import Databrary.Controller.Form
 import Databrary.Controller.Permission
 import Databrary.Controller.Volume
 
-queryFunder :: AppRAction
-queryFunder = action GET (JSON, "funder" :: T.Text) $ withAuth $ do
+queryFunder :: AppRoute ()
+queryFunder = action GET (pathJSON </< "funder") $ \() -> withAuth $ do
   _ <- authAccount
   (q, a) <- runForm Nothing $ liftM2 (,)
     ("query" .:> (deformRequired =<< deform))
@@ -33,8 +34,8 @@ queryFunder = action GET (JSON, "funder" :: T.Text) $ withAuth $ do
     else findFunders q
   okResponse [] $ JSON.toJSON $ map funderJSON r
 
-postVolumeFunding :: Id Volume -> Id Funder -> AppRAction
-postVolumeFunding vi fi = action POST (JSON, vi, fi) $ withAuth $ do
+postVolumeFunding :: AppRoute (Id Volume, Id Funder)
+postVolumeFunding = action POST (pathJSON >/> pathId </> pathId) $ \(vi, fi) -> withAuth $ do
   v <- getVolume PermissionEDIT vi
   f <- maybeAction =<< lookupFunderRef fi
   a <- runForm Nothing $ do
@@ -43,8 +44,8 @@ postVolumeFunding vi fi = action POST (JSON, vi, fi) $ withAuth $ do
   _ <- changeVolumeFunding v fa
   okResponse [] $ fundingJSON fa
 
-deleteVolumeFunder :: Id Volume -> Id Funder -> AppRAction
-deleteVolumeFunder vi fi = action DELETE (JSON, vi, fi) $ withAuth $ do
+deleteVolumeFunder :: AppRoute (Id Volume, Id Funder)
+deleteVolumeFunder = action DELETE (pathJSON >/> pathId </> pathId) $ \(vi, fi) -> withAuth $ do
   v <- getVolume PermissionEDIT vi
   _ <- removeVolumeFunder v fi
   okResponse [] $ volumeJSON v

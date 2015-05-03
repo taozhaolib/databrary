@@ -6,13 +6,15 @@ module Databrary.Controller.Authorize
   , deleteAuthorize
   ) where
 
-import Control.Applicative ((<*>), (<|>))
+import Control.Applicative ((<|>))
 import Control.Monad (when)
+import qualified Data.ByteString.Builder as BSB
 import qualified Data.Foldable as Fold
 import Data.Maybe (fromMaybe, isNothing, mapMaybe)
 import Data.Monoid (mempty, (<>))
 import qualified Data.Text as T
-import qualified Data.Text.Encoding as TE
+import qualified Data.Text.Lazy as TL
+import qualified Data.Text.Lazy.Encoding as TLE
 import Data.Time (UTCTime(..), fromGregorian, addGregorianYearsRollOver)
 import Network.HTTP.Types (noContent204, StdMethod(DELETE))
 
@@ -31,7 +33,6 @@ import Databrary.Model.Authorize
 import Databrary.HTTP.Route.PathParser
 import Databrary.HTTP.Form.Deform
 import Databrary.Action
-import Databrary.Action.Route
 import Databrary.Controller.Form
 import Databrary.Controller.Party
 import Databrary.Controller.Angular
@@ -51,7 +52,7 @@ pathAuthorizeTarget = authorizeTargetIso I.<$>
    </> idIso I.<$> PathDynamic)
 
 viewAuthorize :: AppRoute (API, PartyTarget, AuthorizeTarget)
-viewAuthorize = action GET (pathAPI </> pathPartyTarget </> pathAuthorizeTarget) $ \api i at@(AuthorizeTarget app oi) -> withAuth $ do
+viewAuthorize = action GET (pathAPI </>> pathPartyTarget </> pathAuthorizeTarget) $ \(api, i, AuthorizeTarget app oi) -> withAuth $ do
   angular
   p <- getParty (Just PermissionADMIN) i
   o <- maybeAction =<< lookupParty oi
@@ -76,7 +77,7 @@ authorizeAddr :: [Either T.Text Account]
 authorizeAddr = [Left "authorize@databrary.org"]
 
 postAuthorize :: AppRoute (API, PartyTarget, AuthorizeTarget)
-postAuthorize = action POST (pathAPI </> pathPartyTarget </> pathAuthorizeTarget) $ \api i at@(AuthorizeTarget app oi) -> withAuth $ do
+postAuthorize = action POST (pathAPI </>> pathPartyTarget </> pathAuthorizeTarget) $ \arg@(api, i, AuthorizeTarget app oi) -> withAuth $ do
   p <- getParty (Just PermissionADMIN) i
   o <- maybeAction =<< lookupParty oi
   let (child, parent) = if app then (p, o) else (o, p)
@@ -88,16 +89,14 @@ postAuthorize = action POST (pathAPI </> pathPartyTarget </> pathAuthorizeTarget
         changeAuthorize c'
         dl <- partyDelegates parent
         agent <- peeks $ fmap accountEmail . partyAccount
-        url <- peeks $ actionURL (viewEditParty $ TargetParty $ partyId parent) . Just
-        sendMail
-          (map Right dl ++ authorizeAddr)
+        req <- peek
+        sendMail (map Right dl ++ authorizeAddr)
           ("Databrary authorization request from " <> partyName child)
-          [ partyName child, " <", fromMaybe "" agent, "> has requested to be authorized by ", partyName parent, ".\n\n\
-            \To approve or reject this authorization request, go to:\n",
-            TE.decodeLatin1 url, "?page=grant#auth-", T.pack (show $ partyId child), "\n\n\
+          $ TL.fromStrict (partyName child) <> " <" <> maybe "" TL.fromStrict agent <> "> has requested to be authorized by " <> TL.fromStrict (partyName parent) <> ".\n\n\
+            \To approve or reject this authorization request, go to:\n" <>
+            TLE.decodeLatin1 (BSB.toLazyByteString $ actionURL (Just req) viewEditParty (TargetParty $ partyId parent)) <> "?page=grant#auth-" <> TL.pack (show $ partyId child) <> "\n\n\
             \Find more information about authorizing and managing affiliates here:\n\n\
             \http://databrary.org/access/guide/investigators/authorization/affiliates.html\n"
-          ]
       return $ Just $ fromMaybe c' c
     else do
       su <- peeks identitySuperuser
@@ -114,22 +113,20 @@ postAuthorize = action POST (pathAPI </> pathPartyTarget </> pathAuthorizeTarget
           return $ Authorize (Authorization (Access site member) child parent) $ fmap (`UTCTime` 43210) expires
       maybe (Fold.mapM_ removeAuthorize c) changeAuthorize a
       when (Fold.any ((PermissionPUBLIC <) . accessSite) a && Fold.all ((PermissionPUBLIC >=) . accessSite) c) $
-        sendMail
-          (maybe id (:) (Right <$> partyAccount child) authorizeAddr)
+        sendMail (maybe id (:) (Right <$> partyAccount child) authorizeAddr)
           "Databrary authorization approved"
-          [ "You have been authorized for Databrary access by ", partyName parent, ".\n"
-          ]
+          $ "You have been authorized for Databrary access by " <> TL.fromStrict (partyName parent) <> ".\n"
       return a
   case api of
     JSON -> maybe (emptyResponse noContent204 []) (okResponse [] . JSON.Object . authorizeJSON) a
-    HTML -> redirectRouteResponse [] $ viewAuthorize api i at
+    HTML -> redirectRouteResponse [] viewAuthorize arg
 
 deleteAuthorize :: AppRoute (API, PartyTarget, AuthorizeTarget)
-deleteAuthorize = action DELETE (pathAPI </> pathPartyTarget </> pathAuthorizeTarget) $ \api i at@(AuthorizeTarget app oi) -> withAuth $ do
+deleteAuthorize = action DELETE (pathAPI </>> pathPartyTarget </> pathAuthorizeTarget) $ \arg@(api, i, AuthorizeTarget app oi) -> withAuth $ do
   p <- getParty (Just PermissionADMIN) i
   o <- maybeAction =<< lookupParty oi
   let (child, parent) = if app then (p, o) else (o, p)
   _ <- removeAuthorize $ Authorize (Authorization mempty child parent) Nothing
   case api of
     JSON -> emptyResponse noContent204 []
-    HTML -> redirectRouteResponse [] $ viewAuthorize api i at
+    HTML -> redirectRouteResponse [] viewAuthorize arg

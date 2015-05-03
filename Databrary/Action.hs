@@ -74,9 +74,9 @@ maybeAction :: (MonadAction q m, MonadIO m) => Maybe a -> m a
 maybeAction (Just a) = return a
 maybeAction Nothing = result =<< notFoundResponse
 
-type AppRoute a = Route (Action AppRequest) a
+type AppRoute a = Route AppAction a
 
-runAppRoute :: RouteMap (Action AppRequest) -> Service -> Wai.Application
+runAppRoute :: RouteMap AppAction -> Service -> Wai.Application
 runAppRoute rm rc req = runApp rc
   (fromMaybe notFoundResponse (lookupRoute req rm))
   req

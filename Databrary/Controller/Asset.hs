@@ -34,10 +34,6 @@ import Databrary.Service.Types
 import Databrary.Service.ResourceT
 import qualified Databrary.JSON as JSON
 import Databrary.Service.DB
-import Databrary.HTTP.Form.Errors
-import Databrary.HTTP.Form.Deform
-import Databrary.Action
-import Databrary.Action.Route
 import Databrary.Model.Segment
 import Databrary.Model.Permission
 import Databrary.Model.Id
@@ -58,6 +54,10 @@ import Databrary.Store.Asset
 import Databrary.Store.Upload
 import Databrary.Store.Temp
 import Databrary.Media.AV
+import Databrary.HTTP.Form.Errors
+import Databrary.HTTP.Form.Deform
+import Databrary.HTTP.Route.PathParser
+import Databrary.Action
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
 import Databrary.Controller.Volume
@@ -84,8 +84,8 @@ assetJSONField _ _ _ = return Nothing
 assetJSONQuery :: (MonadDB m, MonadHasIdentity c m) => AssetSlot -> JSON.Query -> m JSON.Object
 assetJSONQuery vol = JSON.jsonQuery (assetSlotJSON vol) (assetJSONField vol)
 
-viewAsset :: API -> Id Asset -> AppRAction
-viewAsset api i = action GET (api, i) $ withAuth $ do
+viewAsset :: AppRoute (API, Id Asset)
+viewAsset = action GET (pathAPI </> pathId) $ \(api, i) -> withAuth $ do
   when (api == HTML) angular
   asset <- getAsset PermissionPUBLIC i
   case api of
@@ -196,54 +196,54 @@ processAsset api target = do
   _ <- changeAssetSlot as''
   case api of
     JSON -> okResponse [] $ assetSlotJSON as''
-    HTML -> redirectRouteResponse [] $ viewAsset api (assetId (slotAsset as''))
+    HTML -> redirectRouteResponse [] viewAsset (api, assetId (slotAsset as''))
 
-postAsset :: API -> Id Asset -> AppRAction
-postAsset api ai = multipartAction $ action POST (api, ai) $ withAuth $ do
+postAsset :: AppRoute (API, Id Asset)
+postAsset = multipartAction $ action POST (pathAPI </> pathId) $ \(api, ai) -> withAuth $ do
   asset <- getAsset PermissionEDIT ai
   r <- assetIsSuperseded (slotAsset asset)
   guardAction (not r) $
     returnResponse conflict409 [] ("This file has already been replaced." :: T.Text)
   processAsset api $ AssetTargetAsset asset
 
-viewEditAsset :: Id Asset -> AppRAction
-viewEditAsset ai = action GET (HTML, ai, "edit" :: T.Text) $ withAuth $ do
+viewEditAsset :: AppRoute (Id Asset)
+viewEditAsset = action GET (pathHTML >/> pathId </< "edit") $ \ai -> withAuth $ do
   angular
   asset <- getAsset PermissionEDIT ai
   blankForm $ htmlAssetForm $ AssetTargetAsset asset
 
-createAsset :: API -> Id Volume -> AppRAction
-createAsset api vi = multipartAction $ action POST (api, vi, "asset" :: T.Text) $ withAuth $ do
+createAsset :: AppRoute (API, Id Volume)
+createAsset = multipartAction $ action POST (pathAPI </> pathId </< "asset") $ \(api, vi) -> withAuth $ do
   v <- getVolume PermissionEDIT vi
   processAsset api $ AssetTargetVolume v
 
-viewCreateAsset :: Id Volume -> AppRAction
-viewCreateAsset vi = action GET (HTML, vi, "asset" :: T.Text) $ withAuth $ do
+viewCreateAsset :: AppRoute (Id Volume)
+viewCreateAsset = action GET (pathHTML >/> pathId </< "asset") $ \vi -> withAuth $ do
   angular
   v <- getVolume PermissionEDIT vi
   blankForm $ htmlAssetForm $ AssetTargetVolume v
 
-createSlotAsset :: API -> Id Slot -> AppRAction
-createSlotAsset api si = multipartAction $ action POST (api, si, "asset" :: T.Text) $ withAuth $ do
+createSlotAsset :: AppRoute (API, Id Slot)
+createSlotAsset = multipartAction $ action POST (pathAPI </> pathSlotId </< "asset") $ \(api, si) -> withAuth $ do
   v <- getSlot PermissionEDIT si
   processAsset api $ AssetTargetSlot v
 
-viewCreateSlotAsset :: Id Slot -> AppRAction
-viewCreateSlotAsset si = action GET (HTML, si, "asset" :: T.Text) $ withAuth $ do
+viewCreateSlotAsset :: AppRoute (Id Slot)
+viewCreateSlotAsset = action GET (pathHTML >/> pathSlotId </< "asset") $ \si -> withAuth $ do
   angular
   s <- getSlot PermissionEDIT si
   blankForm $ htmlAssetForm $ AssetTargetSlot s
 
-deleteAsset :: API -> Id Asset -> AppRAction
-deleteAsset api ai = action DELETE (api, ai) $ withAuth $ do
+deleteAsset :: AppRoute (API, Id Asset)
+deleteAsset = action DELETE (pathAPI </> pathId) $ \(api, ai) -> withAuth $ do
   asset <- getAsset PermissionEDIT ai
   let asset' = asset{ assetSlot = Nothing }
   _ <- changeAssetSlot asset'
   case api of
     JSON -> okResponse [] $ assetSlotJSON asset'
-    HTML -> redirectRouteResponse [] $ viewAsset api (assetId (slotAsset asset'))
+    HTML -> redirectRouteResponse [] viewAsset (api, assetId (slotAsset asset'))
 
-downloadAsset :: Id Asset -> AppRAction
-downloadAsset ai = action GET (ai, "download" :: T.Text) $ withAuth $ do
+downloadAsset :: AppRoute (Id Asset)
+downloadAsset = action GET (pathId </< "download") $ \ai -> withAuth $ do
   as <- getAsset PermissionREAD ai
   serveAssetSegment $ assetSlotSegment as

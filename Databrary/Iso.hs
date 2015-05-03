@@ -1,32 +1,65 @@
 {-# LANGUAGE TypeOperators, QuasiQuotes #-}
 module Databrary.Iso
-  ( module Databrary.Iso.Prim
+  ( module Databrary.Iso.Types
+  , (C.>>>)
+  , (C.<<<)
+  , invert
+  , first
+  , second
+  , (***)
+  , left
+  , right
+  , (+++)
   
   , not
   , swap
   , constant
-  , first
-  , second
+  , fst
+  , snd
   , isJust
   , isNothing
   , switch
   , isLeft
   , isRight
-  , left
-  , right
+  , lft
+  , rgt
   , cons
   , curried
   , defaultEq
   ) where
 
-import Prelude hiding (not)
+import Prelude hiding (not, fst, snd)
 
-import qualified Control.Category as Cat
+import qualified Control.Arrow as A
+import qualified Control.Category as C
 import Data.Maybe (fromMaybe)
 
 import Databrary.Ops ((?!>))
-import Databrary.Iso.Prim
+import Databrary.Iso.Types
 import Databrary.Iso.TH
+
+invert :: a <-> b -> b <-> a
+invert (f :<->: g) = g :<->: f
+
+first :: (a <-> b) -> ((a, c) <-> (b, c))
+first (f :<->: g) = A.first f :<->: A.first g
+
+second :: (a <-> b) -> ((c, a) <-> (c, b))
+second (f :<->: g) = A.second f :<->: A.second g
+
+infixr 3 ***
+(***) :: (a <-> b) -> (a' <-> b') -> ((a, a') <-> (b, b'))
+(f :<->: g) *** (f' :<->: g') = (f A.*** f') :<->: (g A.*** g')
+
+left :: (a <-> b) -> (Either a c <-> Either b c)
+left (f :<->: g) = A.left f :<->: A.left g
+
+right :: (a <-> b) -> (Either c a <-> Either c b)
+right (f :<->: g) = A.right f :<->: A.right g
+
+infixr 2 +++
+(+++) :: (a <-> b) -> (a' <-> b') -> (Either a a' <-> Either b b')
+(f :<->: g) +++ (f' :<->: g') = (f A.+++ f') :<->: (g A.+++ g')
 
 not :: Bool <-> Bool
 not =
@@ -41,11 +74,11 @@ swap = [iso|(a, b) <-> (b, a)|]
 constant :: a -> () <-> a
 constant a = const a :<->: const ()
 
-first :: (a, ()) <-> a
-first = [iso|(a, ()) <-> a|]
+fst :: (a, ()) <-> a
+fst = [iso|(a, ()) <-> a|]
 
-second :: ((), a) <-> a
-second = [iso|((), a) <-> a|]
+snd :: ((), a) <-> a
+snd = [iso|((), a) <-> a|]
 
 isJust :: Maybe () <-> Bool
 isJust =
@@ -55,7 +88,7 @@ isJust =
   |]
 
 isNothing :: Maybe () <-> Bool
-isNothing = not Cat.. isJust
+isNothing = not C.. isJust
 
 switch :: Either a b <-> Either b a
 switch =
@@ -72,17 +105,17 @@ isLeft =
   |]
 
 isRight :: Either () () <-> Bool
-isRight = not Cat.. isLeft
+isRight = not C.. isLeft
 
-left :: Either a () <-> Maybe a
-left =
+lft :: Either a () <-> Maybe a
+lft =
   [iso|
     Left a <-> Just a
     Right () <-> Nothing
   |]
 
-right :: Either () a <-> Maybe a
-right =
+rgt :: Either () a <-> Maybe a
+rgt =
   [iso|
     Left () <-> Nothing
     Right a <-> Just a

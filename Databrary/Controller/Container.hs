@@ -5,9 +5,8 @@ module Databrary.Controller.Container
   , postContainer
   ) where
 
-import qualified Data.Text as T
-
 import Databrary.Ops
+import qualified Databrary.Iso as I
 import Databrary.Model.Id
 import Databrary.Model.Permission
 import Databrary.Model.Volume
@@ -16,6 +15,7 @@ import Databrary.Model.Segment
 import Databrary.Model.Slot
 import Databrary.Action
 import Databrary.HTTP.Form.Deform
+import Databrary.HTTP.Route.PathParser
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
 import Databrary.Controller.Volume
@@ -27,8 +27,8 @@ getContainer p (Id (SlotId i s))
   | segmentFull s = checkPermission p =<< maybeAction =<< lookupContainer i
   | otherwise = result =<< notFoundResponse
 
-viewContainer :: API -> Id Container -> AppRAction
-viewContainer api = viewSlot api . containerSlotId
+viewContainer :: AppRoute (API, Id Container)
+viewContainer = I.second (slotContainerId . unId I.:<->: containerSlotId) I.<$> viewSlot
 
 containerForm :: (Functor m, Monad m) => Container -> DeformT m Container
 containerForm c = do
@@ -41,8 +41,8 @@ containerForm c = do
     , containerRelease = release
     }
 
-createContainer :: API -> Id Volume -> AppRAction
-createContainer api vi = action POST (api, vi, "slot" :: T.Text) $ withAuth $ do
+createContainer :: AppRoute (API, Id Volume)
+createContainer = action POST (pathAPI </> pathId </< "slot") $ \(api, vi) -> withAuth $ do
   vol <- getVolume PermissionEDIT vi
   bc <- runForm (api == HTML ?> htmlContainerForm (Left vol)) $ do
     top <- "top" .:> deform
@@ -51,14 +51,14 @@ createContainer api vi = action POST (api, vi, "slot" :: T.Text) $ withAuth $ do
   c <- addContainer bc
   case api of
     JSON -> okResponse [] $ containerJSON c
-    HTML -> redirectRouteResponse [] $ viewContainer api $ containerId c
+    HTML -> redirectRouteResponse [] viewContainer (api, containerId c)
 
-postContainer :: API -> Id Slot -> AppRAction
-postContainer api ci = action POST (api, ci) $ withAuth $ do
+postContainer :: AppRoute (API, Id Slot)
+postContainer = action POST (pathAPI </> pathSlotId) $ \(api, ci) -> withAuth $ do
   c <- getContainer PermissionEDIT ci
   c' <- runForm (api == HTML ?> htmlContainerForm (Right c)) $ containerForm c
   changeContainer c'
   case api of
     JSON -> okResponse [] $ containerJSON c'
-    HTML -> redirectRouteResponse [] $ viewSlot api ci
+    HTML -> redirectRouteResponse [] viewSlot (api, ci)
 

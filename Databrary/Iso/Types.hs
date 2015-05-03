@@ -1,8 +1,7 @@
 {-# LANGUAGE TypeOperators #-}
-module Databrary.Iso.Prim
+module Databrary.Iso.Types
   ( Invariant(..)
   , (<->)(..)
-  , invert
   , (<$>)
   ) where
 
@@ -21,9 +20,6 @@ data (<->) a b = (:<->:)
 instance Cat.Category (<->) where
   id = id :<->: id
   (f1 :<->: g1) . (f2 :<->: g2) = f1 . f2 :<->: g2 . g1
-
-invert :: a <-> b -> b <-> a
-invert (f :<->: g) = g :<->: f
 
 infixl 4 <$>
 (<$>) :: Invariant f => (<->) a b -> f a -> f b

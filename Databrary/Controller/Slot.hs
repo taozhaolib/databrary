@@ -23,6 +23,7 @@ import Databrary.Model.Excerpt
 import Databrary.Model.RecordSlot
 import Databrary.Model.Tag
 import Databrary.Model.Comment
+import Databrary.HTTP.Route.PathParser
 import Databrary.Action
 import Databrary.Controller.Permission
 import Databrary.Controller.Angular
@@ -50,8 +51,8 @@ slotJSONField _ _ _ = return Nothing
 slotJSONQuery :: (MonadDB m, MonadHasIdentity c m) => Slot -> JSON.Query -> m JSON.Object
 slotJSONQuery o = JSON.jsonQuery (slotJSON o) (slotJSONField o)
 
-viewSlot :: API -> Id Slot -> AppRAction
-viewSlot api i = action GET (api, i) $ withAuth $ do
+viewSlot :: AppRoute (API, Id Slot)
+viewSlot = action GET (pathAPI </> pathSlotId) $ \(api, i) -> withAuth $ do
   when (api == HTML) angular
   c <- getSlot PermissionPUBLIC i
   case api of

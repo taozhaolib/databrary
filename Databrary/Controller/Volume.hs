@@ -28,7 +28,6 @@ import Databrary.Service.DB
 import Databrary.HTTP.Client (HTTPClientM)
 import Databrary.Model.Enum
 import Databrary.Model.Id
-import Databrary.Model.Kind
 import Databrary.Model.Permission
 import Databrary.Model.Identity
 import Databrary.Model.Authorize
@@ -42,6 +41,7 @@ import Databrary.Model.Container
 import Databrary.Model.Record
 import Databrary.Model.Excerpt
 import Databrary.HTTP.Form.Deform
+import Databrary.HTTP.Route.PathParser
 import Databrary.Action.Route
 import Databrary.Action
 import Databrary.Controller.Permission
@@ -84,8 +84,8 @@ volumeFilenames v = do
     ++ maybeToList ((T.pack . show) <$> (citationYear =<< cite))
     ++ [fromMaybe (volumeName v) (getVolumeAlias v)]
 
-viewVolume :: API -> Id Volume -> AppRAction
-viewVolume api vi = action GET (api, vi) $ withAuth $ do
+viewVolume :: AppRoute (API, Id Volume)
+viewVolume = action GET (pathAPI </> pathId) $ \(api, vi) -> withAuth $ do
   when (api == HTML) angular
   v <- getVolume PermissionPUBLIC vi
   case api of
@@ -127,14 +127,14 @@ volumeCitationForm v = do
     "citation" .:> "name" .:> deformRequired (citationHead fill)
   return (vol{ volumeName = name }, empty ?!> fill)
 
-viewVolumeForm :: Id Volume -> AppRAction
-viewVolumeForm vi = action GET (HTML, vi, "edit" :: T.Text) $ withAuth $ do
+viewVolumeForm :: AppRoute (Id Volume)
+viewVolumeForm = action GET (pathHTML >/> pathId </< "edit") $ \vi -> withAuth $ do
   angular
   v <- getVolume PermissionEDIT vi
   blankForm . htmlVolumeForm (Just v) =<< lookupVolumeCitation v
 
-postVolume :: API -> Id Volume -> AppRAction
-postVolume api vi = action POST (api, vi) $ withAuth $ do
+postVolume :: AppRoute (API, Id Volume)
+postVolume = action POST (pathAPI </> pathId) $ \arg@(api, vi) -> withAuth $ do
   v <- getVolume PermissionEDIT vi
   cite <- lookupVolumeCitation v
   (v', cite') <- runForm (api == HTML ?> htmlVolumeForm (Just v) cite) $ volumeCitationForm v
@@ -142,10 +142,10 @@ postVolume api vi = action POST (api, vi) $ withAuth $ do
   _ <- changeVolumeCitation v' cite'
   case api of
     JSON -> okResponse [] $ volumeJSON v'
-    HTML -> redirectRouteResponse [] $ viewVolume api vi
+    HTML -> redirectRouteResponse [] viewVolume arg
 
-createVolume :: API -> AppRAction
-createVolume api = action POST (api, kindOf blankVolume :: T.Text) $ withAuth $ do
+createVolume :: AppRoute API
+createVolume = action POST (pathAPI </< "volume") $ \api -> withAuth $ do
   u <- peek
   (bv, cite, owner) <- runForm (api == HTML ?> htmlVolumeForm Nothing Nothing) $ do
     (bv, cite) <- volumeCitationForm blankVolume
@@ -163,15 +163,15 @@ createVolume api = action POST (api, kindOf blankVolume :: T.Text) $ withAuth $ 
   _ <- changeVolumeAccess $ VolumeAccess PermissionADMIN PermissionEDIT owner v
   case api of
     JSON -> okResponse [] $ volumeJSON v
-    HTML -> redirectRouteResponse [] $ viewVolume api $ volumeId v
+    HTML -> redirectRouteResponse [] viewVolume (api, volumeId v)
 
-viewVolumeLinks :: Id Volume -> AppRAction
-viewVolumeLinks vi = action GET (vi, "link" :: T.Text) $ withAuth $ do
+viewVolumeLinks :: AppRoute (Id Volume)
+viewVolumeLinks = action GET (pathHTML >/> pathId </< "link") $ \vi -> withAuth $ do
   v <- getVolume PermissionEDIT vi
   blankForm . htmlVolumeLinksForm v =<< lookupVolumeLinks v
 
-postVolumeLinks :: API -> Id Volume -> AppRAction
-postVolumeLinks api vi = action POST (api, vi, "link" :: T.Text) $ withAuth $ do
+postVolumeLinks :: AppRoute (API, Id Volume)
+postVolumeLinks = action POST (pathAPI </> pathId </< "link") $ \arg@(api, vi) -> withAuth $ do
   v <- getVolume PermissionEDIT vi
   links <- lookupVolumeLinks v
   links' <- runForm (api == HTML ?> htmlVolumeLinksForm v links) $
@@ -179,15 +179,15 @@ postVolumeLinks api vi = action POST (api, vi, "link" :: T.Text) $ withAuth $ do
   changeVolumeLinks v links'
   case api of
     JSON -> okResponse [] $ volumeJSON v JSON..+ ("links" JSON..= links')
-    HTML -> redirectRouteResponse [] $ viewVolume api vi
+    HTML -> redirectRouteResponse [] viewVolume arg
 
 volumeSearchForm :: (Applicative m, Monad m) => DeformT m VolumeFilter
 volumeSearchForm = VolumeFilter
   <$> ("query" .:> deformNonEmpty deform)
   <*> ("party" .:> optional deform)
 
-queryVolumes :: API -> AppRAction
-queryVolumes api = action GET (api, "volume" :: T.Text) $ withAuth $ do
+queryVolumes :: AppRoute API
+queryVolumes = action GET (pathAPI </< "volume") $ \api -> withAuth $ do
   when (api == HTML) angular
   (vf, (limit, offset)) <- runForm (api == HTML ?> htmlVolumeSearchForm mempty) $
     liftM2 (,) volumeSearchForm paginationForm

@@ -1,8 +1,9 @@
 {-# LANGUAGE ExistentialQuantification, RecordWildCards, ImpredicativeTypes #-}
 module Databrary.HTTP.Route
   ( Route(..)
+  , AnyRoute(..)
   , RouteMap
-  , routeMap
+  , fromRouteList
   , lookupRoute
   , routeURL
   ) where
@@ -18,7 +19,7 @@ import Data.Monoid ((<>))
 import Network.HTTP.Types (Method)
 import qualified Network.Wai as Wai
 
-import Databrary.Iso.Prim (Invariant(..))
+import Databrary.Iso.Types (Invariant(..))
 import Databrary.HTTP.Request
 import Databrary.HTTP.Route.Path
 import qualified Databrary.HTTP.Route.PathMap as PM
@@ -47,12 +48,12 @@ empty = HM.empty
 insert :: Method -> [PathElement] -> AnyRoute r -> RouteMap r -> RouteMap r
 insert a p r m = HM.insertWith PM.union a (PM.singleton p r) m
 
-insertRoute :: (forall a . Route r a) -> RouteMap r -> RouteMap r
-insertRoute r@Route{ routeMethod = a, routePath = p } m =
-  foldl' (\m' p' -> insert a p' (AnyRoute r) m') m $ pathElements {- =<< pathParserExpand -} p
+insertRoute :: AnyRoute r -> RouteMap r -> RouteMap r
+insertRoute r@(AnyRoute Route{ routeMethod = a, routePath = p }) m =
+  foldl' (\m' p' -> insert a p' r m') m $ pathElements {- =<< pathParserExpand -} p
 
-routeMap :: [forall a . Route r a] -> RouteMap r
-routeMap = foldl' (flip insertRoute) empty
+fromRouteList :: [AnyRoute r] -> RouteMap r
+fromRouteList = foldl' (flip insertRoute) empty
 
 lookupRoute :: Wai.Request -> RouteMap r -> Maybe r
 lookupRoute q = r <=< PM.lookup p <=< HM.lookup (Wai.requestMethod q) where

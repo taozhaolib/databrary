@@ -22,6 +22,7 @@ import Databrary.Model.RecordCategory
 import Databrary.Model.Metric
 import Databrary.Model.Measure
 import Databrary.HTTP.Form.Deform
+import Databrary.HTTP.Route.PathParser
 import Databrary.Controller.Form
 import Databrary.Controller.Volume
 import Databrary.Controller.Permission
@@ -32,16 +33,16 @@ getRecord :: Permission -> Id Record -> AuthActionM Record
 getRecord p i =
   checkPermission p =<< maybeAction =<< lookupRecord i
 
-viewRecord :: API -> Id Record -> AppRAction
-viewRecord api i = action GET (api, i) $ withAuth $ do
+viewRecord :: AppRoute (API, Id Record)
+viewRecord = action GET (pathAPI </> pathId) $ \(api, i) -> withAuth $ do
   when (api == HTML) angular
   rec <- getRecord PermissionPUBLIC i
   case api of
     JSON -> okResponse [] $ recordJSON rec
     HTML -> okResponse [] $ T.pack $ show $ recordId rec -- TODO
 
-createRecord :: API -> Id Volume -> AppRAction
-createRecord api vi = action POST (api, vi, "record" :: T.Text) $ withAuth $ do
+createRecord :: AppRoute (API, Id Volume)
+createRecord = action POST (pathAPI </> pathId </< "record") $ \(api, vi) -> withAuth $ do
   vol <- getVolume PermissionEDIT vi
   br <- runForm (api == HTML ?> htmlRecordForm vol) $ do
     cat <- "category" .:> (flatMapM ((`orElseM` Nothing <$ deformError "No such record category.") . getRecordCategory) =<< deformNonEmpty deform)
@@ -51,10 +52,10 @@ createRecord api vi = action POST (api, vi, "record" :: T.Text) $ withAuth $ do
   rec <- addRecord br
   case api of
     JSON -> okResponse [] $ recordJSON rec
-    HTML -> redirectRouteResponse [] $ viewRecord api $ recordId rec
+    HTML -> redirectRouteResponse [] viewRecord (api, recordId rec)
 
-postRecordMeasure :: API -> Id Record -> Id Metric -> AppRAction
-postRecordMeasure api ri mi = action POST (api, ri, mi) $ withAuth $ do
+postRecordMeasure :: AppRoute (API, Id Record, Id Metric)
+postRecordMeasure = action POST (pathAPI </>> pathId </> pathId) $ \(api, ri, mi) -> withAuth $ do
   rec <- getRecord PermissionEDIT ri
   met <- maybeAction $ getMetric mi
   let meas = Measure rec met
@@ -68,4 +69,4 @@ postRecordMeasure api ri mi = action POST (api, ri, mi) $ withAuth $ do
         return $ fromMaybe rec r)
   case api of
     JSON -> okResponse [] $ recordJSON rec'
-    HTML -> redirectRouteResponse [] $ viewRecord api $ recordId rec'
+    HTML -> redirectRouteResponse [] viewRecord (api, recordId rec')

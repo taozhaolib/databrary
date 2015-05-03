@@ -15,7 +15,6 @@ import qualified Data.ByteString as BS
 import Data.ByteString.Lazy.Internal (defaultChunkSize)
 import Data.Int (Int64)
 import Data.Maybe (isJust)
-import qualified Data.Text as T
 import Data.Word (Word64)
 import Network.HTTP.Types (ok200, noContent204, badRequest400)
 import qualified Network.Wai as Wai
@@ -35,6 +34,7 @@ import Databrary.Store
 import Databrary.Store.Upload
 import Databrary.Store.Asset
 import Databrary.HTTP.Form.Deform
+import Databrary.HTTP.Route.PathParser
 import Databrary.Action
 import Databrary.Controller.Form
 import Databrary.Controller.Volume
@@ -42,8 +42,8 @@ import Databrary.Controller.Volume
 fileSizeForm :: (Functor m, Monad m) => DeformT m Int64
 fileSizeForm = deformCheck "Invalid file size." (0 <) =<< deform
 
-uploadStart :: Id Volume -> AppRAction
-uploadStart vi = action POST (JSON, vi, "upload" :: T.Text) $ withAuth $ do
+uploadStart :: AppRoute (Id Volume)
+uploadStart = action POST (pathJSON >/> pathId </< "upload") $ \vi -> withAuth $ do
   vol <- getVolume PermissionEDIT vi
   (filename, size) <- runForm Nothing $ (,)
     <$> ("filename" .:> (deformCheck "File format not supported." (isJust . getFormatByFilename) =<< deform))
@@ -67,8 +67,8 @@ chunkForm = do
   l <- "flowCurrentChunkSize" .:> (deformCheck "Current chunk size out of range." (\l -> c <= l && o + l <= uploadSize up) =<< deform)
   return (up, o, fromIntegral l)
 
-uploadChunk :: AppRAction
-uploadChunk = action POST (JSON, "upload" :: T.Text) $ withAuth $ do
+uploadChunk :: AppRoute ()
+uploadChunk = action POST (pathJSON </< "upload") $ \() -> withAuth $ do
   (up, off, len) <- runForm Nothing chunkForm
   file <- peeks $ uploadFile up
   let badLength = result =<< returnResponse badRequest400 [] ("Incorrect content length." :: JSON.Value)
@@ -96,8 +96,8 @@ uploadChunk = action POST (JSON, "upload" :: T.Text) $ withAuth $ do
     badLength
   emptyResponse noContent204 []
 
-testChunk :: AppRAction
-testChunk = action GET (JSON, "upload" :: T.Text) $ withAuth $ do
+testChunk :: AppRoute ()
+testChunk = action GET (pathJSON </< "upload") $ \() -> withAuth $ do
   (up, off, len) <- runForm Nothing chunkForm
   file <- peeks $ uploadFile up
   r <- liftIO $ withFile (unRawFilePath file) ReadMode $ \h -> do

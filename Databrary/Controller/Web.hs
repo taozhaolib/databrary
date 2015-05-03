@@ -15,7 +15,7 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import System.Posix.FilePath (joinPath, splitFileName, splitDirectories, splitExtension, (</>))
 
-import Databrary.Iso.Prim (invMap)
+import Databrary.Iso.Types (invMap)
 import Databrary.Ops
 import Databrary.Store
 import Databrary.Model.Format

@@ -10,4 +10,4 @@ newtype VolumeAccessTarget = VolumeAccessTarget
   }
 
 viewVolumeAccess :: AppRoute (Id Volume, VolumeAccessTarget)
-postVolumeAccess :: AppRoute (API, Id Volume, VolumeAccessTarget)
+postVolumeAccess :: AppRoute (API, (Id Volume, VolumeAccessTarget))

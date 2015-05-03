@@ -2,7 +2,7 @@
 module Databrary.Model.Slot
   ( module Databrary.Model.Slot.Types
   , lookupSlot
-  , pathSlot
+  , pathSlotId
   , slotJSON
   ) where
 
@@ -27,6 +27,9 @@ slotIdIso = [iso|(c, s) <-> SlotId c s|]
 
 pathSlot :: PathParser SlotId
 pathSlot = slotIdIso I.<$> (idIso I.<$> PathDynamic </> fullSegment =/= PathDynamic)
+
+pathSlotId :: PathParser (Id Slot)
+pathSlotId = pathIdWith pathSlot
 
 slotJSON :: Slot -> JSON.Object
 slotJSON Slot{..} = containerJSON slotContainer JSON..+?

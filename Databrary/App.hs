@@ -9,4 +9,4 @@ import Databrary.Action
 import Databrary.Routes
 
 application :: Service -> Application
-application = runAppRoute routes
+application = runAppRoute routeMap
