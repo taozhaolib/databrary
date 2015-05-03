@@ -1,4 +1,4 @@
-module Databrary.HTTP.Route.PathM
+module Databrary.HTTP.Path.Monad
   ( PathM(..)
   , pathHead
   , fullPathM

@@ -23,7 +23,7 @@ import Databrary.Model.Party
 import Databrary.Model.Identity
 import Databrary.Model.Token
 import Databrary.HTTP.Form.Deform
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Parser
 import Databrary.Controller.Form
 import Databrary.Controller.Party
 import Databrary.Controller.Token

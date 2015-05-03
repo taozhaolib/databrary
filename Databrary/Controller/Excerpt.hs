@@ -14,7 +14,7 @@ import Databrary.Model.Asset
 import Databrary.Model.AssetSegment
 import Databrary.Model.Excerpt
 import Databrary.HTTP.Form.Deform
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Parser
 import Databrary.Action
 import Databrary.Controller.Form
 import Databrary.Controller.AssetSegment

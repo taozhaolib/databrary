@@ -22,7 +22,7 @@ import Databrary.Model.Format
 import Databrary.Action.Route
 import Databrary.Action
 import Databrary.HTTP.File
-import Databrary.HTTP.Route.PathParser (PathParser(..), (>/>))
+import Databrary.HTTP.Path.Parser (PathParser(..), (>/>))
 import Databrary.Web.Types
 import Databrary.Web.Files
 import Databrary.Web.Cache
@@ -46,7 +46,7 @@ parseStaticPath = fmap (StaticPath . joinPath) . mapM component where
   component c = TE.encodeUtf8 c <? (not (T.null c) && T.head c /= '.' && T.all ok c)
 
 pathStatic :: PathParser (Maybe StaticPath)
-pathStatic = invMap parseStaticPath (maybe [] $ map TE.decodeLatin1 . splitDirectories . staticFilePath) PathAll
+pathStatic = invMap parseStaticPath (maybe [] $ map TE.decodeLatin1 . splitDirectories . staticFilePath) PathAny
 
 webFile :: AppRoute (Maybe StaticPath)
 webFile = action GET ("public" >/> pathStatic) $ \sp -> do

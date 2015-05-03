@@ -17,7 +17,7 @@ import Network.HTTP.Types (methodGet, StdMethod(..), renderStdMethod)
 import qualified Databrary.Iso as I
 import Databrary.HTTP.Request
 import Databrary.Action.Types
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Parser
 import Databrary.HTTP.Route
 
 actionURL :: Maybe Request -> Route r a -> a -> BSB.Builder

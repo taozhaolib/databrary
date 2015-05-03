@@ -43,7 +43,7 @@ import Databrary.Model.Asset
 import Databrary.Model.Format
 import Databrary.Store.Temp
 import Databrary.Store.Asset
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Parser
 import Databrary.HTTP.Form.Deform
 import Databrary.HTTP.File
 import Databrary.Controller.Permission

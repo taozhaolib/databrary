@@ -80,7 +80,7 @@ volumeFilter :: VolumeFilter -> String
 volumeFilter VolumeFilter{..} =
   withq volumeFilterParty (const " JOIN volume_access ON volume.id = volume_access.volume")
   ++ withq volumeFilterQuery (\n -> " JOIN volume_text_idx ON volume.id = volume_text_idx.volume, plainto_tsquery('english', " ++ pgQuote n ++ ") query")
-  ++ " WHERE volume.id > 0 AND "
+  ++ " WHERE volume.id > 0 "
   ++ withq volumeFilterParty (\p -> " AND volume_access.party = " ++ pgSafeLiteral p ++ " volume_access.individual >= 'EDIT'")
   ++ withq volumeFilterQuery (const " AND ts @@ query")
   ++ " ORDER BY "

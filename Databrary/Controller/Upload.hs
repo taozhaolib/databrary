@@ -34,7 +34,7 @@ import Databrary.Store
 import Databrary.Store.Upload
 import Databrary.Store.Asset
 import Databrary.HTTP.Form.Deform
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Parser
 import Databrary.Action
 import Databrary.Controller.Form
 import Databrary.Controller.Volume

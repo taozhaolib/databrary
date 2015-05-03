@@ -30,7 +30,7 @@ import Databrary.Model.Party
 import Databrary.Model.Permission
 import Databrary.Model.Identity
 import Databrary.Model.Authorize
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Parser
 import Databrary.HTTP.Form.Deform
 import Databrary.Action
 import Databrary.Controller.Form

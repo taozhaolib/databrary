@@ -36,7 +36,7 @@ import Databrary.Model.AssetSegment
 import Databrary.Store.Asset
 import Databrary.HTTP.File
 import Databrary.HTTP.Request
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Parser
 import Databrary.Media.AV
 import Databrary.Action
 import Databrary.Controller.Angular

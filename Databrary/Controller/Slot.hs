@@ -23,7 +23,7 @@ import Databrary.Model.Excerpt
 import Databrary.Model.RecordSlot
 import Databrary.Model.Tag
 import Databrary.Model.Comment
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Parser
 import Databrary.Action
 import Databrary.Controller.Permission
 import Databrary.Controller.Angular

@@ -26,7 +26,7 @@ import Databrary.Model.Permission
 import Databrary.Model.Token
 import Databrary.HTTP.Cookie
 import Databrary.HTTP.Form.Deform
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Parser
 import Databrary.Action
 import Databrary.Action.Auth
 import Databrary.Controller.Form

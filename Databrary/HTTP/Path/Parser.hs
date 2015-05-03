@@ -1,5 +1,5 @@
 {-# LANGUAGE GADTs, KindSignatures, DataKinds, TypeOperators, TupleSections, QuasiQuotes #-}
-module Databrary.HTTP.Route.PathParser
+module Databrary.HTTP.Path.Parser
   ( PathParser(..)
   , (</>)
   , (</>>)
@@ -8,30 +8,30 @@ module Databrary.HTTP.Route.PathParser
   , (|/|)
   , pathMaybe
   , (=/=)
-  , pathElements
   , pathParser
   , pathGenerate
-  , pathParserExpand
+  , pathCases
   ) where
 
 import Control.Applicative ((<|>))
-import Control.Arrow (first)
+import Control.Arrow (first, second)
 import Control.Monad (guard)
 import Data.Proxy (Proxy(..))
 import Data.String (IsString(..))
 import qualified Data.Text as T
+import Data.Typeable (cast)
 
 import qualified Databrary.Iso as I
 import Databrary.Iso.TH
 import Databrary.Ops
-import Databrary.HTTP.Route.Path
+import Databrary.HTTP.Path.Types
 
 proxy :: p a -> Proxy a
 proxy _ = Proxy
 
 data PathParser a where
   PathEmpty :: PathParser ()
-  PathAll :: PathParser Path
+  PathAny :: PathParser Path
   PathFixed :: !T.Text -> PathParser ()
   PathDynamic :: PathDynamic a => PathParser a
   PathTrans :: (a -> b) -> (b -> a) -> PathParser a -> PathParser b
@@ -42,21 +42,12 @@ instance I.Invariant PathParser where
   invMap f' g' (PathTrans f g p) = PathTrans (f' . f) (g . g') p
   invMap f g p = PathTrans f g p
 
-pathElements :: PathParser a -> [[PathElement]]
-pathElements PathEmpty = [[]]
-pathElements PathAll = [[]]
-pathElements (PathFixed t) = [[PathElementFixed t]]
-pathElements d@PathDynamic = [[PathElementDynamic (proxy d)]]
-pathElements (PathTrans _ _ p) = pathElements p
-pathElements (PathTuple a b) = [ ae ++ be | ae <- pathElements a, be <- pathElements b ]
-pathElements (PathEither a b) = pathElements a ++ pathElements b
-
 instance IsString (PathParser ()) where
   fromString = PathFixed . fromString
 
 pathParse :: PathParser a -> Path -> Maybe (a, Path)
 pathParse PathEmpty l = Just ((), l)
-pathParse PathAll l = Just (l, [])
+pathParse PathAny l = Just (l, [])
 pathParse (PathFixed t) (a:l) = (, l) <$> guard (a == t)
 pathParse PathDynamic (a:l) = (, l) <$> pathDynamic a
 pathParse (PathTrans f _ p) a = first f <$> pathParse p a
@@ -73,7 +64,7 @@ pathParser p l = do
 
 pathGenerate :: PathParser a -> a -> Path
 pathGenerate PathEmpty () = []
-pathGenerate PathAll l = l
+pathGenerate PathAny l = l
 pathGenerate (PathFixed t) () = [t]
 pathGenerate PathDynamic a = [dynamicPath a]
 pathGenerate (PathTrans _ g p) a = pathGenerate p $ g a
@@ -104,15 +95,23 @@ pathMaybe p = I.rgt I.<$> (PathEmpty |/| p)
 (=/=) :: Eq a => a -> PathParser a -> PathParser a
 (=/=) a p = I.defaultEq a I.<$> pathMaybe p
 
-pathParserExpand :: PathParser a -> [PathParser a]
-pathParserExpand (PathTrans f g p) = map (PathTrans f g) $ pathParserExpand p
-pathParserExpand (PathTuple a b) = [ PathTuple a' b' | a' <- pathParserExpand a, b' <- pathParserExpand b ]
-pathParserExpand (PathEither a b) = map (PathTrans Left unLeft) a' ++ map (PathTrans Right unRight) b' where
-  unLeft (Left x) = x
-  unLeft (Right _) = error "pathParserExpand: Right"
-  unRight (Left _) = error "pathParserExpand: Left"
-  unRight (Right x) = x
-  a' = pathParserExpand a
-  b' = pathParserExpand b
-pathParserExpand p = [p]
-
+pathCases :: PathParser a -> [([PathElement], PathResult -> Maybe (a, PathResult))]
+pathCases PathEmpty = [([], Just . (,) ())]
+pathCases PathAny = [([PathElementAny], rf)] where
+  rf (PathResultAny p) = Just (p, PathResultNull)
+  rf _ = Nothing
+pathCases (PathFixed t) = [([PathElementFixed t], Just . (,) ())]
+pathCases d@PathDynamic = [([PathElementDynamic (proxy d)], rf)] where
+  rf (PathResultDynamic v r) = (, r) <$> cast v
+  rf _ = Nothing
+pathCases (PathTrans f _ p) = second (fmap (first f) .) <$> pathCases p
+pathCases (PathTuple a b) = do
+  (ae, arf) <- pathCases a
+  (be, brf) <- pathCases b
+  return (ae ++ be, \r -> do
+    (av, ar) <- arf r
+    (bv, br) <- brf ar
+    return ((av, bv), br))
+pathCases (PathEither a b) =
+  (second (fmap (first Left)  .) <$> pathCases a) ++
+  (second (fmap (first Right) .) <$> pathCases b)

@@ -14,7 +14,7 @@ import Databrary.Model.Id
 import Databrary.Model.Slot
 import Databrary.Model.Tag
 import Databrary.HTTP.Form.Deform
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Parser
 import Databrary.Action
 import Databrary.Controller.Permission
 import Databrary.Controller.Slot

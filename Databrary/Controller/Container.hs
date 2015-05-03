@@ -15,7 +15,7 @@ import Databrary.Model.Segment
 import Databrary.Model.Slot
 import Databrary.Action
 import Databrary.HTTP.Form.Deform
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Parser
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
 import Databrary.Controller.Volume

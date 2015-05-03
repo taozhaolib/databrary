@@ -8,7 +8,7 @@ import Control.Monad (when)
 import qualified Data.Aeson.Types as JSON
 
 import Databrary.Has (peek)
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Parser
 import Databrary.Action
 import Databrary.Controller.Angular
 import Databrary.View.Root

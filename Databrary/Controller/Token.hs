@@ -14,7 +14,7 @@ import qualified Databrary.JSON as JSON
 import Databrary.Model.Id
 import Databrary.Model.Token
 import Databrary.Model.Party
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Parser
 import Databrary.Action
 import Databrary.Action.Auth
 import Databrary.Controller.Form

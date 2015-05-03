@@ -11,7 +11,7 @@ import Databrary.Model.Id
 import Databrary.Model.Slot
 import Databrary.Model.Comment
 import Databrary.HTTP.Form.Deform
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Parser
 import Databrary.Action
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
@@ -19,7 +19,7 @@ import Databrary.Controller.Slot
 import Databrary.View.Comment
 
 postComment :: AppRoute (API, Id Slot)
-postComment = action POST (pathAPI </> pathSlotId) $ \(api, si) -> withAuth $ do
+postComment = action POST (pathAPI </> pathSlotId </< "comment") $ \(api, si) -> withAuth $ do
   u <- authAccount
   s <- getSlot PermissionSHARED si
   c <- runForm (api == HTML ?> htmlCommentForm s) $ do

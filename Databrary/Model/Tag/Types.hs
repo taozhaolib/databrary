@@ -20,7 +20,7 @@ import qualified Text.Regex.Posix as Regex
 import Databrary.Ops
 import Databrary.Has (makeHasRec)
 import qualified Databrary.JSON as JSON
-import Databrary.HTTP.Route.Path
+import Databrary.HTTP.Path.Types
 import Databrary.Model.Kind
 import Databrary.Model.Id.Types
 import Databrary.Model.Party.Types

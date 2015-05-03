@@ -7,7 +7,7 @@ import Data.Aeson (toJSON)
 
 import Databrary.Action
 import Databrary.HTTP.Form.Deform
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Parser
 import Databrary.Controller.Form
 import Databrary.Model.Citation.CrossRef
 

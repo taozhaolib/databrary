@@ -1,7 +1,7 @@
 {-# LANGUAGE ExistentialQuantification, RecordWildCards, ImpredicativeTypes #-}
 module Databrary.HTTP.Route
   ( Route(..)
-  , AnyRoute(..)
+  , route
   , RouteMap
   , fromRouteList
   , lookupRoute
@@ -11,7 +11,6 @@ module Databrary.HTTP.Route
 import Prelude hiding (lookup)
 
 import Control.Applicative ((<$>))
-import Control.Monad ((<=<))
 import qualified Data.ByteString.Builder as BSB
 import qualified Data.HashMap.Strict as HM
 import Data.List (foldl')
@@ -21,9 +20,9 @@ import qualified Network.Wai as Wai
 
 import Databrary.Iso.Types (Invariant(..))
 import Databrary.HTTP.Request
-import Databrary.HTTP.Route.Path
-import qualified Databrary.HTTP.Route.PathMap as PM
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Types
+import qualified Databrary.HTTP.Path.Map as PM
+import Databrary.HTTP.Path.Parser
 
 data Route r a = Route
   { routeMethod :: !Method
@@ -38,27 +37,36 @@ instance Invariant (Route r) where
     , routeAction = routeAction r . g
     }
 
-data AnyRoute r = forall a . AnyRoute (Route r a)
+-- these should never actually return Nothing...
+type RouteResult r = PathResult -> Maybe r
 
-type RouteMap r = HM.HashMap Method (PM.PathMap (AnyRoute r))
+data RouteCase r = RouteCase
+  { _routeMethod :: !Method
+  , _routeElements :: [PathElement]
+  , _routeResult :: RouteResult r
+  }
+
+route :: Route r a -> [RouteCase r]
+route Route{ routeMethod = m, routePath = p, routeAction = f } = cf <$> pathCases p where
+  cf (e, rf) = RouteCase m e $ \r -> do
+    (v, PathResultNull) <- rf r
+    return $ f v
+
+newtype RouteMap r = RouteMap (HM.HashMap Method (PM.PathMap (RouteResult r)))
 
 empty :: RouteMap a
-empty = HM.empty
+empty = RouteMap HM.empty
 
-insert :: Method -> [PathElement] -> AnyRoute r -> RouteMap r -> RouteMap r
-insert a p r m = HM.insertWith PM.union a (PM.singleton p r) m
+insert :: RouteCase r -> RouteMap r -> RouteMap r
+insert (RouteCase a p r) (RouteMap m) = RouteMap $
+  HM.insertWith (const $ PM.insert p r) a (PM.singleton p r) m
 
-insertRoute :: AnyRoute r -> RouteMap r -> RouteMap r
-insertRoute r@(AnyRoute Route{ routeMethod = a, routePath = p }) m =
-  foldl' (\m' p' -> insert a p' r m') m $ pathElements {- =<< pathParserExpand -} p
-
-fromRouteList :: [AnyRoute r] -> RouteMap r
-fromRouteList = foldl' (flip insertRoute) empty
+fromRouteList :: [[RouteCase r]] -> RouteMap r
+fromRouteList = foldl' (flip insert) empty . concat
 
 lookupRoute :: Wai.Request -> RouteMap r -> Maybe r
-lookupRoute q = r <=< PM.lookup p <=< HM.lookup (Wai.requestMethod q) where
-  r (AnyRoute Route{..}) = routeAction <$> pathParser routePath p
-  p = Wai.pathInfo q
+lookupRoute q (RouteMap m) =
+  uncurry (flip ($)) =<< PM.lookup (Wai.pathInfo q) =<< HM.lookup (Wai.requestMethod q) m
 
 routeURL :: Maybe Wai.Request -> Route r a -> a -> BSB.Builder
 routeURL req Route{ routePath = p } a =

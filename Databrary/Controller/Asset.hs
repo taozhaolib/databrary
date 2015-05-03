@@ -56,7 +56,7 @@ import Databrary.Store.Temp
 import Databrary.Media.AV
 import Databrary.HTTP.Form.Errors
 import Databrary.HTTP.Form.Deform
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Parser
 import Databrary.Action
 import Databrary.Controller.Permission
 import Databrary.Controller.Form

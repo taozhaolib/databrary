@@ -11,7 +11,7 @@ import qualified Databrary.Iso as I
 import Databrary.Iso.TH
 import qualified Databrary.JSON as JSON
 import Databrary.Service.DB
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Parser
 import Databrary.Model.Id
 import Databrary.Model.Identity
 import Databrary.Model.Segment

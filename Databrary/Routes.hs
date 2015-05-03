@@ -29,79 +29,79 @@ import Databrary.Controller.Web
 
 routeMap :: RouteMap AppAction
 routeMap = fromRouteList
-  [ AnyRoute viewRoot
+  [ route viewRoot
 
-  , AnyRoute viewUser
-  , AnyRoute postUser
-  , AnyRoute viewLogin
-  , AnyRoute postLogin
-  , AnyRoute postLogout
-  , AnyRoute viewRegister
-  , AnyRoute postRegister
-  , AnyRoute viewPasswordReset
-  , AnyRoute postPasswordReset
-  , AnyRoute viewLoginToken
-  , AnyRoute postPasswordToken
+  , route viewUser
+  , route postUser
+  , route viewLogin
+  , route postLogin
+  , route postLogout
+  , route viewRegister
+  , route postRegister
+  , route viewPasswordReset
+  , route postPasswordReset
+  , route viewLoginToken
+  , route postPasswordToken
 
-  , AnyRoute viewParty
-  , AnyRoute postParty
-  , AnyRoute viewEditParty
-  , AnyRoute viewAuthorize
-  , AnyRoute postAuthorize
-  , AnyRoute deleteAuthorize
-  , AnyRoute viewAvatar
-  , AnyRoute createParty
-  , AnyRoute queryParties
+  , route viewParty
+  , route postParty
+  , route viewEditParty
+  , route viewAuthorize
+  , route postAuthorize
+  , route deleteAuthorize
+  , route viewAvatar
+  , route createParty
+  , route queryParties
 
-  , AnyRoute viewVolume
-  , AnyRoute postVolume
-  , AnyRoute viewVolumeForm
-  , AnyRoute viewVolumeAccess
-  , AnyRoute postVolumeAccess
-  , AnyRoute viewVolumeLinks
-  , AnyRoute postVolumeLinks
-  , AnyRoute postVolumeFunding
-  , AnyRoute deleteVolumeFunder
-  , AnyRoute createVolume
-  , AnyRoute queryVolumes
+  , route viewVolume
+  , route postVolume
+  , route viewVolumeForm
+  , route viewVolumeAccess
+  , route postVolumeAccess
+  , route viewVolumeLinks
+  , route postVolumeLinks
+  , route postVolumeFunding
+  , route deleteVolumeFunder
+  , route createVolume
+  , route queryVolumes
 
-  , AnyRoute createContainer
-  , AnyRoute viewSlot
-  , AnyRoute postContainer
+  , route createContainer
+  , route viewSlot
+  , route postContainer
 
-  , AnyRoute viewAsset
-  , AnyRoute postAsset
-  , AnyRoute viewEditAsset
-  , AnyRoute deleteAsset
-  , AnyRoute downloadAsset
-  , AnyRoute viewCreateAsset
-  , AnyRoute createAsset
-  , AnyRoute createSlotAsset
-  , AnyRoute viewCreateSlotAsset
+  , route viewAsset
+  , route postAsset
+  , route viewEditAsset
+  , route deleteAsset
+  , route downloadAsset
+  , route viewCreateAsset
+  , route createAsset
+  , route createSlotAsset
+  , route viewCreateSlotAsset
 
-  , AnyRoute viewAssetSegment
-  , AnyRoute downloadAssetSegment
-  , AnyRoute thumbAssetSegment
-  , AnyRoute postExcerpt
-  , AnyRoute deleteExcerpt
+  , route viewAssetSegment
+  , route downloadAssetSegment
+  , route thumbAssetSegment
+  , route postExcerpt
+  , route deleteExcerpt
 
-  , AnyRoute createRecord
-  , AnyRoute viewRecord
-  , AnyRoute postRecordMeasure
+  , route createRecord
+  , route viewRecord
+  , route postRecordMeasure
 
-  , AnyRoute postTag
-  , AnyRoute deleteTag
-  , AnyRoute postComment
+  , route postTag
+  , route deleteTag
+  , route postComment
 
-  , AnyRoute uploadStart
-  , AnyRoute uploadChunk
-  , AnyRoute testChunk
-  , AnyRoute viewConstants
-  , AnyRoute getCitation
-  , AnyRoute queryFunder
-  , AnyRoute remoteTranscode
+  , route uploadStart
+  , route uploadChunk
+  , route testChunk
+  , route viewConstants
+  , route getCitation
+  , route queryFunder
+  , route remoteTranscode
 
-  , AnyRoute webFile
+  , route webFile
   ]
 
 {-

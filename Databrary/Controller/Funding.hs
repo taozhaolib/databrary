@@ -17,7 +17,7 @@ import Databrary.Model.Volume
 import Databrary.Model.Funding
 import Databrary.Model.Funding.FundRef
 import Databrary.HTTP.Form.Deform
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Parser
 import Databrary.Action
 import Databrary.Controller.Form
 import Databrary.Controller.Permission

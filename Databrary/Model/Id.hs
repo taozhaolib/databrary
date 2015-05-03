@@ -8,8 +8,8 @@ module Databrary.Model.Id
 
 import qualified Databrary.Iso as I
 import Databrary.Iso.TH
-import Databrary.HTTP.Route.Path
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Types
+import Databrary.HTTP.Path.Parser
 import Databrary.Model.Kind
 import Databrary.Model.Id.Types
 

@@ -41,7 +41,7 @@ import Databrary.Model.Container
 import Databrary.Model.Record
 import Databrary.Model.Excerpt
 import Databrary.HTTP.Form.Deform
-import Databrary.HTTP.Route.PathParser
+import Databrary.HTTP.Path.Parser
 import Databrary.Action.Route
 import Databrary.Action
 import Databrary.Controller.Permission
