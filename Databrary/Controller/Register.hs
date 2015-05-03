@@ -37,14 +37,14 @@ resetPasswordMail (Right auth) subj body = do
   tok <- loginTokenId =<< createLoginToken auth True
   req <- peek
   sendMail [Right $ view auth] subj
-    (body $ Just $ TLE.decodeLatin1 $ BSB.toLazyByteString $ actionURL (Just req) viewLoginToken (HTML, tok))
+    (body $ Just $ TLE.decodeLatin1 $ BSB.toLazyByteString $ actionURL (Just req) viewLoginToken (HTML, tok) [])
 
 viewRegister :: AppRoute ()
 viewRegister = action GET (pathHTML </< "user" </< "register") $ \() -> withAuth $ do
   angular
   maybeIdentity
     (blankForm htmlRegister)
-    (\_ -> redirectRouteResponse [] viewParty (HTML, TargetProfile))
+    (\_ -> redirectRouteResponse [] viewParty (HTML, TargetProfile) [])
 
 postRegister :: AppRoute API
 postRegister = action POST (pathAPI </< "user" </< "register") $ \api -> withoutAuth $ do

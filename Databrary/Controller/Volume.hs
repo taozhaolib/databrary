@@ -142,7 +142,7 @@ postVolume = action POST (pathAPI </> pathId) $ \arg@(api, vi) -> withAuth $ do
   _ <- changeVolumeCitation v' cite'
   case api of
     JSON -> okResponse [] $ volumeJSON v'
-    HTML -> redirectRouteResponse [] viewVolume arg
+    HTML -> redirectRouteResponse [] viewVolume arg []
 
 createVolume :: AppRoute API
 createVolume = action POST (pathAPI </< "volume") $ \api -> withAuth $ do
@@ -163,7 +163,7 @@ createVolume = action POST (pathAPI </< "volume") $ \api -> withAuth $ do
   _ <- changeVolumeAccess $ VolumeAccess PermissionADMIN PermissionEDIT owner v
   case api of
     JSON -> okResponse [] $ volumeJSON v
-    HTML -> redirectRouteResponse [] viewVolume (api, volumeId v)
+    HTML -> redirectRouteResponse [] viewVolume (api, volumeId v) []
 
 viewVolumeLinks :: AppRoute (Id Volume)
 viewVolumeLinks = action GET (pathHTML >/> pathId </< "link") $ \vi -> withAuth $ do
@@ -179,7 +179,7 @@ postVolumeLinks = action POST (pathAPI </> pathId </< "link") $ \arg@(api, vi) -
   changeVolumeLinks v links'
   case api of
     JSON -> okResponse [] $ volumeJSON v JSON..+ ("links" JSON..= links')
-    HTML -> redirectRouteResponse [] viewVolume arg
+    HTML -> redirectRouteResponse [] viewVolume arg []
 
 volumeSearchForm :: (Applicative m, Monad m) => DeformT m VolumeFilter
 volumeSearchForm = VolumeFilter

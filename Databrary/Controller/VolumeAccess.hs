@@ -63,4 +63,4 @@ postVolumeAccess = action POST (pathAPI </> pathId </> pathVolumeAccessTarget) $
   _ <- changeVolumeAccess a'
   case api of
     JSON -> okResponse [] $ JSON.Object $ volumeAccessJSON a
-    HTML -> redirectRouteResponse [] viewVolumeAccess arg
+    HTML -> redirectRouteResponse [] viewVolumeAccess arg []

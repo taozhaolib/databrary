@@ -51,7 +51,7 @@ createContainer = action POST (pathAPI </> pathId </< "slot") $ \(api, vi) -> wi
   c <- addContainer bc
   case api of
     JSON -> okResponse [] $ containerJSON c
-    HTML -> redirectRouteResponse [] viewContainer (api, containerId c)
+    HTML -> redirectRouteResponse [] viewContainer (api, containerId c) []
 
 postContainer :: AppRoute (API, Id Slot)
 postContainer = action POST (pathAPI </> pathSlotId) $ \(api, ci) -> withAuth $ do
@@ -60,5 +60,5 @@ postContainer = action POST (pathAPI </> pathSlotId) $ \(api, ci) -> withAuth $ 
   changeContainer c'
   case api of
     JSON -> okResponse [] $ containerJSON c'
-    HTML -> redirectRouteResponse [] viewSlot (api, ci)
+    HTML -> redirectRouteResponse [] viewSlot (api, ci) []
 

@@ -113,4 +113,4 @@ thumbAssetSegment = action GET (pathSlotId </> pathId </< "thumb") $ \(si, ai) -
       -- redirectRouteResponse [] $ downloadAssetSegment (view as') (view as') -- loses size
       serveAssetSegment as'
     else
-      redirectRouteResponse [] formatIcon afmt
+      redirectRouteResponse [] formatIcon afmt []

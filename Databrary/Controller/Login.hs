@@ -44,14 +44,14 @@ loginAccount api auth su = do
   cook <- setSignedCookie "session" tok ex
   case api of
     JSON -> okResponse [cook] $ identityJSON (Identified sess)
-    HTML -> redirectRouteResponse [cook] viewParty (HTML, TargetProfile)
+    HTML -> redirectRouteResponse [cook] viewParty (HTML, TargetProfile) []
 
 viewLogin :: AppRoute ()
 viewLogin = action GET ("user" >/> "login") $ \() -> withAuth $ do
   angular
   maybeIdentity
     (blankForm htmlLogin)
-    (\_ -> redirectRouteResponse [] viewParty (HTML, TargetProfile))
+    (\_ -> redirectRouteResponse [] viewParty (HTML, TargetProfile) [])
 
 checkPassword :: BS.ByteString -> Account -> Bool
 checkPassword p = Fold.any (`BCrypt.validatePassword` p) . accountPasswd
@@ -80,7 +80,7 @@ postLogout = action POST (pathAPI </< "user" </< "logout") $ \api -> withAuth $ 
   _ <- maybeIdentity (return False) removeSession
   case api of
     JSON -> okResponse [cook] $ identityJSON UnIdentified
-    HTML -> redirectRouteResponse [cook] viewRoot HTML
+    HTML -> redirectRouteResponse [cook] viewRoot HTML []
   where cook = clearCookie "session"
 
 viewUser :: AppRoute ()
@@ -103,4 +103,4 @@ postUser = action POST (pathAPI </< "user") $ \api -> withAuth $ do
   changeAccount acct'
   case api of
     JSON -> okResponse [] $ partyJSON $ accountParty acct'
-    HTML -> redirectRouteResponse [] viewParty (api, TargetProfile)
+    HTML -> redirectRouteResponse [] viewParty (api, TargetProfile) []

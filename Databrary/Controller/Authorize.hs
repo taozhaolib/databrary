@@ -94,7 +94,7 @@ postAuthorize = action POST (pathAPI </>> pathPartyTarget </> pathAuthorizeTarge
           ("Databrary authorization request from " <> partyName child)
           $ TL.fromStrict (partyName child) <> " <" <> maybe "" TL.fromStrict agent <> "> has requested to be authorized by " <> TL.fromStrict (partyName parent) <> ".\n\n\
             \To approve or reject this authorization request, go to:\n" <>
-            TLE.decodeLatin1 (BSB.toLazyByteString $ actionURL (Just req) viewEditParty (TargetParty $ partyId parent)) <> "?page=grant#auth-" <> TL.pack (show $ partyId child) <> "\n\n\
+            TLE.decodeLatin1 (BSB.toLazyByteString $ actionURL (Just req) viewEditParty (TargetParty $ partyId parent) [("page", Just "grant")]) <> "#auth-" <> TL.pack (show $ partyId child) <> "\n\n\
             \Find more information about authorizing and managing affiliates here:\n\n\
             \http://databrary.org/access/guide/investigators/authorization/affiliates.html\n"
       return $ Just $ fromMaybe c' c
@@ -119,7 +119,7 @@ postAuthorize = action POST (pathAPI </>> pathPartyTarget </> pathAuthorizeTarge
       return a
   case api of
     JSON -> maybe (emptyResponse noContent204 []) (okResponse [] . JSON.Object . authorizeJSON) a
-    HTML -> redirectRouteResponse [] viewAuthorize arg
+    HTML -> redirectRouteResponse [] viewAuthorize arg []
 
 deleteAuthorize :: AppRoute (API, PartyTarget, AuthorizeTarget)
 deleteAuthorize = action DELETE (pathAPI </>> pathPartyTarget </> pathAuthorizeTarget) $ \arg@(api, i, AuthorizeTarget app oi) -> withAuth $ do
@@ -129,4 +129,4 @@ deleteAuthorize = action DELETE (pathAPI </>> pathPartyTarget </> pathAuthorizeT
   _ <- removeAuthorize $ Authorize (Authorization mempty child parent) Nothing
   case api of
     JSON -> emptyResponse noContent204 []
-    HTML -> redirectRouteResponse [] viewAuthorize arg
+    HTML -> redirectRouteResponse [] viewAuthorize arg []

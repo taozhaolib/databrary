@@ -12,7 +12,8 @@ module Databrary.Action.Route
 
 import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Char8 as BSC
-import Network.HTTP.Types (methodGet, StdMethod(..), renderStdMethod)
+import Data.Monoid ((<>))
+import Network.HTTP.Types (methodGet, StdMethod(..), renderStdMethod, Query, renderQueryBuilder)
 
 import qualified Databrary.Iso as I
 import Databrary.HTTP.Request
@@ -20,9 +21,9 @@ import Databrary.Action.Types
 import Databrary.HTTP.Path.Parser
 import Databrary.HTTP.Route
 
-actionURL :: Maybe Request -> Route r a -> a -> BSB.Builder
-actionURL req r@Route{ routeMethod = g }
-  | g == methodGet = routeURL req r
+actionURL :: Maybe Request -> Route r a -> a -> Query -> BSB.Builder
+actionURL req r@Route{ routeMethod = g } a q
+  | g == methodGet = routeURL req r a <> renderQueryBuilder True q
   | otherwise = error $ "actionURL: " ++ BSC.unpack g
 
 action :: StdMethod -> PathParser a -> (a -> Action q) -> Route (Action q) a

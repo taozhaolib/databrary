@@ -52,7 +52,7 @@ createRecord = action POST (pathAPI </> pathId </< "record") $ \(api, vi) -> wit
   rec <- addRecord br
   case api of
     JSON -> okResponse [] $ recordJSON rec
-    HTML -> redirectRouteResponse [] viewRecord (api, recordId rec)
+    HTML -> redirectRouteResponse [] viewRecord (api, recordId rec) []
 
 postRecordMeasure :: AppRoute (API, Id Record, Id Metric)
 postRecordMeasure = action POST (pathAPI </>> pathId </> pathId) $ \(api, ri, mi) -> withAuth $ do
@@ -69,4 +69,4 @@ postRecordMeasure = action POST (pathAPI </>> pathId </> pathId) $ \(api, ri, mi
         return $ fromMaybe rec r)
   case api of
     JSON -> okResponse [] $ recordJSON rec'
-    HTML -> redirectRouteResponse [] viewRecord (api, recordId rec')
+    HTML -> redirectRouteResponse [] viewRecord (api, recordId rec') []

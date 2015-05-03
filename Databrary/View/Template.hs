@@ -59,9 +59,9 @@ htmlTemplate req title body = H.docTypeHtml $ do
           H.! HA.href "/"
           $ "Databrary"
         foldIdentity
-          (H.a H.! actionLink viewLogin () $ "login")
+          (H.a H.! actionLink viewLogin () [] $ "login")
           (\_ -> do
-            H.a H.! actionLink viewParty (HTML, TargetProfile) $ "profile"
+            H.a H.! actionLink viewParty (HTML, TargetProfile) [] $ "profile"
             actionForm postLogout HTML $
               H.button
                 H.! HA.type_ "submit"

@@ -32,4 +32,4 @@ postComment = action POST (pathAPI </> pathSlotId </< "comment") $ \(api, si) ->
   c' <- addComment c
   case api of
     JSON -> okResponse [] $ commentJSON c'
-    HTML -> redirectRouteResponse [] viewSlot (api, slotId $ commentSlot c')
+    HTML -> redirectRouteResponse [] viewSlot (api, slotId $ commentSlot c') []

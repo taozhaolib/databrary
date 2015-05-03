@@ -145,7 +145,7 @@ postParty = multipartAction $ action POST (pathAPI </> pathPartyTarget) $ \(api,
     void $ changeAvatar p' a
   case api of
     JSON -> okResponse [] $ partyJSON p'
-    HTML -> redirectRouteResponse [] viewParty (api, i)
+    HTML -> redirectRouteResponse [] viewParty (api, i) []
 
 createParty :: AppRoute API
 createParty = multipartAction $ action POST (pathAPI </< "party") $ \api -> withAuth $ do
@@ -157,7 +157,7 @@ createParty = multipartAction $ action POST (pathAPI </< "party") $ \api -> with
     void $ changeAvatar p a
   case api of
     JSON -> okResponse [] $ partyJSON p
-    HTML -> redirectRouteResponse [] viewParty (api, TargetParty $ partyId p)
+    HTML -> redirectRouteResponse [] viewParty (api, TargetParty $ partyId p) []
 
 partySearchForm :: (Applicative m, Monad m) => DeformT m PartyFilter
 partySearchForm = PartyFilter
@@ -180,7 +180,7 @@ queryParties = action GET (pathAPI </< "party") $ \api -> withAuth $ do
 viewAvatar :: AppRoute (Id Party)
 viewAvatar = action GET (pathId </< "avatar") $ \i ->
   maybe
-    (redirectRouteResponse [] webFile $ Just $ staticPath ["images", "avatar.png"])
+    (redirectRouteResponse [] webFile (Just $ staticPath ["images", "avatar.png"]) [])
     (\a -> do
       -- elsewhere? size <- runForm Nothing $ "size" .:> optional deform
       store <- maybeAction =<< getAssetFile a

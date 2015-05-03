@@ -27,7 +27,7 @@ ngAttribute :: String -> H.AttributeValue -> H.Attribute
 ngAttribute = H.customAttribute . H.stringTag . ("ng-" <>)
 
 public :: [BS.ByteString] -> H.AttributeValue
-public p = builderValue $ actionURL Nothing webFile (Just $ staticPath p)
+public p = builderValue $ actionURL Nothing webFile (Just $ staticPath p) []
 
 htmlAngular :: AuthRequest -> H.Html
 htmlAngular auth = H.docTypeHtml H.! ngAttribute "ng-app" "databraryModule" $ do
