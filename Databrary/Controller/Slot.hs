@@ -2,11 +2,13 @@
 module Databrary.Controller.Slot
   ( getSlot
   , viewSlot
+  , slotDownloadName
   ) where
 
 import Control.Monad (when)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
+import qualified Data.Text as T
 import qualified Network.Wai as Wai
 
 import Databrary.Ops
@@ -27,6 +29,7 @@ import Databrary.HTTP.Path.Parser
 import Databrary.Action
 import Databrary.Controller.Permission
 import Databrary.Controller.Angular
+import Databrary.Controller.Container
 
 getSlot :: Permission -> Id Slot -> AuthActionM Slot
 getSlot p i =
@@ -50,6 +53,10 @@ slotJSONField _ _ _ = return Nothing
 
 slotJSONQuery :: (MonadDB m, MonadHasIdentity c m) => Slot -> JSON.Query -> m JSON.Object
 slotJSONQuery o = JSON.jsonQuery (slotJSON o) (slotJSONField o)
+
+slotDownloadName :: (MonadDB m) => Slot -> m [T.Text]
+slotDownloadName s = do
+  return $ containerDownloadName (slotContainer s)
 
 viewSlot :: AppRoute (API, Id Slot)
 viewSlot = action GET (pathAPI </> pathSlotId) $ \(api, i) -> withAuth $ do

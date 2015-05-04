@@ -3,7 +3,11 @@ module Databrary.Controller.Container
   ( getContainer
   , createContainer
   , postContainer
+  , containerDownloadName
   ) where
+
+import Data.Maybe (maybeToList)
+import qualified Data.Text as T
 
 import Databrary.Ops
 import qualified Databrary.Iso as I
@@ -19,13 +23,16 @@ import Databrary.HTTP.Path.Parser
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
 import Databrary.Controller.Volume
-import Databrary.Controller.Slot
+import {-# SOURCE #-} Databrary.Controller.Slot
 import Databrary.View.Container
 
 getContainer :: Permission -> Id Slot -> AuthActionM Container
 getContainer p (Id (SlotId i s))
   | segmentFull s = checkPermission p =<< maybeAction =<< lookupContainer i
   | otherwise = result =<< notFoundResponse
+
+containerDownloadName :: Container -> [T.Text]
+containerDownloadName c = maybeToList $ containerName c
 
 viewContainer :: AppRoute (API, Id Container)
 viewContainer = I.second (slotContainerId . unId I.:<->: containerSlotId) I.<$> viewSlot

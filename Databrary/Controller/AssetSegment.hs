@@ -34,6 +34,7 @@ import Databrary.Model.Asset
 import Databrary.Model.AssetSlot
 import Databrary.Model.AssetSegment
 import Databrary.Store.Asset
+import Databrary.Store.Filename
 import Databrary.HTTP.File
 import Databrary.HTTP.Request
 import Databrary.HTTP.Path.Parser
@@ -42,6 +43,9 @@ import Databrary.Action
 import Databrary.Controller.Angular
 import Databrary.Controller.Permission
 import Databrary.Controller.Web
+import Databrary.Controller.Volume
+import Databrary.Controller.Slot
+import Databrary.Controller.Asset
 
 getAssetSegment :: Permission -> Id Slot -> Id Asset -> AuthActionM AssetSegment
 getAssetSegment p s a =
@@ -53,6 +57,12 @@ assetSegmentJSONField _ _ _ = return Nothing
 assetSegmentJSONQuery :: (MonadDB m, MonadHasIdentity c m) => AssetSegment -> JSON.Query -> m JSON.Object
 assetSegmentJSONQuery vol = JSON.jsonQuery (assetSegmentJSON vol) (assetSegmentJSONField vol)
 
+assetSegmentDownloadName :: (MonadDB m, MonadHasIdentity c m) => AssetSegment -> m [T.Text]
+assetSegmentDownloadName a = do
+  v <- volumeDownloadName (view a)
+  s <- slotDownloadName (view a)
+  return $ v ++ s ++ assetDownloadName (view a)
+
 viewAssetSegment :: AppRoute (API, Id Slot, Id Asset)
 viewAssetSegment = action GET (pathAPI </>> pathSlotId </> pathId) $ \(api, si, ai) -> withAuth $ do
   when (api == HTML) angular
@@ -61,15 +71,16 @@ viewAssetSegment = action GET (pathAPI </>> pathSlotId </> pathId) $ \(api, si, 
     JSON -> okResponse [] =<< assetSegmentJSONQuery as =<< peeks Wai.queryString
     HTML -> okResponse [] $ T.pack $ show $ assetId $ slotAsset $ segmentAsset as -- TODO
 
-serveAssetSegment :: AssetSegment -> AuthAction
-serveAssetSegment as = do
+serveAssetSegment :: Bool -> AssetSegment -> AuthAction
+serveAssetSegment dl as = do
   store <- maybeAction =<< getAssetFile a
   szs <- peeks $ lookupQueryParameters "size"
   let sz = case szs of
         [Just n] -> fst <$> BSC.readInt n
         _ -> Nothing
-  auditAssetSegmentDownload True as
-  (hd, part) <- fileResponse store (view as) Nothing etag
+  when dl $ auditAssetSegmentDownload True as
+  dlname <- if dl then Just . makeFilename <$> assetSegmentDownloadName as else return Nothing
+  (hd, part) <- fileResponse store (view as) dlname etag
   av <- peek
   let samp p = do
         Just s <- liftIO $ avFrame av store p sz Nothing Nothing
@@ -101,16 +112,16 @@ downloadAssetSegment :: AppRoute (Id Slot, Id Asset)
 downloadAssetSegment = action GET (pathSlotId </> pathId </< "download") $ \(si, ai) -> withAuth $ do
   as <- getAssetSegment PermissionREAD si ai
   inline <- peeks $ lookupQueryParameters "inline"
-  serveAssetSegment as
+  serveAssetSegment (null inline) as
 
 thumbAssetSegment :: AppRoute (Id Slot, Id Asset)
 thumbAssetSegment = action GET (pathSlotId </> pathId </< "thumb") $ \(si, ai) -> withAuth $ do
   as <- getAssetSegment PermissionREAD si ai
+  q <- peeks Wai.queryString
   let afmt = view as
   if formatIsImage (fromMaybe afmt (formatSample afmt))
     then do
       let as' = as{ assetSegment = segmentInterp (assetSegment as) 0.25 }
-      -- redirectRouteResponse [] $ downloadAssetSegment (view as') (view as') -- loses size
-      serveAssetSegment as'
+      redirectRouteResponse [] downloadAssetSegment (slotId $ view as', assetId $ view as') q
     else
-      redirectRouteResponse [] formatIcon afmt []
+      redirectRouteResponse [] formatIcon afmt q

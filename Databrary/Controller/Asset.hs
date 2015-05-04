@@ -11,6 +11,7 @@ module Databrary.Controller.Asset
   , viewCreateSlotAsset
   , deleteAsset
   , downloadAsset
+  , assetDownloadName
   ) where
 
 import Control.Applicative ((<|>))
@@ -19,7 +20,7 @@ import Control.Monad ((<=<), when, void)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Trans.Class (lift)
 import qualified Data.ByteString as BS
-import Data.Maybe (fromMaybe, isNothing, isJust, catMaybes)
+import Data.Maybe (fromMaybe, isNothing, isJust, catMaybes, maybeToList)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Data.Traversable as Trav
@@ -54,6 +55,7 @@ import Databrary.Store.Asset
 import Databrary.Store.Upload
 import Databrary.Store.Temp
 import Databrary.Media.AV
+import Databrary.HTTP.Request
 import Databrary.HTTP.Form.Errors
 import Databrary.HTTP.Form.Deform
 import Databrary.HTTP.Path.Parser
@@ -62,7 +64,7 @@ import Databrary.Controller.Permission
 import Databrary.Controller.Form
 import Databrary.Controller.Volume
 import Databrary.Controller.Slot
-import Databrary.Controller.AssetSegment
+import {-# SOURCE #-} Databrary.Controller.AssetSegment
 import Databrary.Controller.Angular
 import Databrary.View.Asset
 
@@ -83,6 +85,9 @@ assetJSONField _ _ _ = return Nothing
 
 assetJSONQuery :: (MonadDB m, MonadHasIdentity c m) => AssetSlot -> JSON.Query -> m JSON.Object
 assetJSONQuery vol = JSON.jsonQuery (assetSlotJSON vol) (assetJSONField vol)
+
+assetDownloadName :: Asset -> [T.Text]
+assetDownloadName a = maybeToList $ assetName a
 
 viewAsset :: AppRoute (API, Id Asset)
 viewAsset = action GET (pathAPI </> pathId) $ \(api, i) -> withAuth $ do
@@ -246,4 +251,5 @@ deleteAsset = action DELETE (pathAPI </> pathId) $ \(api, ai) -> withAuth $ do
 downloadAsset :: AppRoute (Id Asset)
 downloadAsset = action GET (pathId </< "download") $ \ai -> withAuth $ do
   as <- getAsset PermissionREAD ai
-  serveAssetSegment $ assetSlotSegment as
+  inline <- peeks $ lookupQueryParameters "inline"
+  serveAssetSegment (null inline) $ assetSlotSegment as
