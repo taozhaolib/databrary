@@ -31,6 +31,7 @@ app.controller('party/register', [
           page.models.Login.register($scope.registerForm.data)
             .then(function () {
               $scope.registerForm.$setUnsubmitted();
+              $scope.registerForm.sent = true;
               $scope.proceed();
             }, function (res) {
               $scope.registerForm.$setUnsubmitted();
