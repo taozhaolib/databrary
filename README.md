@@ -11,6 +11,13 @@ http://databrary.github.io/databrary
 
 ## Installation
 
+Requirements:
+- PostgreSQL >= 9.3
+- ffmpeg >= 2.4 (not libav) with shared libraries
+- cracklib with shared library
+- activator >= 1.2 (play 2.3)
+- Java 7 JDK
+
 ### Postgres
 
 We assume that the server's timezone (for timestamp without timezone values) is
@@ -33,6 +40,10 @@ Then create local.conf with whatever password you used above:
 
 For other settings, see conf/application.conf.
 
+You also must manually install pgranges after each postgres upgrade:
+
+    make -C dbrary/pgranges install
+
 ### Security
 
 To ensure proper application security you must add a secret to local.conf,
@@ -43,50 +54,22 @@ e.g.:
 ### Object storage
 
 The default configuration stores objects under store/ and cache/, which will
-both need to be created or changed to other existing directories.
+both need to be created or changed to other existing directories in local.conf.
 
 ## Usage
 
 ### Code Style
 
-#### Directory Structure
-
-* app/
-  * assets/
-    * config/ - angular.module().config
-    * controller/ - angular.module().controller, currently empty, probably you want directives
-    * decorator/ - angular.module().decorator
-    * directive/ - angular.module().directive, generic, sometimes without templates
-    * filter/ - angular.module().filter
-    * form/ - angular.module().directive, always with templates
-    * helper/ - angular.module().[service|factory|provider], services that other services depend on
-    * interceptor/ - angular.module().interceptor
-    * model/ - angular.module().[service|factory|provider], services that make http requests
-    * panel/ - angular.module().directive, always with templates
-    * polyfill/ - vanilla js polyfills
-    * service/ - angular.module().[service|factory|provider], generic
-    * stylus/ - styles framework
-      * common/ - common styles based on class, another form of shame
-      * mixins/ - all our mixins, generally used by stylus/styles/ of the same name
-      * shame/ - all css hacks, browser fixes, and bad practices
-      * styles/ - all our generic styles, generally using stylus/mixins of the same name
-      * vars.styl - all our variables
-    * view/ - angular.module().controller, specific to routes
-
 #### HTML
 
 * Always use double-quotes.
 * Indent with two spaces.
-* ID the top element of every template.
-* Parallel top element ID with identical class (for styling).
 * IDs and classes are dash-spearated, not under_score, not camelCase.
 * Lowercase everything.
-* Never use style="", but maybe use ng-style/bo-style.
 * App links should not have target or title.
 * External links should always have target and title.
-* Never write any inline text. Use conf/messages.
 
-### STYLUS
+### Stylus
 
 * Indent with two spaces.
 * Keep template-specific styles with template.
@@ -102,7 +85,7 @@ both need to be created or changed to other existing directories.
 
 #### JS
 
-* Always use single quotes. Always. 
+* Always use single quotes.
 * Indent with two spaces.
 * Use === as often as possible.
 * Make sure app.js is remains the first file alphabetically.
@@ -112,14 +95,10 @@ both need to be created or changed to other existing directories.
 * Bind everything related to a form to the form object.
 * Store form data in form.data, preferably in the structure you'd send to the server.
 * Make as few new scopes as possible.
-* Use controllerAs syntax as often as possible.
-* Prefer events to $watch and {{bind}}.
-* Never use filters in templates
-
 
 ## License
 
-Copyright (C) 2013 New York University
+Copyright (C) 2013-2015 New York University
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
