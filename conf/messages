@@ -518,7 +518,7 @@ wizard.register-password.instructions=Please set a secure password. Remember tha
 
 wizard.register-agent.name=Request Authorization
 wizard.register-agent.description=Begin the authorization process.
-wizard.register-agent.instructions=In order to access Databrary resources, you must be authorized either as an Authorized Investigator through a sponsoring institution, or by an authorized Databrary Investigator as an Affiliate. Read more about <a href="http://databrary.org/access/guide/investigators.html" target="_blank">who qualifies for authorization</a> and <a href="http://databrary.org/access/guide/investigators/authorization.html" target="_blank">how to get authorized</a>. 
+wizard.register-agent.instructions=In order to access Databrary resources, you must be authorized either as an Authorized Investigator through a sponsoring institution, or by an authorized Databrary Investigator as an Affiliate. Read more about <a href="http://databrary.org/access/guide/investigators.html" target="_blank">who qualifies for authorization</a> and <a href="http://databrary.org/access/guide/investigators/authorization.html" target="_blank">how to get authorized</a>. If you cannot find your institution or sponsoring PI below, you can still proceed with registration by selecting 'None of these'.
 
 wizard.register-request.name=Submit Authorization
 wizard.register-request.description=Confirm your authorization request.
