@@ -31,11 +31,6 @@
     <colgroup ng-repeat="col in recordCols track by col.category.id">
       <col ng-repeat="metric in col.metrics track by metric.id" ng-class="[col.category.name, metric.name]"/>
     </colgroup>
-    <colgroup ng-if="::assets">
-      <col class="name"/>
-      <col class="classification"/>
-      <col class="excerpt"/>
-    </colgroup>
     <colgroup ng-if="categories.length">
       <col class="add">
     </colgroup>
@@ -46,9 +41,6 @@
           <span ng-bind="col.category.name"></span>
           <span ng-if="::editing" ng-click="clickCategoryAdd($event, col)" class="icon add addSessionInfo" tooltip="'spreadsheet.add.metric' | message:col.category.name"></span>
         </th>
-        <th ng-if="::assets" colspan="3">
-          file
-        </th>
         <th ng-if="categories.length" id="{{::id}}-add" class="add" ng-click="clickAdd($event)" tooltip="'spreadsheet.add.category' | message"></th>
       </tr>
       <tr class="spreadsheet-head-metrics">
@@ -56,9 +48,6 @@
         <th ng-if="::!top" id="{{::id}}-date" ng-click="clickSlot($event, 'date')" ng-class="colClasses('date')">test date</th>
         <th ng-if="::!top" id="{{::id}}-release" class="last" ng-click="clickSlot($event, 'release')" ng-class="colClasses('release')">release</th>
         <th ng-repeat="col in metricCols" id="{{::id}}-metric_{{::$index}}" ng-click="clickMetric(col)" ng-class="colClasses(col)" ng-bind="col.metric.name"></th>
-        <th ng-if-start="::assets" class="first">name</th>
-        <th>classification</th>
-        <th ng-if-end class="last">excerpt</th>
         <th ng-if="categories.length" class="first last"></th>
       </tr>
     </thead>
