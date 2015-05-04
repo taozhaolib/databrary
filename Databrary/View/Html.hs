@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Databrary.View.Html
   ( lazyByteStringHtml
   , byteStringHtml
@@ -40,13 +41,13 @@ byteStringValue = H.unsafeLazyByteStringValue . BSB.toLazyByteString . fromHtmlE
 builderValue :: BSB.Builder -> H.AttributeValue
 builderValue = lazyByteStringValue . BSB.toLazyByteString
 
-actionLink :: Route r a -> a -> Query -> H.Attribute
-actionLink r a q = HA.href $ builderValue $ actionURL Nothing r a q
+actionLink :: Route r a -> a -> Maybe Bool -> Query -> H.Attribute
+actionLink r a j q = HA.href $ builderValue $ actionURL Nothing r a $ maybe id (\v -> (:) ("js",Just (if v then "1" else "0"))) j q
 
 actionForm :: Route r a -> a -> H.Html -> H.Html
 actionForm r@Route{ routeMethod = g, routeMultipart = p } a = H.form
   H.! HA.method (H.unsafeByteStringValue g)
-  H.!? (p, HA.enctype $ H.toValue "multipart/form-data")
+  H.!? (p, HA.enctype "multipart/form-data")
   H.! HA.action (builderValue $ routeURL Nothing r a)
 
 (!?) :: Markup.Attributable h => h -> Maybe H.Attribute -> h

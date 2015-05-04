@@ -22,6 +22,7 @@ import Databrary.Action
 import Databrary.View.Html
 
 import {-# SOURCE #-} Databrary.Controller.Angular
+import {-# SOURCE #-} Databrary.Controller.Root
 import {-# SOURCE #-} Databrary.Controller.Login
 import {-# SOURCE #-} Databrary.Controller.Party
 
@@ -36,7 +37,7 @@ htmlHeader req = do
     H.! HA.href "/public/icons/favicon.png"
   H.link
     H.! HA.rel "start"
-    H.! HA.href "/"
+    H.! actionLink viewRoot HTML hasjs []
   where
   (hasjs, nojs) = jsURL Nothing req
 
@@ -56,12 +57,12 @@ htmlTemplate req title body = H.docTypeHtml $ do
       H.! HA.class_ "toolbar"
       $ do
         H.a
-          H.! HA.href "/"
+          H.! actionLink viewRoot HTML (Just False) []
           $ "Databrary"
         foldIdentity
-          (H.a H.! actionLink viewLogin () [] $ "login")
+          (H.a H.! actionLink viewLogin () (Just False) [] $ "login")
           (\_ -> do
-            H.a H.! actionLink viewParty (HTML, TargetProfile) [] $ "profile"
+            H.a H.! actionLink viewParty (HTML, TargetProfile) (Just False) [] $ "profile"
             actionForm postLogout HTML $
               H.button
                 H.! HA.type_ "submit"
