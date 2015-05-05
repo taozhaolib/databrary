@@ -937,7 +937,10 @@ app.controller('volume/slot', [
         return
 
     $scope.positionBackgroundStyle = (l, i) ->
-      new TimeSegment(l[i].l, if i+1 of l then l[i+1].l else Infinity).style()
+      if l[i].lt.p > 1
+        visibility: "hidden"
+      else
+        new TimeSegment(l[i].l, if i+1 of l then l[i+1].l else Infinity).style()
 
     $scope.setCategory = (c) ->
       if c?
