@@ -16,6 +16,6 @@
     <validator class="col-desktop-7 col-tablet-4 col-mobile-5" name="links[{{$index}}].url">
       <input type="text" name="links[{{$index}}].url" ng-model="link.url" placeholder="{{::'link.url' | message}}" ng-pattern="/^((doi:)?10\.[\.0-9]+|ftp:/|http:/|https:/)//" ng-change="volumeEditLinksForm.change()">
     </validator>
-    <button class="mini" ng-if="$index < volumeEditLinksForm.data.length-1" ng-click="volumeEditLinksForm.remove(link)"><span class="icon trash"></button>
+    <button class="mini icon trash" ng-if="$index < volumeEditLinksForm.data.length-1" ng-click="volumeEditLinksForm.remove(link)"></button>
   </fieldset>
 </ng-form>
