@@ -877,6 +877,10 @@ app.controller('volume/slot', [
         $scope.editing = 'position'
         return
 
+      updatePosition: (u) ->
+        $scope.form.position[if u then 'position-lower' else 'position-upper'].$validate()
+        return
+
       finishPosition: () ->
         $scope.editing = true
         @init(@rec.segment)

@@ -144,9 +144,9 @@
               </select>
             </ng-form>
             <ng-form ng-switch-when="position" name="form.position">
-              <input input-position="-Infinity" class="position-input" type="text" size="10" name="position-lower" ng-model="current.l" position-max="current.record ? current.u : Infinity" ng-change="current.updatePosition()" key-enter="updatePosition()" placeholder="{{::'position.placeholder' | message}}">
+              <input input-position="-Infinity" class="position-input" type="text" size="10" name="position-lower" ng-model="current.l" position-max="current.record ? current.u : Infinity" ng-change="current.updatePosition(false)" key-enter="updatePosition()" placeholder="{{::'position.placeholder' | message}}">
               &ndash;
-              <input input-position="Infinity" class="position-input" type="text" size="10" name="position-upper" ng-model="current.u" position-min="current.l" ng-disabled="!current.record" placeholder="{{::'position.placeholder' | message}}">
+              <input input-position="Infinity" class="position-input" type="text" size="10" name="position-upper" ng-model="current.u" position-min="current.l" ng-change="current.updatePosition(true)" ng-disabled="!current.record" placeholder="{{::'position.placeholder' | message}}">
               &#32;
               <button ng-click="current.finishPosition()">Cancel</button>
               <button class="green" ng-click="current.savePosition()" ng-disabled="form.position.$pristine || form.position.$invalid">Save</button>
