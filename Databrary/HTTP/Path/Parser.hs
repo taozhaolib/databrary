@@ -1,4 +1,4 @@
-{-# LANGUAGE GADTs, KindSignatures, DataKinds, TypeOperators, TupleSections, QuasiQuotes #-}
+{-# LANGUAGE GADTs, TupleSections, QuasiQuotes #-}
 module Databrary.HTTP.Path.Parser
   ( PathParser(..)
   , (</>)
@@ -16,7 +16,6 @@ module Databrary.HTTP.Path.Parser
 import Control.Applicative ((<|>))
 import Control.Arrow (first, second)
 import Control.Monad (guard)
-import Data.Proxy (Proxy(..))
 import Data.String (IsString(..))
 import qualified Data.Text as T
 import Data.Typeable (cast)
@@ -26,8 +25,8 @@ import Databrary.Iso.TH
 import Databrary.Ops
 import Databrary.HTTP.Path.Types
 
-proxy :: p a -> Proxy a
-proxy _ = Proxy
+parserUndef :: PathParser a -> a
+parserUndef _ = undefined
 
 data PathParser a where
   PathEmpty :: PathParser ()
@@ -95,14 +94,16 @@ pathMaybe p = I.rgt I.<$> (PathEmpty |/| p)
 (=/=) :: Eq a => a -> PathParser a -> PathParser a
 (=/=) a p = I.defaultEq a I.<$> pathMaybe p
 
-pathCases :: PathParser a -> [([PathElement], PathResult -> Maybe (a, PathResult))]
+pathCases :: PathParser a -> [([PathElement], PathElements -> Maybe (a, PathElements))]
 pathCases PathEmpty = [([], Just . (,) ())]
-pathCases PathAny = [([PathElementAny], rf)] where
-  rf (PathResultAny p) = Just (p, PathResultNull)
+pathCases PathAny = [([PathElementAny undefined], rf)] where
+  rf (PathElementAny p:l) = Just (p, l)
   rf _ = Nothing
-pathCases (PathFixed t) = [([PathElementFixed t], Just . (,) ())]
-pathCases d@PathDynamic = [([PathElementDynamic (proxy d)], rf)] where
-  rf (PathResultDynamic v r) = (, r) <$> cast v
+pathCases (PathFixed t) = [([PathElementFixed t], rf)] where
+  rf (PathElementFixed _:l) = Just ((), l)
+  rf _ = Nothing
+pathCases d@PathDynamic = [([PathElementDynamic (parserUndef d)], rf)] where
+  rf (PathElementDynamic v:l) = (, l) <$> cast v
   rf _ = Nothing
 pathCases (PathTrans f _ p) = second (fmap (first f) .) <$> pathCases p
 pathCases (PathTuple a b) = do
