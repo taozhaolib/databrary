@@ -222,8 +222,9 @@ app.controller('volume/slot', [
     ################################### Video/playback controls
 
     $scope.updatePosition = () ->
-      if video && $scope.asset?.segment.contains(ruler.position.o) && isFinite($scope.asset.segment.l)
-        video[0].currentTime = (ruler.position.o - (if $scope.editing == 'position' then $scope.current.l else $scope.asset.segment.l)) / 1000
+      seg = (if $scope.editing == 'position' then $scope.current else $scope.asset?.segment)
+      if seg && video && seg.contains(ruler.position.o) && seg.lBounded
+        video[0].currentTime = (ruler.position.o - seg.l) / 1000
       return
 
     seekOffset = (o) ->
