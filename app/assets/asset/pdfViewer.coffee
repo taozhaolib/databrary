@@ -10,6 +10,7 @@ app.directive 'pdfViewer', [
       objectTag = document.createElement('object')
       objectTag.setAttribute('data', $scope.asset.downloadRoute(true))
       objectTag.setAttribute('width', '80%')
+      objectTag.setAttribute('type', $scope.asset.format.mimetype)
       pdfElement.appendChild(objectTag)
       return 
 
