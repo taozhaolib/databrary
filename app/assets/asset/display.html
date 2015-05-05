@@ -19,10 +19,11 @@
   </div>
 
   <div ng-switch-when="application">
-    <pdf-viewer asset="::asset"></pdf-viewer>
-    <div ng-if="::asset.format.mimetype !== 'application/pdf'" class="no-preview">
-      <span message="asset.display.unavailable"></span>
-    </div>
+    <pdf-viewer asset="::asset">
+      <div class="no-preview">
+        <span message="asset.display.unavailable"></span>
+      </div>
+    </pdf-viewer>
   </div>
 
   <div class="no-preview" ng-switch-default>
