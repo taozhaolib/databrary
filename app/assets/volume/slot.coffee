@@ -450,9 +450,12 @@ app.controller('volume/slot', [
       return
 
     $scope.zoom = (seg) ->
-      seg ?= fullRange
-      ruler.range = seg
-      ruler.zoomed = seg != fullRange
+      if seg
+        ruler.range = new Segment((if seg.lBounded then seg.l else fullRange.l), (if seg.uBounded then seg.u else fullRange.u))
+        ruler.zoomed = true
+      else
+        ruler.range = fullRange
+        ruler.zoomed = false
       searchLocation($location.replace())
       return
 
