@@ -3,7 +3,7 @@
     <section ng-if="!!current" class="panel-excerpts-player-frame">
       <div ng-repeat="current in [current]">
         <header>
-          <a ng-href="{{::jumpLink(current)}}" class="icon line session tool" tooltip="'session.jump' | message:'highlight'"></a>
+          <a ng-href="{{::current.slotRoute()}}" class="icon line session tool" tooltip="'session.jump' | message:'highlight'"></a>
           <a ng-if="::!current.pending && current.checkPermission(page.constants.permission.VIEW)" ng-href="{{::current.route()}}" class="icon line download tool" tooltip="'excerpts.download' | message"></a>
           <h1 class="panel-excerpts-player-heading">
             <div class="release icon line" ng-class="::page.constants.release[current.release]" hint="release-{{::page.constants.release[current.release]}}"></div>
@@ -31,7 +31,7 @@
             <div class="panel-excerpts-binder" ng-class="{'panel-excerpts-list-current':excerpt===current}">
               <div class="panel-excerpts-actions">
                 <img class="icon" ng-src="{{::excerpt.icon}}" hint="format-{{::excerpt.format.extension}}">
-                <a ng-href="{{::jumpLink(excerpt)}}" class="icon session tool" tooltip="'session.jump' | message:'highlight'"></a>
+                <a ng-href="{{::excerpt.slotRoute()}}" class="icon session tool" tooltip="'session.jump' | message:'highlight'"></a>
               </div>
               <div ng-click="setCurrent(excerpt)" class="panel-excerpts-icon">
                 <div ng-if="::hasThumbnail(excerpt)">
