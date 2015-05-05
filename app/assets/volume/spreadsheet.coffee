@@ -950,24 +950,25 @@ app.directive 'spreadsheet', [
             inputl = (input ? '').toLowerCase()
             set = (r) -> (cell) ->
               setRecord(cell, info, r)
-            for r in editScope.records
-              add("Use " + info.category.name + ' ' + r.d, set(r.r), r.v == inputl) if r.v.startsWith(inputl)
-            v = if info.metric.options
+            rs = (r for r in editScope.records when r.v.startsWith(inputl))
+            for r in rs
+              add("Use " + info.category.name + ' ' + r.d, set(r.r), input && rs.length == 1 || r.v == inputl)
+            os = if info.metric.options
                 (x for x in info.metric.options when x.toLowerCase().startsWith(inputl))
               else
                 []
-            if input && !v.length
-              v = [input]
-            v.forEach (i) ->
+            if input && !os.length
+              os = [input]
+            os.forEach (i) ->
               if info.r
                 add("Change all " + info.record.displayName + " " + info.metric.name + " to '" + i + "'",
                   (cell) -> saveMeasure(cell, info.record, info.metric, i),
-                  i == input)
+                  input && !rs.length && os.length == 1 || i == input)
               add("Create new " + info.category.name + " with " + info.metric.name + " '" + i + "'",
                 (cell) -> setRecord(cell, info).then((r) ->
                   saveMeasure(cell, r, info.metric, i) if r
                   return),
-                i == input)
+                input && !rs.length && os.length == 1 || i == input)
           if o.length then o else input
 
         optionCompletions = (input) ->
