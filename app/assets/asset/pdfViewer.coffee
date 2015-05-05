@@ -6,7 +6,7 @@ app.directive 'pdfViewer', [
     scope:
       asset:  '=asset'
     link: ($scope, $elem) ->
-      pdfElement = $($elem)[0]
+      pdfElement = $elem[0]
       objectTag = document.createElement('object')
       objectTag.setAttribute('data', $scope.asset.downloadRoute(true))
       objectTag.setAttribute('width', '80%')
