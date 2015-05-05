@@ -1,8 +1,8 @@
 'use strict'
 
 app.directive 'assetDisplay', [
-  'constantService',
-  (constants) ->
+  'constantService', '$timeout',
+  (constants, $timeout) ->
     restrict: 'E'
     templateUrl: 'asset/display.html'
     scope:
@@ -11,7 +11,6 @@ app.directive 'assetDisplay', [
       asset = $scope.assetFn()
       $scope.asset = asset.inContext()
       $scope.readable = $scope.asset.checkPermission(constants.permission.VIEW)
-
       if $scope.asset != asset
         $scope.clip = asset.segment.relativeTo($scope.asset.segment)
       return
