@@ -104,7 +104,7 @@ app.directive 'spreadsheet', [
 
         Data = {}                   # [Category_id][Metric_id][Count] :: Data
         Counts = new Array(Slots.length) # [Row][Category_id] :: Count
-        RecordCols = []             # [] Array over records :: {category: Category_id, metrics[]: Array of Metric_id}
+        RecordCols = []             # [] Array over records :: {category: Category, metrics[]: Array of Metric}
         MetricCols = []             # [] Array over metrics :: {category: Category, metric: Metric} (flattened version of RecordCols)
         Depends = {}                # [Record_id][Row] :: Count
 
@@ -132,6 +132,22 @@ app.directive 'spreadsheet', [
           pseudoCategory[c || 0] || constants.category[c]
 
         class Info
+          # Represents everything we know about a specific cell.  Properties:
+          #   id: html element id string
+          #   i: Row
+          #   n: Count (index of count), optional [0]
+          #   m: index into MetricCols
+          #   cols: RecordCols element
+          #   col: MetricCols element
+          #   category: Category
+          #   c: Category_id
+          #   metric: Metric
+          #   row: Rows[i]
+          #   slot: Slots[i]
+          #   d: Data for id metric
+          #   record: Record
+          #   asset: Asset
+
           constructor: (el) ->
             return unless el && (i = el.id) && (i = stripPrefix(i, ID+'-'))
             s = i.split '_'
@@ -158,6 +174,9 @@ app.directive 'spreadsheet', [
               #  info.a = if 2 of s then parseInt(s[2], 10) else 0
 
           cachedProperties =
+            cols: ->
+              if (c = @c)?
+                RecordCols.find (col) -> `col.category.id == c`
             col: ->
               MetricCols[m] if (m = @m)?
             category: ->
@@ -165,12 +184,14 @@ app.directive 'spreadsheet', [
                 c.category
               else if this.hasOwnProperty('c')
                 getCategory(@c)
+              else if this.hasOwnProperty('cols')
+                @cols.category
             c: ->
               @category?.id
             metric: ->
               @col?.metric
-            m: ->
-              @metric.id if this.hasOwnProperty('metric')
+            row: ->
+              Rows[i] if (i = @i)?
             slot: ->
               Slots[i] if (i = @i)?
             d: ->
@@ -357,71 +378,70 @@ app.directive 'spreadsheet', [
           return
 
         # Add a td element to tr r with value c and id i
-        generateCell = (r, m, v, i, assumed) ->
-          td = r.appendChild(document.createElement('td'))
+        generateCell = (info, v) ->
+          td = info.row.appendChild(document.createElement('td'))
           if v == null
             td.className = 'null'
           else
-            generateText(td, m, v, assumed)
-            td.id = i
+            generateText(td, info.metric.id, v, info.metric.assumed)
+            td.id = info.id
           td
 
-        generateMultiple = (col, cols, row, i, n, t) ->
-          if n == undefined
-            return if t == 1
-          else
-            return if n < t
-          td = row.appendChild(document.createElement('td'))
-          td.setAttribute("colspan", cols)
-          cat = col.category
-          if n == undefined && t > 1
-            td.appendChild(document.createTextNode(t + " " + cat.name + "s"))
-            td.className = 'more'
-            td.id = ID + '-more_' + i + '_' + cat.id
-          else
+        generateMultiple = (info) -> # (col, cols, row, i, n, t) ->
+          t = Counts[info.i][info.c] || 0
+          return if (if info.n? then info.n < t else t == 1)
+          td = info.row.appendChild(document.createElement('td'))
+          width = info.cols.metrics.length
+          td.setAttribute("colspan", width)
+          if info.n? || t <= 1
             td.className = 'null'
-            if !n || n == t
-              if Editing && cols > 1
-                td.appendChild(document.createTextNode("\u2190 add " + cat.name))
-              else if !n
-                td.appendChild(document.createTextNode(cat.not))
+            if !info.n || info.n == t
+              if Editing && width > 1
+                td.appendChild(document.createTextNode("\u2190 add " + info.category.name))
+              else if !info.n
+                td.appendChild(document.createTextNode(info.category.not))
               if Editing
-                if 'metrics' of col && col.metrics[0].id != 'id'
-                  generateCell(row, undefined, undefined, ID+'-rec_'+i+(if n then '_'+n else '')+'_'+col.start)
-                  if cols > 1
-                    row.appendChild(td)
-                    td.setAttribute("colspan", cols-1)
+                if info.cols.metrics[0].id != 'id'
+                  info.id = ID+'-rec_'+info.i+(if info.n? then '_'+info.n else '')+'_'+info.cols.start
+                  generateCell(info)
+                  if width > 1
+                    info.row.appendChild(td)
+                    td.setAttribute("colspan", width-1)
                   else
-                    row.removeChild(td)
+                    info.row.removeChild(td)
                   td.className = 'null'
                 else
                   td.className = 'null add'
-                  td.id = ID + '-add_' + i + '_' + cat.id
+                  td.id = ID + '-add_' + info.i + '_' + info.c
+          else
+            td.appendChild(document.createTextNode(t + " " + info.category.name + "s"))
+            td.className = 'more'
+            td.id = ID + '-more_' + info.i + '_' + info.c
           td
 
         # Add all the measure tds to row i for count n, record r
-        generateRecord = (row, i, col, n) ->
-          return unless l = col.metrics.length
-          c = col.category.id
-          t = Counts[i][c] || 0
-          r = Data[c]
-          if td = generateMultiple(col, l, row, i, n, t)
-            if n == undefined
+        generateRecord = (info) -> # (row, i, col, n) ->
+          ms = info.cols.metrics
+          return unless l = ms.length
+          t = Counts[info.i][info.c] || 0
+          r = Data[info.c]
+          if td = generateMultiple(info) # (col, l, row, i, n, t)
+            unless info.n?
               for n in [0..t-1] by 1
-                td.classList.add('ss-rec_' + r.id[n][i])
+                td.classList.add('ss-rec_' + r.id[n][info.i])
             return
-          ms = col.metrics
-          b = ID + '-rec_' + i + '_'
-          if n == undefined
-            n = 0
-          else
+          b = ID + '-rec_' + info.i + '_'
+          if (n = info.n)?
             b += n + '_'
+          else
+            n = 0
           for mi in [0..l-1] by 1
-            m = ms[mi].id
-            v = r[m][n] && r[m][n][i]
-            cell = generateCell(row, m, v, b + (col.start+mi), ms[mi].assumed)
+            m = (info.metric = ms[mi]).id
+            v = r[m][n] && r[m][n][info.i]
+            info.id = b + (info.cols.start+mi)
+            cell = generateCell(info, v, info.metric.assumed)
             if v != null
-              ri = 'ss-rec_' + r.id[n][i]
+              ri = 'ss-rec_' + r.id[n][info.i]
               cell.classList.add(ri)
               cell.classList.add(ri + '_' + m)
           return
@@ -448,8 +468,9 @@ app.directive 'spreadsheet', [
 
         # Fill out rows[i].
         generateRow = (i) ->
-          slot = Slots[i]
-          stop = slot.id == Volume.top.id
+          info = new Info()
+          info.i = i
+          stop = info.slot.id == Volume.top.id
           row = if Rows[i]
               $(Rows[i]).empty()
               Rows[i]
@@ -460,28 +481,30 @@ app.directive 'spreadsheet', [
           if Editing && stop
             row.className = 'top'
 
-          name = slot.name
-          if stop
-            name ?= constants.message('materials.top')
-          cell = generateCell(row, 'name', name, ID + '-name_' + i)
-          if Editing && !stop
-            a = cell.insertBefore(document.createElement('a'), cell.firstChild)
-            a.className = 'trash icon'
-            $(a).on 'click', (event) ->
-              $scope.$apply () ->
-                removeSlot(cell, i, slot)
-                return
-              event.stopPropagation()
-              return
-          a = cell.insertBefore(document.createElement('a'), cell.firstChild)
-          a.setAttribute('href', if Editing then slot.editRoute() else slot.route())
-          a.className = "session icon hint-action-slot"
+          #name = slot.name
+          #if stop
+          #  name ?= constants.message('materials.top')
+          #cell = generateCell(row, 'name', name, ID + '-name_' + i)
+          #if Editing && !stop
+          #  a = cell.insertBefore(document.createElement('a'), cell.firstChild)
+          #  a.className = 'trash icon'
+          #  $(a).on 'click', (event) ->
+          #    $scope.$apply () ->
+          #      removeSlot(cell, i, slot)
+          #      return
+          #    event.stopPropagation()
+          #    return
+          #a = cell.insertBefore(document.createElement('a'), cell.firstChild)
+          #a.setAttribute('href', if Editing then slot.editRoute() else slot.route())
+          #a.className = "session icon hint-action-slot"
 
-          unless slot.top
-            generateCell(row, 'date', slot.date, ID + '-date_' + i)
-            generateCell(row, 'release', slot.release, ID + '-release_' + i)
-          for c in RecordCols
-            generateRecord(row, i, c)
+          #unless slot.top
+          #  generateCell(row, 'date', slot.date, ID + '-date_' + i)
+          #  generateCell(row, 'release', slot.release, ID + '-release_' + i)
+
+          for col in RecordCols
+            info.c = (info.category = (info.cols = col).category).id
+            generateRecord(info)
           #if assets
           #  generateAsset(row, i)
           return
