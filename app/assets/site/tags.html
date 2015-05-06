@@ -13,7 +13,8 @@
         </div>
       </li>
       <li class="panel-tags-item" ng-if="::target">
-        <tag-add hint="{{::keyword ? 'keyword' : 'tag'}}-add" placeholder="Add new {{::keyword ? 'keyword' : 'tag'}}..."></tag-add>
+        <tag-add ng-if="::!keyword"></tag-add>
+        <tag-add ng-if="::keyword" keyword></tag-add>
       </li>
     </ul>
   </ng-form>

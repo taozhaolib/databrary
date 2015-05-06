@@ -1,3 +1,3 @@
-<ng-form name="tagAddForm" class="panel-tags-new-form" autocomplete="off" isolate>
-  <input-completer input-name="newName" ng-model="tagAddForm.name" placeholder="{{::placeholder}}" completer="tagAddForm.search($input)" submit="tagAddForm.submit($input)" ng-pattern="/^[a-zA-Z][a-zA-Z -]{1,30}[a-zA-Z]$/">
+<ng-form name="tagAddForm" class="panel-tags-new-form" isolate>
+  <input-completer input-name="newName" ng-model="tagAddForm.name" placeholder="Add new {{::keyword ? 'keyword' : 'tag'}}..." completer="tagAddForm.search($input)" submit="tagAddForm.submit($input)" ng-pattern="/^[a-zA-Z][a-zA-Z -]{1,30}[a-zA-Z]$/">
 </ng-form>
