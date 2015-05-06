@@ -1,8 +1,8 @@
 'use strict'
 
 app.directive 'assetDisplay', [
-  'constantService', '$timeout',
-  (constants, $timeout) ->
+  'constantService',
+  (constants) ->
     restrict: 'E'
     templateUrl: 'asset/display.html'
     scope:
