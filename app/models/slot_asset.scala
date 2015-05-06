@@ -45,7 +45,7 @@ sealed trait AssetSlot extends Slot {
   override def json : JsonObject = JsonObject.flatten(
     Some('permission -> permission),
     if (segment.isFull) None else Some('segment -> segment),
-    releaseJson,
+    Some('release -> release),
     excerpt.map('excerpt -> _.release)
   )
 

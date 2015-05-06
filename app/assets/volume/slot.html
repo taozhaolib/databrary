@@ -31,8 +31,8 @@
             <div ng-if="!(folded || !current)" id="player-scroll" class="player-scroll" ng-style="{height:playerHeight+'px'}">
               <div class="player-info">
                 <h1 class="player-info-name">
-                  <img ng-if="!editing && !!current.asset" ng-src="{{current.asset.icon}}" hint="format-{{current.asset.format.extension}}" class="player-info-file-icon">
-                  <span ng-if="!editing && !!current.asset" class="release icon" ng-class="page.constants.release[current.asset.release]" hint="release-{{page.constants.release[current.asset.release]}}"></span>              
+                  <img ng-if="!editing && !!current.asset" ng-src="{{current.asset.icon}}" ng-class="'hint-format-'+current.asset.format.extension" class="player-info-file-icon">
+                  <span ng-if="!editing && !!current.asset" class="release icon" ng-class="[page.constants.release[current.asset.release], 'hint-release-'+page.constants.release[current.asset.release]]"></span>
                   <span class="filename" ng-if="!editing && !!current.asset" ng-bind="current.asset.name"></span>
                   <span class="category" ng-if="!editing && !!current.record" ng-bind="current.record.displayName"></span>
                   <span class="category" ng-if="editing && !!current.record.category" ng-bind="page.constants.category[current.record.category].name"></span>
@@ -103,7 +103,10 @@
         <div id="slot-tags" class="slot-tags panel-tags-list" ng-form="form.tag">
           <ul class="panel-tags-items">
             <li ng-repeat="tag in tags" class="panel-tags-item" ng-class="{'active': tag.active,'keyword': tag.keyword.length}">
-              <div class="panel-tag-name" ng-click="tag.toggle()" ng-bind="::tag.id"></div>
+              <div class="panel-tag-name" ng-click="tag.toggle()">
+                <span ng-bind="::tag.id"></span>
+                <span ng-if="::tag.keyword.length" class="icon info" tooltip="'keywords.display.description' | message"></span>
+              </div>
               <div class="panel-tag-controls" ng-if="::page.models.Login.isAuthorized()">
                 <button class="panel-tag-vote available null" name="vote" ng-click="tag.save(false)" ng-if="tag.state === true" hint="tags-vote-null">
                   -
@@ -114,7 +117,8 @@
               </div>
             </li>
             <li class="panel-tags-item" ng-if="::editing || page.models.Login.isAuthorized()">
-              <tag-add placeholder="Add new {{::editing ? 'keyword' : 'tag'}}..."></tag-add>
+              <tag-add ng-if="::!editing"></tag-add>
+              <tag-add ng-if="::editing" keyword></tag-add>
             </li>
           </ul>
         </div>
@@ -144,9 +148,9 @@
               </select>
             </ng-form>
             <ng-form ng-switch-when="position" name="form.position">
-              <input input-position="-Infinity" class="position-input" type="text" size="10" name="position-lower" ng-model="current.l" position-max="current.record ? current.u : Infinity" ng-change="current.updatePosition()" key-enter="updatePosition()" placeholder="{{::'position.placeholder' | message}}">
+              <input input-position="-Infinity" class="position-input" type="text" size="10" name="position-lower" ng-model="current.l" position-max="current.record ? current.u : Infinity" ng-change="current.updatePosition(false)" key-enter="updatePosition()" placeholder="{{::'position.placeholder' | message}}">
               &ndash;
-              <input input-position="Infinity" class="position-input" type="text" size="10" name="position-upper" ng-model="current.u" position-min="current.l" ng-disabled="!current.record" placeholder="{{::'position.placeholder' | message}}">
+              <input input-position="Infinity" class="position-input" type="text" size="10" name="position-upper" ng-model="current.u" position-min="current.l" ng-change="current.updatePosition(true)" ng-disabled="!current.record" placeholder="{{::'position.placeholder' | message}}">
               &#32;
               <button ng-click="current.finishPosition()">Cancel</button>
               <button class="green" ng-click="current.savePosition()" ng-disabled="form.position.$pristine || form.position.$invalid">Save</button>
@@ -216,7 +220,7 @@
                     <span class="track-status" ng-if="t.asset && !t.asset.duration && t.asset.format.type==='video'"> (processing)</span>
                   </div>
                   <upload-progress class="upload-progress-info" ng-if="!!t.file" progress-value="t.progress"></upload-progress>
-                  <span ng-if="!!t.asset" class="classification-info release icon" ng-class="page.constants.release[t.asset.release]" hint="release-{{page.constants.release[t.asset.release]}}"></span>
+                  <span ng-if="!!t.asset" class="classification-info release icon" ng-class="[page.constants.release[t.asset.release], 'hint-release-'+page.constants.release[t.asset.release]]"></span>
                 </div>
                 <div class="slot-track-asset" ng-if="t.asset && !t.full" ng-style="t.style()">
                   <div ng-if="t === current && editing === 'position'" class="slot-handle slot-handle-move" mouse-drag="t.dragMove($down, $up)"></div>

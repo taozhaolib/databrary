@@ -1,19 +1,23 @@
 <div class="panel-tags-list">
   <ng-form name="tagForm" isolate>
     <ul class="panel-tags-items">
-      <li ng-repeat="tag in tags" class="panel-tags-item" ng-class="{'keyword': tag.keyword}">
-        <div class="panel-tag-name" ng-bind="tag.id"></div>
+      <li ng-repeat="tag in tags" class="panel-tags-item" ng-class="::{'keyword': tag.keyword}">
+        <div class="panel-tag-name">
+          <span ng-bind="::tag.id"></span>
+          <span ng-if="::tag.keyword" class="icon info" tooltip="'keywords.display.description' | message"></span>
+        </div>
         <div class="panel-tag-controls" ng-if="::target">
-          <button class="panel-tag-vote available null" name="vote" ng-click="vote(tag.id, false)" ng-if="keyword || tag.vote" hint="tags-vote-null">
+          <button class="panel-tag-vote available null" name="vote" ng-click="vote(tag.id, false)" ng-if="::keyword || tag.vote" hint="tags-vote-null">
             -
           </button>
-          <button class="panel-tag-vote available up" name="vote" ng-click="vote(tag.id, true)" ng-if="!keyword && !tag.vote" hint="tags-vote-up">
+          <button class="panel-tag-vote available up" name="vote" ng-click="vote(tag.id, true)" ng-if="::!keyword && !tag.vote" hint="tags-vote-up">
             +
           </button>
         </div>
       </li>
       <li class="panel-tags-item" ng-if="::target">
-        <tag-add placeholder="Add new {{::keyword ? 'keyword' : 'tag'}}..."></tag-add>
+        <tag-add ng-if="::!keyword"></tag-add>
+        <tag-add ng-if="::keyword" keyword></tag-add>
       </li>
     </ul>
   </ng-form>

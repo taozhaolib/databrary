@@ -222,8 +222,9 @@ app.controller('volume/slot', [
     ################################### Video/playback controls
 
     $scope.updatePosition = () ->
-      if video && $scope.asset?.segment.contains(ruler.position.o) && isFinite($scope.asset.segment.l)
-        video[0].currentTime = (ruler.position.o - (if $scope.editing == 'position' then $scope.current.l else $scope.asset.segment.l)) / 1000
+      seg = (if $scope.editing == 'position' then $scope.current else $scope.asset?.segment)
+      if seg && video && seg.contains(ruler.position.o) && seg.lBounded
+        video[0].currentTime = (ruler.position.o - seg.l) / 1000
       return
 
     seekOffset = (o) ->
@@ -450,9 +451,12 @@ app.controller('volume/slot', [
       return
 
     $scope.zoom = (seg) ->
-      seg ?= fullRange
-      ruler.range = seg
-      ruler.zoomed = seg != fullRange
+      if seg
+        ruler.range = new Segment((if seg.lBounded then seg.l else fullRange.l), (if seg.uBounded then seg.u else fullRange.u))
+        ruler.zoomed = true
+      else
+        ruler.range = fullRange
+        ruler.zoomed = false
       searchLocation($location.replace())
       return
 
@@ -877,6 +881,10 @@ app.controller('volume/slot', [
         $scope.editing = 'position'
         return
 
+      updatePosition: (u) ->
+        $scope.form.position[if u then 'position-lower' else 'position-upper'].$validate()
+        return
+
       finishPosition: () ->
         $scope.editing = true
         @init(@rec.segment)
@@ -937,7 +945,10 @@ app.controller('volume/slot', [
         return
 
     $scope.positionBackgroundStyle = (l, i) ->
-      new TimeSegment(l[i].l, if i+1 of l then l[i+1].l else Infinity).style()
+      if l[i].lt.p > 1 || l[i].ut.p < 0
+        visibility: "hidden"
+      else
+        new TimeSegment(l[i].l, if i+1 of l then l[i+1].l else Infinity).style()
 
     $scope.setCategory = (c) ->
       if c?

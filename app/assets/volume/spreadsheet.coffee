@@ -381,10 +381,10 @@ app.directive 'spreadsheet', [
           else
             td.className = 'null'
             if !n || n == t
-              if !n
+              if Editing && cols > 1
+                td.appendChild(document.createTextNode("\u2190 add " + cat.name))
+              else if !n
                 td.appendChild(document.createTextNode(cat.not))
-              else if Editing
-                td.appendChild(document.createTextNode("add " + cat.name))
               if Editing
                 if 'metrics' of col && col.metrics[0].id != 'id'
                   generateCell(row, undefined, undefined, ID+'-rec_'+i+(if n then '_'+n else '')+'_'+col.start)
@@ -800,7 +800,7 @@ app.directive 'spreadsheet', [
 
           if type == 'ident'
             r = editScope.identCompleter(value)
-            r.find((o) -> o.default)?.select(cell) if Array.isArray(r)
+            r.find((o) -> o.default)?.run(cell) if Array.isArray(r)
             return
 
           switch info.t
@@ -954,7 +954,6 @@ app.directive 'spreadsheet', [
 
         unselect = ->
           styles.clear()
-
           unedit()
           return
 
@@ -988,13 +987,25 @@ app.directive 'spreadsheet', [
             unselect()
           return
 
-        editScope.unedit = ($event) ->
-          unedit($event)
+        doneEdit = (event, cell) ->
+          if cell && event && event.$key == 'Tab'
+            setFocus = !event.shiftKey && cell.id
+            c = cell
+            while true
+              c = if event.shiftKey then c.previousSibling else c.nextSibling
+              return unless c && c.tagName == 'TD' && info = parseId(c)
+              break unless info.t == 'rec' && info.metric.id == 'id' # skip "delete" actions
+            select(c, info)
+
+          return
+
+        editScope.unedit = (event) ->
+          doneEdit(event, unedit(event))
           false
 
-        editSelect = () ->
+        editSelect = (event) ->
           editInput.value = @text
-          unedit(true)
+          editScope.unedit(event)
           @text
 
         editScope.identCompleter = (input) ->
@@ -1004,9 +1015,12 @@ app.directive 'spreadsheet', [
           add = (t, f, d) ->
             o.push
               text: t
-              select: (cell) ->
-                f(cell ? unedit(false))
-                undefined
+              select: (event) ->
+                cell = unedit(false)
+                f(cell)
+                doneEdit(event, cell)
+                return
+              run: f
               default: d && !defd
             defd ||= d
           if info.r
@@ -1022,24 +1036,25 @@ app.directive 'spreadsheet', [
             inputl = (input ? '').toLowerCase()
             set = (r) -> (cell) ->
               setRecord(cell, info, r)
-            for r in editScope.records
-              add("Use " + info.category.name + ' ' + r.d, set(r.r), r.v == inputl) if r.v.startsWith(inputl)
-            v = if info.metric.options
+            rs = (r for r in editScope.records when r.v.startsWith(inputl))
+            for r in rs
+              add("Use " + info.category.name + ' ' + r.d, set(r.r), input && rs.length == 1 || r.v == inputl)
+            os = if info.metric.options
                 (x for x in info.metric.options when x.toLowerCase().startsWith(inputl))
               else
                 []
-            if input && !v.length
-              v = [input]
-            v.forEach (i) ->
+            if input && !os.length
+              os = [input]
+            os.forEach (i) ->
               if info.r
                 add("Change all " + info.record.displayName + " " + info.metric.name + " to '" + i + "'",
                   (cell) -> saveMeasure(cell, info.record, info.metric, i),
-                  i == input)
+                  input && !rs.length && os.length == 1 || i == input)
               add("Create new " + info.category.name + " with " + info.metric.name + " '" + i + "'",
                 (cell) -> setRecord(cell, info).then((r) ->
                   saveMeasure(cell, r, info.metric, i) if r
                   return),
-                i == input)
+                input && !rs.length && os.length == 1 || i == input)
           if o.length then o else input
 
         optionCompletions = (input) ->
@@ -1055,17 +1070,6 @@ app.directive 'spreadsheet', [
               match[0]
             else
               ({text:o, select: editSelect, default: input && i==0} for o, i in match)
-
-        editScope.next = ($event) ->
-          cell = unedit($event)
-          return unless cell
-          setFocus = !$event.shiftKey && cell.id
-          while true
-            cell = if $event.shiftKey then cell.previousSibling else cell.nextSibling
-            return unless cell && cell.tagName == 'TD' && info = parseId(cell)
-            break unless info.t == 'rec' && info.metric.id == 'id' # skip "delete" actions
-          select(cell, info)
-          false
 
         $scope.clickAdd = ($event) ->
           unselect()

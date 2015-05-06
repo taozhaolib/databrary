@@ -940,7 +940,8 @@ app.factory('modelService', [
     AssetSlot.prototype.slotRoute = function () {
       var params = {};
       params.asset = this.id;
-      return Slot.prototype.route.call(this, params);
+      params.select = this.segment.format();
+      return this.container.route(params);
     };
 
     AssetSlot.prototype.inContext = function () {

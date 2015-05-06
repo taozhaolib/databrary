@@ -347,13 +347,13 @@ release.DEFAULT.deselect=This file is deidentified (no faces, voices, dates, etc
 release.DEFAULT.select=Use current file or participant release level
 release.DEFAULT.description=This content has not been shared
 release.PRIVATE.title=Private
-release.PRIVATE.select=Only available to collaborators
+release.PRIVATE.select=Available only to collaborators
 release.PRIVATE.description=This content has not been shared and is only available to collaborators
 release.SHARED.title=Authorized Users
 release.SHARED.select=Available only to authorized Databrary users
-release.SHARED.description=This content is restricted to authorized Databrary users only
+release.SHARED.description=This content is restricted only to authorized Databrary users
 release.EXCERPTS.title=Excerpts
-release.EXCERPTS.select=Available to authorized Databrary users and may also be used in presentations for informational or educational purposes
+release.EXCERPTS.select=Available only to authorized Databrary users and may also be used in presentations for informational or educational purposes
 release.EXCERPTS.description=This content has been made available to authorized Databrary users and may also be used by authorized Databrary users in presentations for informational or educational purposes
 release.PUBLIC.title=Public
 release.PUBLIC.select=Available openly to anybody
@@ -432,17 +432,18 @@ comments.text.help=Comment on the content of this page.
 comments.text.error=Must be at least 3 characters long.
 
 tags.title=Tags
-tags.display.description=Community-generated terms that help users find similar content across volumes
-tags.add.description=Add a tag to label content and help other users find specific types of data
 tags.vote.up=Vote this tag up.
 tags.vote.null=Remove your vote on this tag.
 tags.auto.error=The auto-suggestion list is out-of-order.
 tags.vote.up.success=Tag <strong>{0}</strong> voted up.
 tags.vote.null.success=Tag <strong>{0}</strong> vote canceled.
 tags.vote.error=Error while voting for tag <strong>{0}</strong>.
+tags.display.description=User-provided terms that help others find similar content
+tag.add.help=Add a tag to this content help others find it
 
-keywords.display.description=Data-owner generated terms that use a preferred vocabulary to help users find data
-keywords.add.description=Add preferred terms to label your data. For example, you might use the keywords associated with the publication for this dataset if there is one
+keywords.title=Keywords
+keywords.display.description=Preferred terms provided by the author to help others find this content
+keyword.add.help=Add preferred terms to label your data. For example, you might use the keywords associated with the publication for this dataset if there is one
 
 # Access
 access.global.legend=Share this volume
@@ -518,7 +519,7 @@ wizard.register-password.instructions=Please set a secure password. Remember tha
 
 wizard.register-agent.name=Request Authorization
 wizard.register-agent.description=Begin the authorization process.
-wizard.register-agent.instructions=In order to access Databrary resources, you must be authorized either as an Authorized Investigator through a sponsoring institution, or by an authorized Databrary Investigator as an Affiliate. Read more about <a href="http://databrary.org/access/guide/investigators.html" target="_blank">who qualifies for authorization</a> and <a href="http://databrary.org/access/guide/investigators/authorization.html" target="_blank">how to get authorized</a>. If you cannot find your institution or sponsoring PI below, you can still proceed with registration by selecting 'None of these'.
+wizard.register-agent.instructions=In order to access Databrary resources, you must be authorized either as an Authorized Investigator through a sponsoring institution, or by an authorized Databrary Investigator as an Affiliate. Read more about <a href="http://databrary.org/access/guide/investigators.html" target="_blank">who qualifies for authorization</a> and <a href="http://databrary.org/access/guide/investigators/authorization.html" target="_blank">how to get authorized</a>. If you cannot find your institution or sponsoring PI below, you can still proceed with registration by selecting ''None of these''.
 
 wizard.register-request.name=Submit Authorization
 wizard.register-request.description=Confirm your authorization request.
