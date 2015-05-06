@@ -50,7 +50,7 @@ data RouteCase r = RouteCase
 
 route :: Route r a -> [RouteCase r]
 route Route{ routeMethod = m, routePath = p, routeAction = f } = cf <$> pathCases p where
-  cf (e, rf) = RouteCase m e $ \r -> fromMaybe (error $ "route: " ++ (BSLC.unpack $ BSB.toLazyByteString $ renderPathElements r)) $ do
+  cf (e, rf) = RouteCase m e $ \r -> fromMaybe (error $ "route: " ++ (BSLC.unpack $ BSB.toLazyByteString $ renderPath $ elementsPath r)) $ do
     (v, []) <- rf r
     return $ f v
 
@@ -72,4 +72,4 @@ lookupRoute q (RouteMap m) = fmap (uncurry (flip ($))) $
 
 routeURL :: Maybe Wai.Request -> Route r a -> a -> BSB.Builder
 routeURL req Route{ routePath = p } a =
-  maybe id ((<>) . BSB.byteString . requestHost) req $ renderPath $ pathGenerate p a
+  maybe id ((<>) . BSB.byteString . requestHost) req $ renderPath $ elementsPath $ producePath p a

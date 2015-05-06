@@ -8,8 +8,8 @@ module Databrary.HTTP.Path.Parser
   , (|/|)
   , pathMaybe
   , (=/=)
-  , pathParser
-  , pathGenerate
+  , parsePath
+  , producePath
   , pathCases
   ) where
 
@@ -56,20 +56,20 @@ pathParse (PathTuple p q) a = do
 pathParse (PathEither p q) a = first Left <$> pathParse p a <|> first Right <$> pathParse q a
 pathParse _ _ = Nothing
 
-pathParser :: PathParser a -> Path -> Maybe a
-pathParser p l = do
+parsePath :: PathParser a -> Path -> Maybe a
+parsePath p l = do
   (a, []) <- pathParse p l
   return a
 
-pathGenerate :: PathParser a -> a -> Path
-pathGenerate PathEmpty () = []
-pathGenerate PathAny l = l
-pathGenerate (PathFixed t) () = [t]
-pathGenerate PathDynamic a = [dynamicPath a]
-pathGenerate (PathTrans _ g p) a = pathGenerate p $ g a
-pathGenerate (PathTuple p q) (a, b) = pathGenerate p a ++ pathGenerate q b
-pathGenerate (PathEither p _) (Left a) = pathGenerate p a
-pathGenerate (PathEither _ q) (Right b) = pathGenerate q b
+producePath :: PathParser a -> a -> PathElements
+producePath PathEmpty () = []
+producePath PathAny l = [PathElementAny l]
+producePath (PathFixed t) () = [PathElementFixed t]
+producePath PathDynamic a = [PathElementDynamic a]
+producePath (PathTrans _ g p) a = producePath p $ g a
+producePath (PathTuple p q) (a, b) = producePath p a ++ producePath q b
+producePath (PathEither p _) (Left a) = producePath p a
+producePath (PathEither _ p) (Right a) = producePath p a
 
 infixr 2 </>, </>>, >/>, </<
 (</>) :: PathParser a -> PathParser b -> PathParser (a, b)
