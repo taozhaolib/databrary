@@ -441,6 +441,7 @@ tags.vote.up.success=Tag <strong>{0}</strong> voted up.
 tags.vote.null.success=Tag <strong>{0}</strong> vote canceled.
 tags.vote.error=Error while voting for tag <strong>{0}</strong>.
 
+keywords.title=Keywords
 keywords.display.description=Data-owner generated terms that use a preferred vocabulary to help users find data
 keywords.add.description=Add preferred terms to label your data. For example, you might use the keywords associated with the publication for this dataset if there is one
 
