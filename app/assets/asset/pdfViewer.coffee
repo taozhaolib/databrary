@@ -13,7 +13,7 @@ app.directive 'pdfViewer', [
       objectTag.setAttribute('width', '80%')
       objectTag.setAttribute('type', $scope.asset.format.mimetype)
       $transclude (elem) ->
-        objectTag.appendChild elem[0]
+        _.each elem, (i) -> objectTag.appendChild i
       pdfElement.appendChild(objectTag)
       return 
 
