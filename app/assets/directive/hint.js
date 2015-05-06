@@ -33,11 +33,6 @@ app.directive('hint', [
         constants.message('tags.vote.' + a);
     });
 
-    _.each(['keywords', 'tags'], function (a) {
-      hints[a + '-add'] =
-        constants.message(a+'.add.description');
-    });    
-
     _.each(hints, function (hint, name) {
       new tooltips({
         live: true,
