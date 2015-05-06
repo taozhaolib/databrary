@@ -12,9 +12,6 @@
     <spreadsheet limit="32"></spreadsheet>
   </panel>
   <panel id="panel-tags" panel-title="tags.title" fold ng-if="::page.models.Login.isAuthorized() || volume.tags">
-    <div class="panel-tags-item keyword legend" message="keywords.title" tooltip="'keywords.display.description' | message"></div>
-    <div class="panel-tags-item legend" message="tags.title" tooltip="'tags.display.description' | message"></div>
-    <hr>
     <tags target="volume" edit="page.models.Login.isAuthorized()"></tags>
   </panel>
   <panel id="panel-comments" panel-title="comments.title" fold ng-if="::page.models.Login.isAuthorized() || volume.comments.keys.length">

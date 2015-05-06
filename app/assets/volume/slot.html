@@ -103,7 +103,10 @@
         <div id="slot-tags" class="slot-tags panel-tags-list" ng-form="form.tag">
           <ul class="panel-tags-items">
             <li ng-repeat="tag in tags" class="panel-tags-item" ng-class="{'active': tag.active,'keyword': tag.keyword.length}">
-              <div class="panel-tag-name" ng-click="tag.toggle()" ng-bind="::tag.id"></div>
+              <div class="panel-tag-name" ng-click="tag.toggle()">
+                <span ng-bind="::tag.id"></span>
+                <span ng-if="::tag.keyword.length" class="icon info" tooltip="'keywords.display.description' | message"></span>
+              </div>
               <div class="panel-tag-controls" ng-if="::page.models.Login.isAuthorized()">
                 <button class="panel-tag-vote available null" name="vote" ng-click="tag.save(false)" ng-if="tag.state === true" hint="tags-vote-null">
                   -
