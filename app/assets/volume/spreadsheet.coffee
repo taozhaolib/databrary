@@ -728,7 +728,7 @@ app.directive 'spreadsheet', [
 
           if type == 'ident'
             r = editScope.identCompleter(value)
-            r.find((o) -> o.default)?.select(cell) if Array.isArray(r)
+            r.find((o) -> o.default)?.run(cell) if Array.isArray(r)
             return
 
           switch info.t
@@ -882,7 +882,6 @@ app.directive 'spreadsheet', [
 
         unselect = ->
           styles.clear()
-
           unedit()
           return
 
@@ -916,13 +915,25 @@ app.directive 'spreadsheet', [
             unselect()
           return
 
-        editScope.unedit = ($event) ->
-          unedit($event)
+        doneEdit = (event, cell) ->
+          if cell && event && event.$key == 'Tab'
+            setFocus = !event.shiftKey && cell.id
+            c = cell
+            while true
+              c = if event.shiftKey then c.previousSibling else c.nextSibling
+              return unless c && c.tagName == 'TD' && info = parseId(c)
+              break unless info.t == 'rec' && info.metric.id == 'id' # skip "delete" actions
+            select(c, info)
+
+          return
+
+        editScope.unedit = (event) ->
+          doneEdit(event, unedit(event))
           false
 
-        editSelect = () ->
+        editSelect = (event) ->
           editInput.value = @text
-          unedit(true)
+          editScope.unedit(event)
           @text
 
         editScope.identCompleter = (input) ->
@@ -932,9 +943,12 @@ app.directive 'spreadsheet', [
           add = (t, f, d) ->
             o.push
               text: t
-              select: (cell) ->
-                f(cell ? unedit(false))
-                undefined
+              select: (event) ->
+                cell = unedit(false)
+                f(cell)
+                doneEdit(event, cell)
+                return
+              run: f
               default: d && !defd
             defd ||= d
           if info.r
@@ -984,17 +998,6 @@ app.directive 'spreadsheet', [
               match[0]
             else
               ({text:o, select: editSelect, default: input && i==0} for o, i in match)
-
-        editScope.next = ($event) ->
-          cell = unedit($event)
-          return unless cell
-          setFocus = !$event.shiftKey && cell.id
-          while true
-            cell = if $event.shiftKey then cell.previousSibling else cell.nextSibling
-            return unless cell && cell.tagName == 'TD' && info = parseId(cell)
-            break unless info.t == 'rec' && info.metric.id == 'id' # skip "delete" actions
-          select(cell, info)
-          false
 
         $scope.clickAdd = ($event) ->
           unselect()
