@@ -308,10 +308,10 @@ app.directive 'spreadsheet', [
           else
             td.className = 'null'
             if !n || n == t
-              if !n
+              if editing && cols > 1
+                td.appendChild(document.createTextNode("\u2190 add " + cat.name))
+              else if !n
                 td.appendChild(document.createTextNode(cat.not))
-              else if editing
-                td.appendChild(document.createTextNode("add " + cat.name))
               if editing
                 if 'metrics' of col && col.metrics[0].id != 'id'
                   generateCell(row, undefined, undefined, id+'-rec_'+i+(if n then '_'+n else '')+'_'+col.start)
