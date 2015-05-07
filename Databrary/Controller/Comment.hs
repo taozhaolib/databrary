@@ -13,6 +13,7 @@ import Databrary.Model.Comment
 import Databrary.HTTP.Form.Deform
 import Databrary.HTTP.Path.Parser
 import Databrary.Action
+import Databrary.Controller.Paths
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
 import Databrary.Controller.Slot

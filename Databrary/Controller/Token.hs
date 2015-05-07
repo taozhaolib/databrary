@@ -17,6 +17,7 @@ import Databrary.Model.Party
 import Databrary.HTTP.Path.Parser
 import Databrary.Action
 import Databrary.Action.Auth
+import Databrary.Controller.Paths
 import Databrary.Controller.Form
 import Databrary.Controller.Login
 import Databrary.Controller.Angular

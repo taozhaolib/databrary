@@ -19,6 +19,7 @@ import Databrary.Has (view)
 import Databrary.Model.Identity
 import Databrary.Action.Auth
 import Databrary.Action
+import Databrary.Controller.Paths
 import Databrary.View.Html
 
 import {-# SOURCE #-} Databrary.Controller.Angular

@@ -10,8 +10,9 @@ import Data.Monoid ((<>))
 import Databrary.Ops
 import Databrary.Action.Auth
 import Databrary.Action
-import Databrary.View.Form
 import Databrary.Model.Party
+import Databrary.Controller.Paths
+import Databrary.View.Form
 
 import {-# SOURCE #-} Databrary.Controller.Party
 

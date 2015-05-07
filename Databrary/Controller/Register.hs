@@ -24,6 +24,7 @@ import Databrary.Model.Identity
 import Databrary.Model.Token
 import Databrary.HTTP.Form.Deform
 import Databrary.HTTP.Path.Parser
+import Databrary.Controller.Paths
 import Databrary.Controller.Form
 import Databrary.Controller.Party
 import Databrary.Controller.Token

@@ -6,10 +6,11 @@ module Databrary.View.VolumeAccess
 import Data.Monoid ((<>))
 
 import Databrary.Action
-import Databrary.View.Form
 import Databrary.Model.Party
 import Databrary.Model.Volume
 import Databrary.Model.VolumeAccess
+import Databrary.Controller.Paths
+import Databrary.View.Form
 
 import {-# SOURCE #-} Databrary.Controller.VolumeAccess
 

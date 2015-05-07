@@ -1,8 +1,6 @@
-{-# LANGUAGE OverloadedStrings, QuasiQuotes #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Party
-  ( PartyTarget(..)
-  , pathPartyTarget
-  , getParty
+  ( getParty
   , viewParty
   , viewEditParty
   , postParty
@@ -23,8 +21,6 @@ import qualified Network.Wai as Wai
 import Network.Wai.Parse (FileInfo(..))
 
 import Databrary.Ops
-import qualified Databrary.Iso as I
-import Databrary.Iso.TH
 import Databrary.Has (view, peek, peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.Action.Route
@@ -46,21 +42,12 @@ import Databrary.Store.Asset
 import Databrary.HTTP.Path.Parser
 import Databrary.HTTP.Form.Deform
 import Databrary.HTTP.File
+import Databrary.Controller.Paths
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
 import Databrary.Controller.Angular
 import Databrary.Controller.Web
 import Databrary.View.Party
-
-data PartyTarget
-  = TargetProfile
-  | TargetParty (Id Party)
-
-pathPartyTarget :: PathParser PartyTarget
-pathPartyTarget = [iso|
-    Left () <-> TargetProfile
-    Right i <-> TargetParty i
-  |] I.<$> ("profile" |/| pathId)
 
 getParty :: Maybe Permission -> PartyTarget -> AuthActionM Party
 getParty (Just p) (TargetParty i) =

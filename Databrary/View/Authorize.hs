@@ -10,7 +10,7 @@ import Databrary.View.Form
 import Databrary.Model.Party
 import Databrary.Model.Permission
 import Databrary.Model.Authorize
-import Databrary.Controller.Party
+import Databrary.Controller.Paths
 
 import {-# SOURCE #-} Databrary.Controller.Authorize
 

@@ -40,6 +40,7 @@ import Databrary.HTTP.Request
 import Databrary.HTTP.Path.Parser
 import Databrary.Media.AV
 import Databrary.Action
+import Databrary.Controller.Paths
 import Databrary.Controller.Angular
 import Databrary.Controller.Permission
 import Databrary.Controller.Web

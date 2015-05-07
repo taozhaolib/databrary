@@ -1,7 +1,6 @@
-{-# LANGUAGE OverloadedStrings, QuasiQuotes, TypeOperators #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Authorize
-  ( AuthorizeTarget(..)
-  , viewAuthorize
+  ( viewAuthorize
   , postAuthorize
   , deleteAuthorize
   ) where
@@ -19,13 +18,10 @@ import Data.Time (UTCTime(..), fromGregorian, addGregorianYearsRollOver)
 import Network.HTTP.Types (noContent204, StdMethod(DELETE))
 
 import Databrary.Ops
-import qualified Databrary.Iso as I
-import Databrary.Iso.TH
 import Databrary.Has (peek, peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.Service.DB
 import Databrary.Service.Mail
-import Databrary.Model.Id
 import Databrary.Model.Party
 import Databrary.Model.Permission
 import Databrary.Model.Identity
@@ -33,23 +29,11 @@ import Databrary.Model.Authorize
 import Databrary.HTTP.Path.Parser
 import Databrary.HTTP.Form.Deform
 import Databrary.Action
+import Databrary.Controller.Paths
 import Databrary.Controller.Form
 import Databrary.Controller.Party
 import Databrary.Controller.Angular
 import Databrary.View.Authorize
-
-data AuthorizeTarget = AuthorizeTarget
-  { authorizeApply :: Bool
-  , authorizeTarget :: Id Party
-  }
-
-authorizeTargetIso :: (Bool, Id Party) I.<-> AuthorizeTarget
-authorizeTargetIso = [iso|(a, t) <-> AuthorizeTarget a t|]
-
-pathAuthorizeTarget :: PathParser AuthorizeTarget
-pathAuthorizeTarget = authorizeTargetIso I.<$>
-  (I.isRight I.<$> ("authorize" |/| "apply")
-   </> idIso I.<$> PathDynamic)
 
 viewAuthorize :: AppRoute (API, PartyTarget, AuthorizeTarget)
 viewAuthorize = action GET (pathAPI </>> pathPartyTarget </> pathAuthorizeTarget) $ \(api, i, AuthorizeTarget app oi) -> withAuth $ do

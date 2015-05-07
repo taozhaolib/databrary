@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, QuasiQuotes #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Tag
   ( postTag
   , deleteTag
@@ -7,8 +7,6 @@ module Databrary.Controller.Tag
 import qualified Data.Text as T
 import Network.HTTP.Types (StdMethod(DELETE), conflict409)
 
-import qualified Databrary.Iso as I
-import Databrary.Iso.TH
 import Databrary.Model.Permission
 import Databrary.Model.Id
 import Databrary.Model.Slot
@@ -16,17 +14,9 @@ import Databrary.Model.Tag
 import Databrary.HTTP.Form.Deform
 import Databrary.HTTP.Path.Parser
 import Databrary.Action
+import Databrary.Controller.Paths
 import Databrary.Controller.Permission
 import Databrary.Controller.Slot
-
-data TagId = TagId
-  { _tagIdKeyword :: Bool
-  , _tagIdName :: TagName
-  }
-
-pathTagId :: PathParser TagId
-pathTagId = [iso|(b, t) <-> TagId b t|] I.<$>
-  (I.isRight I.<$> ("tag" |/| "keyword") </> PathDynamic)
 
 _tagNameForm :: (Functor m, Monad m) => DeformT m TagName
 _tagNameForm = deformMaybe' "Invalid tag name." . validateTag =<< deform

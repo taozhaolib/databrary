@@ -27,6 +27,7 @@ import Databrary.Model.Tag
 import Databrary.Model.Comment
 import Databrary.HTTP.Path.Parser
 import Databrary.Action
+import Databrary.Controller.Paths
 import Databrary.Controller.Permission
 import Databrary.Controller.Angular
 import Databrary.Controller.Container

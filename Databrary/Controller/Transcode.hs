@@ -19,6 +19,7 @@ import Databrary.Action.Auth
 import Databrary.Model.Id
 import Databrary.Model.Transcode
 import Databrary.Store.Transcode
+import Databrary.Controller.Paths
 import Databrary.Controller.Form
 
 unHex :: String -> Maybe [Word8]

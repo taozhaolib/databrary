@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Web.Routes
   ( generateRoutesJS
+  , jsRoute
   ) where
 
 import qualified Data.ByteString as BS
@@ -10,13 +11,11 @@ import System.IO (hPutStr, withFile, IOMode(WriteMode))
 
 import Databrary.JSON (quoteByteString)
 import Databrary.Store
-import Databrary.Model.Id.Types
 import Databrary.HTTP.Path.JS
 import Databrary.HTTP.Route
-import Databrary.Action.Route
 import Databrary.Web.Files
 
-import {-# SOURCE #-} Databrary.Controller.VolumeAccess
+import {-# SOURCE #-} Databrary.Routes
 
 jsRoute :: BS.ByteString -> Route r a -> a -> B.Builder
 jsRoute n r v = quoteByteString '"' n
@@ -27,5 +26,5 @@ generateRoutesJS :: RawFilePath -> IO Bool
 generateRoutesJS f = webRegenerate undefined f Nothing $ \wf ->
   withFile (unRawFilePath wf) WriteMode $ \h -> do
     hPutStr h "app.constant('routeData',{"
-    B.hPutBuilder h $ jsRoute "foo" postVolumeAccess (JSON, (Id 0, VolumeAccessTarget (Id 0)))
+    B.hPutBuilder h jsRoutes
     hPutStr h "});"

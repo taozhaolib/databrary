@@ -1,17 +1,13 @@
-{-# LANGUAGE OverloadedStrings, QuasiQuotes #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.VolumeAccess
-  ( VolumeAccessTarget(..)
-  , viewVolumeAccess
+  ( viewVolumeAccess
   , postVolumeAccess
   ) where
 
 import Databrary.Ops
-import qualified Databrary.Iso as I
-import Databrary.Iso.TH
 import Databrary.Has (peek)
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Id
-import Databrary.Model.Party
 import Databrary.Model.Permission
 import Databrary.Model.Identity
 import Databrary.Model.Volume
@@ -19,17 +15,11 @@ import Databrary.Model.VolumeAccess
 import Databrary.HTTP.Form.Deform
 import Databrary.HTTP.Path.Parser
 import Databrary.Action
+import Databrary.Controller.Paths
 import Databrary.Controller.Form
 import Databrary.Controller.Volume
 import Databrary.Controller.Angular
 import Databrary.View.VolumeAccess
-
-newtype VolumeAccessTarget = VolumeAccessTarget
-  { volumeAccessTarget :: Id Party
-  }
-
-pathVolumeAccessTarget :: PathParser VolumeAccessTarget
-pathVolumeAccessTarget = "access" >/> [iso|i <-> VolumeAccessTarget (Id i)|] I.<$> PathDynamic
 
 viewVolumeAccess :: AppRoute (Id Volume, VolumeAccessTarget)
 viewVolumeAccess = action GET (pathHTML >/> pathId </> pathVolumeAccessTarget) $ \(vi, VolumeAccessTarget ap) -> withAuth $ do

@@ -1,10 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Routes
   ( routeMap
+  , jsRoutes
   ) where
+
+import qualified Data.ByteString.Builder as B
+import Data.Monoid (mconcat)
 
 import Databrary.HTTP.Route
 import Databrary.Action
+import Databrary.Controller.Paths
 import Databrary.Controller.Root
 import Databrary.Controller.Login
 import Databrary.Controller.Register
@@ -26,6 +31,7 @@ import Databrary.Controller.Tag
 import Databrary.Controller.Comment
 import Databrary.Controller.Transcode
 import Databrary.Controller.Web
+import Databrary.Web.Routes
 
 routeMap :: RouteMap AppAction
 routeMap = fromRouteList
@@ -109,3 +115,9 @@ routeMap = fromRouteList
       then emptyResponse movedPermanently301 [(hLocation, actionURL ra (Just req) `BS.append` Wai.rawQueryString req)]
       else routeAction ra
 -}
+
+jsRoutes :: B.Builder
+jsRoutes = mconcat
+  [ jsRoute "root" viewRoot HTML
+  , jsRoute "setVolumeAccess" postVolumeAccess (JSON, (undefined, VolumeAccessTarget undefined))
+  ]
