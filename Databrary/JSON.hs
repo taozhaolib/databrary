@@ -24,6 +24,7 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Builder as B
 import qualified Data.ByteString.Builder.Prim as BP
 import Data.ByteString.Internal (c2w)
+import qualified Data.Configurator.Types as C
 import qualified Data.HashMap.Strict as HM
 import Data.List (foldl')
 import Data.Monoid ((<>))
@@ -69,6 +70,12 @@ instance ToJSON BS.ByteString where
 
 instance ToJSON URI where
   toJSON = toJSON . show
+
+instance ToJSON C.Value where
+  toJSON (C.Bool b) = Bool b
+  toJSON (C.String t) = String t
+  toJSON (C.Number r) = Number $ fromRational r
+  toJSON (C.List l) = Array $ V.fromList $ map toJSON l
 
 jsonQuery :: (Monad m) => Object -> (BS.ByteString -> Maybe BS.ByteString -> m (Maybe Value)) -> Query -> m Object
 jsonQuery j _ [] = return j

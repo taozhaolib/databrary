@@ -10,6 +10,8 @@ Category:            Web
 Build-type:          Custom
 Cabal-version:       >=1.6
 
+data-files: messages.conf
+
 Source-Repository head
   Type:	git
   Location: https://github.com/dylex/databrary
