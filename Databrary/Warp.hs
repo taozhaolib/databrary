@@ -8,19 +8,18 @@ import Data.Version (showVersion)
 import qualified Network.Wai.Handler.Warp as Warp
 
 import Paths_databrary (version)
-import Databrary.Service.Init (withService)
-import Databrary.Service.Types (serviceConfig)
+import Databrary.Service.Init
 import Databrary.Action (runAppRoute)
 import Databrary.Routes (routeMap)
 
 main :: IO ()
-main = withService $ \rc -> do
-  let conf = serviceConfig rc
+main = do
+  conf <- loadConfig
   port <- C.require conf "port"
   routes <- evaluate routeMap
-  Warp.runSettings
+  withService conf $ Warp.runSettings
     ( Warp.setPort port
     $ Warp.setTimeout 300
     $ Warp.setServerName (BSC.pack $ "databrary/" ++ showVersion version)
     $ Warp.defaultSettings)
-    $ runAppRoute routes rc
+    . runAppRoute routes

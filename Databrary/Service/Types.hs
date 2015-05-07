@@ -5,7 +5,6 @@ module Databrary.Service.Types
   ) where
 
 import qualified Data.ByteString as BS
-import qualified Data.Configurator.Types as C
 
 import Databrary.Has (makeHasRec)
 import Databrary.Service.DB (DBConn)
@@ -14,15 +13,16 @@ import Databrary.HTTP.Client (HTTPClient)
 import Databrary.Store.Types (Storage)
 import Databrary.Service.Passwd (Passwd)
 import Databrary.Service.Log (Logs)
+import Databrary.Service.Messages (Messages)
 import Databrary.Web.Types (Web)
 import Databrary.Media.AV (AV)
 import Databrary.Model.Time
 
 data Service = Service
-  { serviceConfig :: !C.Config
-  , serviceStartTime :: !Timestamp
+  { serviceStartTime :: !Timestamp
   , serviceLogs :: !Logs
   , serviceSecret :: !BS.ByteString
+  , serviceMessages :: !Messages
   , serviceEntropy :: !Entropy
   , servicePasswd :: !Passwd
   , serviceDB :: !DBConn
@@ -32,4 +32,4 @@ data Service = Service
   , serviceHTTPClient :: !HTTPClient
   }
 
-makeHasRec ''Service ['serviceConfig, 'serviceDB, 'serviceEntropy, 'serviceHTTPClient, 'serviceStorage, 'serviceWeb, 'servicePasswd, 'serviceAV]
+makeHasRec ''Service ['serviceDB, 'serviceMessages, 'serviceEntropy, 'serviceHTTPClient, 'serviceStorage, 'serviceWeb, 'servicePasswd, 'serviceAV]
