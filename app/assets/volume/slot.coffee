@@ -481,22 +481,21 @@ app.controller('volume/slot', [
 
     class Asset extends TimeBar
       constructor: (asset) ->
-        if asset
-          @setAsset(asset)
-        else
-          @fillData()
+        @init(asset)
         @excerpts = []
         return
 
       type: 'asset'
 
-      setAsset: (@asset) ->
+      init: (@asset) ->
         @fillData()
-        return unless asset
-        @init(asset.segment)
-        @choose() if `asset.id == target.asset`
-        $scope.asset = asset if $scope.current == this
-        @updateExcerpt()
+        if asset
+          super(asset.segment)
+          @choose() if `asset.id == target.asset`
+          $scope.asset = asset if $scope.current == this
+          @updateExcerpt()
+        else
+          super(undefined)
         return
 
       fillData: ->
@@ -563,7 +562,7 @@ app.controller('volume/slot', [
 
             $scope.form.edit.$setUnsubmitted()
             first = !@asset
-            @setAsset(asset)
+            @init(asset)
 
             messages.add
               type: 'green'
@@ -746,7 +745,7 @@ app.controller('volume/slot', [
         messages.clear(this)
         uploads.removedAsset.link(slot).then (a) =>
             uploads.removedAsset = undefined
-            @setAsset(a)
+            @init(a)
             blank = undefined if this == blank
             return
           , (res) ->
@@ -1022,6 +1021,7 @@ app.controller('volume/slot', [
     class TagName extends TimeBar
       constructor: (name) ->
         @id = name
+        super()
         return
 
       save: (vote) ->
@@ -1055,7 +1055,7 @@ app.controller('volume/slot', [
 
     class Tag extends TagName
       constructor: (t) ->
-        @id = t.id
+        super(t.id)
         @active = t.id in tagToggle
         @fillData(t)
         return
