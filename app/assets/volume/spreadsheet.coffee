@@ -147,9 +147,10 @@ app.directive 'spreadsheet', [
           #   d: Data for id metric
           #   record: Record
           #   asset: Asset
+          #   v: Data value
 
-          constructor: (el) ->
-            return unless el && (i = el.id) && (i = stripPrefix(i, ID+'-'))
+          constructor: (@cell) ->
+            return unless cell && (i = cell.id) && (i = stripPrefix(i, ID+'-'))
             s = i.split '_'
             return if s.length > 1 && isNaN(@i = parseInt(s[1], 10))
             @id = i
@@ -200,6 +201,8 @@ app.directive 'spreadsheet', [
               Volume.records[d] if (d = @d)?
             asset: ->
               s.assets[d] if (s = @slot)? and (d = @d)?
+            v:
+              Data[c][m][n]?[i] if (c = @c)? and (m = @m)? and (n = @n)? and (i = @i)?
 
           caching = (v, f) ->
             get: ->
@@ -346,46 +349,47 @@ app.directive 'spreadsheet', [
           return
 
         # Add or replace the text contents of cell c for measure/type m with value v
-        generateText = (c, m, v, assumed) ->
-          if m == 'name'
-            a = c.insertBefore(document.createElement('a'), c.firstChild)
+        generateText = (info, c) ->
+          v = info.v
+          if info.metric.id == 'name'
+            a = info.cell.insertBefore(document.createElement('a'), info.cell.firstChild)
             #a.setAttribute('href', if editing then slot.editRoute() else slot.route())
             a.className = "session icon hint-action-slot"
             #v ?= constants.message('materials.top') if stop
-          else if m == 'release'
+          else if info.metric.id == 'release'
             cn = constants.release[v || 0]
-            c.className = cn + ' release icon hint-release-' + cn
+            info.cell.className = cn + ' release icon hint-release-' + cn
             v = ''
           else if v == undefined
-            c.classList.add('blank')
-            v = assumed || ''
-          else if m == 'classification'
+            info.cell.classList.add('blank')
+            v = info.metric.assumed || ''
+          else if info.metric.id == 'classification'
             cn = constants.release[v]
-            c.className = cn + ' release icon hint-release-' + cn
+            info.cell.className = cn + ' release icon hint-release-' + cn
             v = ''
-          else if m == 'excerpt'
+          else if info.metric.id == 'excerpt'
             if v
-              c.className = 'icon bullet'
+              info.cell.className = 'icon bullet'
             v = ''
           else
-            c.classList.remove('blank')
-            if m == 'id'
-              c.className = 'icon ' + if Editing then 'trash' else 'bullet'
+            info.cell.classList.remove('blank')
+            if info.metric.id == 'id'
+              info.cell.className = 'icon ' + if Editing then 'trash' else 'bullet'
               v = ''
-            else if m == 'age'
+            else if info.metric.id == 'age'
               v = display.formatAge(v)
-          setCell(c, document.createTextNode(v))
+          setCell(info.cell, document.createTextNode(v))
           return
 
         # Add a td element to tr r with value c and id i
-        generateCell = (info, v) ->
-          td = info.row.appendChild(document.createElement('td'))
+        generateCell = (info) ->
+          info.cell = info.row.appendChild(document.createElement('td'))
           if v == null
-            td.className = 'null'
+            info.cell.className = 'null'
           else
-            generateText(td, info.metric.id, v, info.metric.assumed)
-            td.id = info.id
-          td
+            generateText(info)
+            info.cell.id = info.id
+          return
 
         generateMultiple = (info) -> # (col, cols, row, i, n, t) ->
           t = Counts[info.i][info.c] || 0
@@ -437,13 +441,13 @@ app.directive 'spreadsheet', [
             n = 0
           for mi in [0..l-1] by 1
             m = (info.metric = ms[mi]).id
-            v = r[m][n] && r[m][n][info.i]
+            info.v = r[m][n] && r[m][n][info.i]
             info.id = b + (info.cols.start+mi)
-            cell = generateCell(info, v, info.metric.assumed)
+            generateCell(info)
             if v != null
               ri = 'ss-rec_' + r.id[n][info.i]
-              cell.classList.add(ri)
-              cell.classList.add(ri + '_' + m)
+              info.cell.classList.add(ri)
+              info.cell.classList.add(ri + '_' + m)
           return
 
         #generateAsset = (row, i, n) ->
@@ -632,7 +636,7 @@ app.directive 'spreadsheet', [
           data[info.t] = v ? ''
           return if info.slot[info.t] == data[info.t]
           saveRun cell, info.slot.save(data).then () ->
-            generateText(cell, info.t, info.slot[info.t])
+            generateText(info) #, cell, info.t, info.slot[info.t])
             return
 
         removeSlot = (cell, i, slot) ->
@@ -718,6 +722,34 @@ app.directive 'spreadsheet', [
           saveRun cell, info.asset.save(data).then () ->
             generateText(cell, t, info.asset[t])
             return
+
+        saveDatum = (info, v) ->
+          if info.c == 'slot'
+            data = {}
+            data[info.t] = v ? ''
+            return if info.slot[info.t] == data[info.t]
+            saveRun info.cell, info.slot.save(data).then () ->
+              generateText(info) #, cell, info.t, info.slot[info.t])
+              return
+          else if info.c == 'asset'
+            data = {}
+            t = info.metric.id
+            data[t] = v ? ''
+            return if info.asset[t] == data[t]
+            saveRun info.cell, info.asset.save(data).then () ->
+              generateText(info)
+              return
+          else
+            return if info.record.measures[info.metric.id] == v
+            saveRun info.cell, info.record.measureSet(info.metric.id, v).then (rec) ->
+              rcm = Data[info.c || 0][info.metric.id]
+              for i, n of Depends[info.d]
+                arr(rcm, n)[i] = v
+                # TODO age may have changed... not clear how to update.
+              l = TBody.getElementsByClassName('ss-rec_' + info.d + '_' + info.metric.id)
+              for li in l
+                generateText(li, metric.id, v, metric.assumed)
+              return
 
         ################################# Interaction
 
@@ -826,13 +858,14 @@ app.directive 'spreadsheet', [
             r.find((o) -> o.default)?.run(cell) if Array.isArray(r)
             return
 
-          switch info.t
-            when 'name', 'date', 'release'
-              saveSlot(cell, info, value)
-            when 'rec'
-              saveMeasure(cell, info.record, info.metric, value)
-            when 'asset'
-              saveAsset(cell, info, value)
+          saveDatum(info, value)
+          #switch info.t
+          #  when 'name', 'date', 'release'
+          #    saveSlot(cell, info, value)
+          #  when 'rec'
+          #    saveMeasure(cell, info.record, info.metric, value)
+          #  when 'asset'
+          #    saveAsset(cell, info, value)
 
         editScope = $scope.$new(true)
         editScope.constants = constants
