@@ -481,21 +481,21 @@ app.controller('volume/slot', [
 
     class Asset extends TimeBar
       constructor: (asset) ->
-        @init(asset)
+        @setAsset(asset)
         @excerpts = []
         return
 
       type: 'asset'
 
-      init: (@asset) ->
+      setAsset: (@asset) ->
         @fillData()
         if asset
-          super(asset.segment)
+          @init(asset.segment)
           @choose() if `asset.id == target.asset`
           $scope.asset = asset if $scope.current == this
           @updateExcerpt()
         else
-          super(undefined)
+          @init(undefined)
         return
 
       fillData: ->
@@ -562,7 +562,7 @@ app.controller('volume/slot', [
 
             $scope.form.edit.$setUnsubmitted()
             first = !@asset
-            @init(asset)
+            @setAsset(asset)
 
             messages.add
               type: 'green'
@@ -745,7 +745,7 @@ app.controller('volume/slot', [
         messages.clear(this)
         uploads.removedAsset.link(slot).then (a) =>
             uploads.removedAsset = undefined
-            @init(a)
+            @setAsset(a)
             blank = undefined if this == blank
             return
           , (res) ->
