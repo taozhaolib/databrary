@@ -12,7 +12,9 @@ app.factory('analyticService', [
     };
 
     analytics.add = function (action, data) {
-      queue.push({action: action, route: location.pathname, data: data});
+      data = {action: action, route: location.pathname, data: data};
+      if (!_.some(queue, data))
+        queue.push(data);
     };
 
     return analytics;
