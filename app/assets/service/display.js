@@ -18,7 +18,7 @@ app.factory('displayService', [
 
     $rootScope.$on('$routeChangeSuccess', function () {
       display.loading = false;
-      analytics.add('open', {});
+      analytics.add('open');
     });
 
     display.error = undefined;

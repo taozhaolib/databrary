@@ -12,9 +12,11 @@ app.factory('analyticService', [
     };
 
     analytics.add = function (action, data) {
-      data = {action: action, route: location.pathname, data: data};
-      if (!_.some(queue, data))
-        queue.push(data);
+      var a = {action: action, route: location.pathname};
+      if (data !== undefined)
+        a.data = data;
+      if (!_.some(queue, a))
+        queue.push(a);
     };
 
     return analytics;
