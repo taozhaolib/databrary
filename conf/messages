@@ -439,11 +439,11 @@ tags.vote.up.success=Tag <strong>{0}</strong> voted up.
 tags.vote.null.success=Tag <strong>{0}</strong> vote canceled.
 tags.vote.error=Error while voting for tag <strong>{0}</strong>.
 tags.display.description=User-provided terms that help others find similar content
-tag.add.help=Add a tag to this content help others find it
+tag.add.help=Add a tag to this content to help others find it
 
 keywords.title=Keywords
 keywords.display.description=Preferred terms provided by the author to help others find this content
-keyword.add.help=Add preferred terms to label your data. For example, you might use the keywords associated with the publication for this dataset if there is one
+keyword.add.help=Add preferred terms to label your data, such as the keywords associated with any related publication
 
 # Access
 access.global.legend=Share this volume
