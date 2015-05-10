@@ -15,7 +15,7 @@
         </a>
       </li>
       <li>File format: {{asset.format.extension}}</li>
-      <li ng-if="::!asset.segment.full && !asset.segment.empty">
+      <li ng-if="::!asset.segment.full && asset.segment.length">
         <span>Duration: </span>
         <span ng-bind="::asset.segment.length | timecode"></span>
       </li>
