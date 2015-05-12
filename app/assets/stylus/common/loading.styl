@@ -2,8 +2,7 @@
 
 circle = 100px
 pad = b2
-border = 10px
-speed = 10s/3
+border = 15px
 
 // styles
 
@@ -35,9 +34,9 @@ speed = 10s/3
   margin (circle / -2) 0 0 (circle / -2)
 
 .loading-circle
-  width circle - (border * 2)
-  height circle - (border * 2)
-  border-radius circle - (border * 2)
+  width circle - border
+  height circle - border
+  border-radius circle - border
   border border solid blue52
 
 .loading-mask
@@ -51,7 +50,7 @@ speed = 10s/3
   left (border / 2)
   width circle - border
   height circle - border
-  animation spin (speed/3) infinite linear
+  animation spin (1s) infinite linear
 
 @keyframes spin
   from
