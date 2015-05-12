@@ -348,13 +348,13 @@ release.DEFAULT.select=Use current file or participant release level
 release.DEFAULT.description=This content has not been shared
 release.PRIVATE.title=Private
 release.PRIVATE.select=Available only to collaborators
-release.PRIVATE.description=This content has not been shared and is only available to collaborators
+release.PRIVATE.description=This content has not been shared and is restricted to collaborators
 release.SHARED.title=Authorized Users
 release.SHARED.select=Available only to authorized Databrary users
-release.SHARED.description=This content is restricted only to authorized Databrary users
+release.SHARED.description=This content is restricted to authorized Databrary users
 release.EXCERPTS.title=Excerpts
-release.EXCERPTS.select=Available only to authorized Databrary users and may also be used in presentations for informational or educational purposes
-release.EXCERPTS.description=This content has been made available to authorized Databrary users and may also be used by authorized Databrary users in presentations for informational or educational purposes
+release.EXCERPTS.select=Available only to authorized Databrary users, who may use it in presentations for informational or educational purposes
+release.EXCERPTS.description=This content is restricted to authorized Databrary users, who may use it in presentations for informational or educational purposes
 release.PUBLIC.title=Public
 release.PUBLIC.select=Available openly to anybody
 release.PUBLIC.description=This content is available openly to anyone
@@ -439,11 +439,11 @@ tags.vote.up.success=Tag <strong>{0}</strong> voted up.
 tags.vote.null.success=Tag <strong>{0}</strong> vote canceled.
 tags.vote.error=Error while voting for tag <strong>{0}</strong>.
 tags.display.description=User-provided terms that help others find similar content
-tag.add.help=Add a tag to this content help others find it
+tag.add.help=Add a tag to this content to help others find it
 
 keywords.title=Keywords
 keywords.display.description=Preferred terms provided by the author to help others find this content
-keyword.add.help=Add preferred terms to label your data. For example, you might use the keywords associated with the publication for this dataset if there is one
+keyword.add.help=Add preferred terms to label your data, such as the keywords associated with any related publication
 
 # Access
 access.global.legend=Share this volume

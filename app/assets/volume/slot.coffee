@@ -481,10 +481,7 @@ app.controller('volume/slot', [
 
     class Asset extends TimeBar
       constructor: (asset) ->
-        if asset
-          @setAsset(asset)
-        else
-          @fillData()
+        @setAsset(asset)
         @excerpts = []
         return
 
@@ -492,11 +489,13 @@ app.controller('volume/slot', [
 
       setAsset: (@asset) ->
         @fillData()
-        return unless asset
-        @init(asset.segment)
-        @choose() if `asset.id == target.asset`
-        $scope.asset = asset if $scope.current == this
-        @updateExcerpt()
+        if asset
+          @init(asset.segment)
+          @choose() if `asset.id == target.asset`
+          $scope.asset = asset if $scope.current == this
+          @updateExcerpt()
+        else
+          @init(undefined)
         return
 
       fillData: ->
@@ -1022,6 +1021,7 @@ app.controller('volume/slot', [
     class TagName extends TimeBar
       constructor: (name) ->
         @id = name
+        super()
         return
 
       save: (vote) ->
@@ -1055,7 +1055,7 @@ app.controller('volume/slot', [
 
     class Tag extends TagName
       constructor: (t) ->
-        @id = t.id
+        super(t.id)
         @active = t.id in tagToggle
         @fillData(t)
         return

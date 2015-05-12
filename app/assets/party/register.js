@@ -106,15 +106,12 @@ app.controller('party/register', [
       request: function (step) {
         var form = $scope.authApplyForm = step.$scope.authApplyForm;
         form.sent = false;
-        form.$setSubmitted();
         form.successFn = function () {
-          form.$setUnsubmitted();
           form.sent = true;
           updateUserAuth();
         };
 
         form.cancelFn = function () {
-          form.$setUnsubmitted();
           delete $scope.auth.party;
           delete $scope.auth.query;
           $scope.proceed();

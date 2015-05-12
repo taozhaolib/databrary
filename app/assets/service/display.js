@@ -16,13 +16,9 @@ app.factory('displayService', [
       messages.clear();
     });
 
-    $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
+    $rootScope.$on('$routeChangeSuccess', function () {
       display.loading = false;
-
-      var data = {current: current.controller};
-      if (previous)
-        data.previous = previous.controller;
-      analytics.add('open', data);
+      analytics.add('open');
     });
 
     display.error = undefined;
