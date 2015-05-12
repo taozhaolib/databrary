@@ -209,7 +209,7 @@ app.directive 'spreadsheet', [
             slot: ->
               Slots[i] if (i = @i)?
             d: ->
-              Data[c].id[n][i] if (c = @c)? and (n = @n) and (i = @i)?
+              Data[c].id[n][i] if (c = @c)? and (n = @n)? and (i = @i)?
             record: ->
               Volume.records[d] if (d = @d)?
             asset: ->
@@ -362,9 +362,28 @@ app.directive 'spreadsheet', [
           v = info.v
           if info.metric.id == 'name'
             a = info.cell.insertBefore(document.createElement('a'), info.cell.firstChild)
-            #a.setAttribute('href', if editing then slot.editRoute() else slot.route())
-            a.className = "session icon hint-action-slot"
-            #v ?= constants.message('materials.top') if stop
+            if info.c == 'asset'
+              a.className = "format hint-format-" + info.asset.format.extension
+              v ?= ''
+              t = {asset:info.d}
+            else
+              a.className = "session icon hint-action-slot"
+              v ?= if info.slot.id == Volume.top.id then constants.message('materials.top') else ''
+              t = {}
+            a.setAttribute('href', if Editing then info.slot.editRoute(t) else info.slot.route(t))
+            #if Editing && !stop
+            #  a = cell.insertBefore(document.createElement('a'), cell.firstChild)
+            #  a.className = 'trash icon'
+            #  $(a).on 'click', (event) ->
+            #    $scope.$apply () ->
+            #      removeSlot(cell, i, slot)
+            #      return
+            #    event.stopPropagation()
+            #    return
+            #
+            #  icon = cell.insertBefore(document.createElement('img'), cell.firstChild)
+            #  icon.src = a.icon
+            #  icon.className = "format hint-format-" + a.format.extension
           else if info.metric.id == 'release'
             cn = constants.release[v || 0]
             info.cell.className = cn + ' release icon hint-release-' + cn
@@ -452,6 +471,7 @@ app.directive 'spreadsheet', [
             m = (info.metric = ms[mi]).id
             info.v = r[m][n] && r[m][n][info.i]
             info.id = b + (info.cols.start+mi)
+            info.d = r.id[n][info.i]
             generateCell(info)
             if info.v != null
               ri = 'ss-rec_' + r.id[n][info.i]
@@ -483,7 +503,6 @@ app.directive 'spreadsheet', [
         generateRow = (i) ->
           info = new Info()
           info.i = i
-          stop = info.slot.id == Volume.top.id
           row = if Rows[i]
               $(Rows[i]).empty()
               Rows[i]
@@ -491,7 +510,7 @@ app.directive 'spreadsheet', [
               Rows[i] = document.createElement('tr')
           row.id = ID + '_' + i
           row.data = i
-          if Editing && stop
+          if Editing && info.slot.id == Volume.top.id
             row.className = 'top'
 
           #name = slot.name
