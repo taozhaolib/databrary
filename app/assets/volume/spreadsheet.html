@@ -23,31 +23,22 @@
 
 <div class="spreadsheet" ng-class="::{'edit': editing, 'view': !editing}">
   <table class="spreadsheet-table">
-    <colgroup>
-      <col class="name"/>
-      <col ng-if="::!top" class="date"/>
-      <col class="release"/>
-    </colgroup>
-    <colgroup ng-repeat="col in recordCols track by col.category.id">
-      <col ng-repeat="metric in col.metrics track by metric.id" ng-class="[col.category.name, metric.name]"/>
+    <colgroup ng-repeat="g in groups track by g.category.id">
+      <col ng-repeat="metric in g.metrics track by metric.id" ng-class="[g.category.name, metric.name]"/>
     </colgroup>
     <colgroup ng-if="categories.length">
       <col class="add">
     </colgroup>
     <thead>
       <tr class="spreadsheet-head-groups">
-        <th colspan="{{::1+2*!top}}" id="{{::id}}-head" ng-class="::top ? 'col-materials' : 'col-sessions'" ng-click="clickSlot($event)" message="{{::top ? 'materials' : 'session'}}"></th>
-        <th class="metric-col" ng-repeat="col in recordCols track by col.category.id" id="{{::id}}-category_{{::col.category.id}}" colspan="{{col.metrics.length}}" ng-class="::'col'+col.category.id">
+        <th class="metric-col" ng-repeat="col in groups track by col.category.id" id="{{::id}}-category_{{::col.category.id}}" colspan="{{col.metrics.length}}" ng-class="::'col'+col.category.id">
           <span ng-bind="col.category.name"></span>
           <span ng-if="::editing" ng-click="clickCategoryAdd($event, col)" class="icon add addSessionInfo" tooltip="'spreadsheet.add.metric' | message:col.category.name"></span>
         </th>
         <th ng-if="categories.length" id="{{::id}}-add" class="add" ng-click="clickAdd($event)" tooltip="'spreadsheet.add.category' | message"></th>
       </tr>
       <tr class="spreadsheet-head-metrics">
-        <th id="{{::id}}-name" class="first" ng-click="clickSlot($event, 'name')" ng-class="colClasses('name')"/>
-        <th ng-if="::!top" id="{{::id}}-date" ng-click="clickSlot($event, 'date')" ng-class="colClasses('date')">test date</th>
-        <th ng-if="::!top" id="{{::id}}-release" class="last" ng-click="clickSlot($event, 'release')" ng-class="colClasses('release')">release</th>
-        <th ng-repeat="col in metricCols" id="{{::id}}-metric_{{::$index}}" ng-click="clickMetric(col)" ng-class="colClasses(col)" ng-bind="col.metric.name"></th>
+        <th ng-repeat="col in cols" id="{{::id}}-metric_{{::$index}}" ng-click="clickMetric(col)" ng-class="colClasses(col)" ng-bind="col.metric.name"></th>
         <th ng-if="categories.length" class="first last"></th>
       </tr>
     </thead>
@@ -55,10 +46,10 @@
     </tbody>
     <tfoot>
       <tr ng-if="more">
-        <td colspan="{{totalCols}}" class="null" ng-click="unlimit()" ng-bind="::'spreadsheet.unlimit' | message:more"></td>
+        <td colspan="{{cols.length}}" class="null" ng-click="unlimit()" ng-bind="::'spreadsheet.unlimit' | message:more"></td>
       </tr>
       <tr ng-if="::editing">
-        <td id="{{::id}}-new" colspan="{{totalCols}}" class="add null" ng-click="clickNew($event)" ng-bind="::'add ' + (top ? 'materials' : 'session' | message)"</td>
+        <td id="{{::id}}-new" colspan="{{cols.length}}" class="add null" ng-click="clickNew($event)" ng-bind="::'add ' + (top ? 'materials' : 'session' | message)"</td>
       </tr>
     </tfoot>
   </table>
