@@ -15,7 +15,6 @@ select[size]
 input,
 select
   line-height 1
-  height 31px
 
 input,
 textarea,
@@ -76,6 +75,11 @@ input
     &:focus
       box-shadow outset-shadow
       outline 0
+  &[type="text"],
+  &[type="url"],
+  &[type="email"],
+  &[type="password"]
+    height 31px
 
 select
   padding-bottom f4
