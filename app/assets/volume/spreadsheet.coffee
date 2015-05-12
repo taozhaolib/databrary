@@ -7,7 +7,6 @@ app.directive 'spreadsheet', [
       if isNaN(i = parseInt(s, 10)) then s else i
     byDefault = (a,b) -> +(a > b) || +(a == b) - 1
     byNumber = (a,b) -> a-b
-    byId = (a,b) -> a.id-b.id
     byType = (a,b) ->
       ta = typeof a
       tb = typeof b
@@ -16,11 +15,9 @@ app.directive 'spreadsheet', [
         b = tb
       byDefault(a,b)
     byMagic = (a,b) ->
-      na = parseFloat(a)
-      nb = parseFloat(b)
-      return 1 if na > nb
-      return -1 if na < nb
-      byType(a,b)
+      if isNaN(d = a-b) then byDefault(a,b) else d
+    bySortId = (a,b) ->
+      (a.sort || a.id)-(b.sort || b.id)
 
     stripPrefix = (s, prefix) ->
       if s.startsWith(prefix) then s.substr(prefix.length)
@@ -36,35 +33,42 @@ app.directive 'spreadsheet', [
         0
 
     pseudoMetric =
-      name: # slot, asset
-        id: 'name'
-        name: 'name'
-        display: ' '
-        type: 'text'
-      date: # slot
-        id: 'date'
-        name: 'test date'
-        type: 'date'
-      release: # slot
-        id: 'release'
-        name: 'release'
-      classification: # asset
-        id: 'classification'
-        name: 'classification'
-      excerpt: # asset
-        id: 'excerpt'
-        name: 'excerpt'
-      id: # record
+      id:
         id: 'id'
         name: 'id'
         display: ' '
         type: 'number'
         release: constants.release.PUBLIC
+        sort: -10000
+      name: # slot, asset
+        id: 'name'
+        name: 'name'
+        display: ' '
+        type: 'text'
+        sort: -9000
+      date: # slot
+        id: 'date'
+        name: 'test date'
+        type: 'date'
+        sort: -8000
+      release: # slot
+        id: 'release'
+        name: 'release'
+        sort: -7000
+      classification: # asset
+        id: 'classification'
+        name: 'classification'
+        sort: -6000
+      excerpt: # asset
+        id: 'excerpt'
+        name: 'excerpt'
+        sort: -5000
       age: # record
         id: 'age'
         name: 'age'
         type: 'number'
         release: constants.release.EXCERPTS
+        sort: constants.metric.birthdate + 0.5
     constants.deepFreeze(pseudoMetric)
     getMetric = (m) ->
       pseudoMetric[m] || constants.metric[m]
@@ -116,7 +120,8 @@ app.directive 'spreadsheet', [
           slot:
             id: 'slot'
             name: if Top then 'materials' else 'session'
-            template: if Top then ['name'] else ['name', 'date', 'release']
+            template: if Top then ['$name'] else ['$name', 'date', 'release']
+            sort: -10000
           0:
             id: 0
             name: 'record'
@@ -126,7 +131,8 @@ app.directive 'spreadsheet', [
             id: 'asset'
             name: 'file'
             not: 'No file'
-            template: ['name', 'classification', 'excerpt']
+            template: ['$name', 'classification', 'excerpt']
+            sort: 10000
         constants.deepFreeze(pseudoCategory)
         getCategory = (c) ->
           pseudoCategory[c || 0] || constants.category[c]
@@ -269,7 +275,7 @@ app.directive 'spreadsheet', [
               Depends[record.id] = {}
 
             # populate records:
-            r = if c of Data then Data[c] else Data[c] = {id: []}
+            r = if c of Data then Data[c] else Data[c] = {id:[]}
 
             # determine Count:
             n = inc(count, c)
@@ -298,23 +304,20 @@ app.directive 'spreadsheet', [
         # Fill Cols and Groups from records
         populateCols = ->
           Cols = []
-          $scope.groups = Groups = Object.keys(Data).sort(byNumber).map (c) ->
-            category = getCategory(c)
+          $scope.groups = Groups = Object.keys(Data).map(getCategory).sort(bySortId).map (category) ->
+            d = Data[category.id]
             if Editing
               for m in category.template
-                arr(Data[c], m)
-            metrics = Object.keys(Data[c]).map(maybeInt)
-                    .sort(byType)
-            metrics.pop() # remove 'id' (necessarily last)
-            metrics = _.map metrics, getMetric
-            # add back the 'id' column first if needed
-            if !metrics.length
-              metrics.unshift(pseudoMetric.id)
+                arr(d, m)
+
+            metrics = Object.keys(d).map(getMetric).sort(bySortId)
+            if metrics.length > 1
+              metrics.shift() # remove 'id' (necessarily first)
             si = Cols.length
             Cols.push.apply Cols, _.map metrics, (m) ->
               category: category
               metric: m
-              sortable: m != pseudoMetric.id || metrics.length == 1
+              sortable: m.id != 'id' || metrics.length == 1
             l = metrics.length
             Cols[si].first = Cols[si+l-1].last = l
             {
@@ -327,15 +330,15 @@ app.directive 'spreadsheet', [
             ### jshint ignore:start #### fixed in jshint 2.5.7
             $scope.categories = (c for ci, c of constants.category when ci not of Data)
             ### jshint ignore:end ###
-            $scope.categories.sort(byId)
+            $scope.categories.sort(bySortId)
             $scope.categories.push(pseudoCategory[0]) unless 0 of Data
           return
 
         # Call all populate functions
         populate = ->
           Data = {}
-          Data.slot = {id: []}
-          Data.asset = {id: []} if Assets
+          Data.slot = {id:[]}
+          Data.asset = {id:[]} if Assets
           Depends = {}
           for s, i in Slots
             populateSlot(i)
@@ -675,17 +678,17 @@ app.directive 'spreadsheet', [
             populate()
             return
 
-        saveMeasure = (cell, record, metric, v) ->
-          return if record.measures[metric.id] == v
-          saveRun cell, record.measureSet(metric.id, v).then (rec) ->
-            rcm = Data[rec.category || 0][metric.id]
-            for i, n of Depends[record.id]
-              arr(rcm, n)[i] = v
-              # TODO age may have changed... not clear how to update.
-            l = TBody.getElementsByClassName('ss-rec_' + record.id + '_' + metric.id)
-            for li in l
-              generateText(li, metric.id, v, metric.assumed)
-            return
+        #saveMeasure = (cell, record, metric, v) ->
+        #  return if record.measures[metric.id] == v
+        #  saveRun cell, record.measureSet(metric.id, v).then (rec) ->
+        #    rcm = Data[rec.category || 0][metric.id]
+        #    for i, n of Depends[record.id]
+        #      arr(rcm, n)[i] = v
+        #      # TODO age may have changed... not clear how to update.
+        #    l = TBody.getElementsByClassName('ss-rec_' + record.id + '_' + metric.id)
+        #    for li in l
+        #      generateText(li, metric.id, v, metric.assumed)
+        #    return
 
         setRecord = (info, record) ->
           add = ->
@@ -758,7 +761,7 @@ app.directive 'spreadsheet', [
           else
             return if info.record.measures[info.metric.id] == v
             saveRun info.cell, info.record.measureSet(info.metric.id, v).then (rec) ->
-              rcm = Data[info.c || 0][info.metric.id]
+              rcm = Data[rec.category || 0][info.metric.id]
               for i, n of Depends[info.d]
                 arr(rcm, n)[i] = v
                 # TODO age may have changed... not clear how to update.
@@ -910,17 +913,6 @@ app.directive 'spreadsheet', [
 
         edit = (info) ->
           switch info.t
-            when 'name'
-              return if info.slot.id == Volume.top.id
-              editScope.type = 'text'
-              editInput.value = info.slot.name
-            when 'date'
-              return if info.slot.id == Volume.top.id
-              editScope.type = 'date'
-              editInput.value = info.slot.date
-            when 'release'
-              editScope.type = 'release'
-              editInput.value = (info.slot.release || 0) + ''
             when 'rec', 'add'
               if info.c == 'asset'
                 # for now, just go to slot edit
@@ -996,14 +988,11 @@ app.directive 'spreadsheet', [
               editScope.options = []
               for mi, m of constants.metric when !(mi of Data[info.c])
                 editScope.options.push(m)
-              editScope.options.sort(byId)
+              editScope.options.sort(bySortId)
             when 'head'
               editScope.type = 'category'
               editInput.value = undefined
               editScope.options = $scope.categories
-            when 'asset'
-              editScope.type = 'text'
-              editInput.value = info.asset.name
             else
               return
 
@@ -1113,12 +1102,12 @@ app.directive 'spreadsheet', [
             os.forEach (i) ->
               if info.r
                 add("Change all " + info.record.displayName + " " + info.metric.name + " to '" + i + "'",
-                  (info) -> saveMeasure(info, i),
+                  (info) -> saveDatum(info, i),
                   input && !rs.length && os.length == 1 || i == input)
               add("Create new " + info.category.name + " with " + info.metric.name + " '" + i + "'",
                 (info) -> setRecord(info).then((r) ->
                   info.record = r
-                  saveMeasure(info, i) if r
+                  saveDatum(info, i) if r
                   return),
                 input && !rs.length && os.length == 1 || i == input)
           if o.length then o else input
@@ -1139,7 +1128,7 @@ app.directive 'spreadsheet', [
 
         $scope.clickAdd = ($event) ->
           unselect()
-          edit({cell:event.target, t:'head'})
+          edit({cell:$event.target, t:'head'})
           return
 
         $scope.clickCategoryAdd = ($event, col) ->
