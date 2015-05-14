@@ -166,7 +166,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") with TableSlot[SlotAsset
     ).map { case (segment, asset, context, excerpt) =>
       SlotAsset(asset, segment, context, excerpt)
     }
-    .SELECT(sql"WHERE slot_asset.segment && ${slot.segment}")
+    .SELECT(sql"WHERE slot_asset.segment && ${slot.segment} ORDER BY slot_asset.segment, asset.id")
     .list
 
   def getVolume(volume : Volume, top : Option[Boolean]) : Future[Seq[SlotAsset]] =
