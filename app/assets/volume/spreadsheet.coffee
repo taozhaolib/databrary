@@ -356,22 +356,14 @@ app.directive 'spreadsheet', [
 
         ################################# Generate HTML
         
-        # Find the text content of cell c with element t
-        setCell = (c, t) ->
-          el = c.lastChild
-          if el && el.nodeType == 3
-            c.replaceChild(t, el)
-          else
-            c.appendChild(t)
-          return
-
         # Add or replace the text contents of cell c for measure/type m with value v
         generateText = (info) ->
+          $(cell = info.cell).empty()
           v = info.v
           switch info.metric.id
             when 'name'
               if info.d
-                a = info.cell.insertBefore(document.createElement('a'), info.cell.firstChild)
+                a = cell.appendChild(document.createElement('a'))
                 if info.c == 'asset'
                   icon = a.appendChild(document.createElement('img'))
                   icon.src = info.asset.icon
@@ -379,41 +371,43 @@ app.directive 'spreadsheet', [
                   v ?= ''
                   t = {asset:info.d}
                 else
+                  stop = info.slot.id == Volume.top.id
+                  if Editing && !stop
+                    del = cell.insertBefore(document.createElement('a'), a)
+                    del.className = 'trash icon'
+                    i = info.i
+                    $(del).on 'click', (event) ->
+                      $scope.$apply () ->
+                        removeSlot(cell, i)
+                        return
+                      event.stopPropagation()
+                      return
                   a.className = "session icon hint-action-slot"
-                  #if Editing && !stop
-                  #  a = cell.insertBefore(document.createElement('a'), cell.firstChild)
-                  #  a.className = 'trash icon'
-                  #  $(a).on 'click', (event) ->
-                  #    $scope.$apply () ->
-                  #      removeSlot(cell, i, slot)
-                  #      return
-                  #    event.stopPropagation()
-                  #    return
-                  v ?= if info.slot.id == Volume.top.id then constants.message('materials.top') else ''
+                  v ?= if stop then constants.message('materials.top') else ''
                   t = {}
                 a.setAttribute('href', if Editing then info.slot.editRoute(t) else info.slot.route(t))
               else
                 v ?= ''
             when 'release', 'classification'
               cn = constants.release[v || 0]
-              info.cell.className = cn + ' release icon hint-release-' + cn
+              cell.className = cn + ' release icon hint-release-' + cn
               v = ''
             when 'excerpt'
               if v
-                info.cell.className = 'icon bullet'
+                cell.className = 'icon bullet'
               v = ''
             when 'id'
               if v?
-                info.cell.className = 'icon ' + if Editing then 'trash' else 'bullet'
+                cell.className = 'icon ' + if Editing then 'trash' else 'bullet'
                 v = ''
             when 'age'
               v = display.formatAge(v)
           if v?
-            info.cell.classList.remove('blank')
+            cell.classList.remove('blank')
           else
-            info.cell.classList.add('blank')
+            cell.classList.add('blank')
             v = info.metric.assumed || ''
-          setCell(info.cell, document.createTextNode(v))
+          cell.appendChild(document.createTextNode(v))
           return
 
         # Add a td element to tr r with value c and id i
@@ -630,17 +624,9 @@ app.directive 'spreadsheet', [
             TBody.appendChild(Rows[i])
             return
 
-        #saveSlot = (info, v) ->
-        #  data = {}
-        #  data[info.t] = v ? ''
-        #  return if info.slot[info.t] == data[info.t]
-        #  saveRun info.cell, info.slot.save(data).then () ->
-        #    generateText(info) #, cell, info.t, info.slot[info.t])
-        #    return
-
-        removeSlot = (cell, i, slot) ->
+        removeSlot = (cell, i) ->
           # assuming we have a container
-          saveRun cell, slot.remove().then (done) ->
+          saveRun cell, Slots[i].remove().then (done) ->
             unless done
               messages.add
                 body: constants.message('slot.remove.notempty')
@@ -704,8 +690,8 @@ app.directive 'spreadsheet', [
         saveDatum = (info, v) ->
           if info.c == 'slot'
             data = {}
-            data[info.t] = v ? ''
-            return if info.slot[info.t] == data[info.t]
+            data[info.metric.id] = v ? ''
+            return if info.slot[info.metric.id] == v
             saveRun info.cell, info.slot.save(data).then () ->
               info.v = Data[info.c][info.metric.id][info.n][info.i] = v
               generateText(info) #, cell, info.t, info.slot[info.t])
@@ -870,7 +856,7 @@ app.directive 'spreadsheet', [
             when 'rec'
               if info.c == 'asset'
                 # for now, just go to slot edit
-                $location.url(info.slot.editRoute())
+                $location.url(info.slot.editRoute({asset:info.d}))
                 return
               return if info.slot.id == Volume.top.id
               m = info.metric.id
@@ -880,35 +866,33 @@ app.directive 'spreadsheet', [
                 return
               return if info.metric.readonly
               editScope.type = info.metric.type
-              switch info.c
-                when 'slot'
-                  v = info.slot[m]
-                  if m == 'release'
-                    ### jshint ignore:start ###
-                    v ||= 0
-                    ### jshint ignore:end ###
-                when 'asset' # not reached
-                  v = info.asset[m]
-                else
-                  v = info.record?.measures[m]
-                  if info.col.first
-                    editScope.type = 'ident'
-                    editScope.info = info
-                    rs = []
-                    mf = (r) -> (m) -> r.measures[m]
-                    for ri, r of Volume.records
-                      if (r.category || 0) == info.category.id && !(ri of Depends && info.i of Depends[ri])
-                        rs.push
-                          r:r
-                          v:(r.measures[info.metric.id] ? '').toLowerCase()
-                          d:recordDescription(r)
-                    editScope.records = rs.sort((a, b) -> byMagic(a.v, b.v))
-                  else if info.metric.options
-                    editScope.type = 'options'
-                    editScope.options = info.metric.options
-                  else if info.metric.long
-                    editScope.type = 'long'
-                  break
+              if info.c == 'slot'
+                v = info.slot[m]
+                if m == 'release'
+                  ### jshint ignore:start ###
+                  v ||= 0
+                  ### jshint ignore:end ###
+              else if info.c == 'asset' # not reached
+                v = info.asset[m]
+              else
+                v = info.record?.measures[m]
+                if info.col.first
+                  editScope.type = 'ident'
+                  editScope.info = info
+                  rs = []
+                  mf = (r) -> (m) -> r.measures[m]
+                  for ri, r of Volume.records
+                    if (r.category || 0) == info.category.id && !(ri of Depends && info.i of Depends[ri])
+                      rs.push
+                        r:r
+                        v:(r.measures[info.metric.id] ? '').toLowerCase()
+                        d:recordDescription(r)
+                  editScope.records = rs.sort((a, b) -> byMagic(a.v, b.v))
+                else if info.metric.options
+                  editScope.type = 'options'
+                  editScope.options = info.metric.options
+                else if info.metric.long
+                  editScope.type = 'long'
               editInput.value = (v ? '')+''
             when 'add'
               if info.c == 'asset'
@@ -1004,7 +988,7 @@ app.directive 'spreadsheet', [
           return unless el.tagName == 'TD' && info = parseId(el)
 
           select(info)
-          if info.hasOwnProperty('m') && Cols[info.m].metric.id == 'age'
+          if info.metric?.id == 'age'
             display.toggleAge()
           return
 

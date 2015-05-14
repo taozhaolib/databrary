@@ -801,8 +801,8 @@ app.factory('modelService', [
       return router.slot([this.volume.id, this.container.id, this.segment.format()], params);
     };
 
-    Slot.prototype.editRoute = function () {
-      return router.slotEdit([this.volume.id, this.container.id, this.segment.format()]);
+    Slot.prototype.editRoute = function (params) {
+      return router.slotEdit([this.volume.id, this.container.id, this.segment.format()], params);
     };
 
     Slot.prototype.zipRoute = function () {
