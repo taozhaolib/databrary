@@ -40,6 +40,7 @@ app.directive 'spreadsheet', [
         type: 'number'
         release: constants.release.PUBLIC
         sort: -10000
+        readonly: true
       name: # slot, asset
         id: 'name'
         name: 'name'
@@ -54,21 +55,26 @@ app.directive 'spreadsheet', [
       release: # slot
         id: 'release'
         name: 'release'
+        type: 'release'
         sort: -7000
       classification: # asset
         id: 'classification'
         name: 'classification'
+        type: 'classification'
         sort: -6000
+        readonly: true
       excerpt: # asset
         id: 'excerpt'
         name: 'excerpt'
         sort: -5000
+        readonly: true
       age: # record
         id: 'age'
         name: 'age'
         type: 'number'
         release: constants.release.EXCERPTS
         sort: constants.metric.birthdate + 0.5
+        readonly: true
     constants.deepFreeze(pseudoMetric)
     getMetric = (m) ->
       pseudoMetric[m] || constants.metric[m]
@@ -131,7 +137,7 @@ app.directive 'spreadsheet', [
           asset:
             id: 'asset'
             name: 'file'
-            not: 'No file'
+            not: 'No files'
             template: ['name', 'classification', 'excerpt']
             sort: 10000
             fixed: true
@@ -150,6 +156,7 @@ app.directive 'spreadsheet', [
           #   col: Cols element
           #   category: Category
           #   c: Category_id
+          #   count: Count[i][c]
           #   metric: Metric
           #   row: Rows[i]
           #   slot: Slots[i]
@@ -190,10 +197,10 @@ app.directive 'spreadsheet', [
             n: ->
               0
             id: ->
-              cell.id if (cell = @cell)
+              @cell?.id
             cols: ->
-              if (c = @c)?
-                @cols = Groups.find (col) -> `col.category.id == c`
+              c = @c
+              @cols = Groups.find (col) -> `col.category.id == c`
             col: ->
               Cols[@m]
             category: ->
@@ -203,6 +210,8 @@ app.directive 'spreadsheet', [
                 @category = getCategory(@c)
             c: ->
               @category?.id
+            count: ->
+              Counts[@i][@c] || 0
             metric: ->
               @col?.metric
             row: ->
@@ -210,13 +219,13 @@ app.directive 'spreadsheet', [
             slot: ->
               Slots[@i]
             d: ->
-              Data[c].id[@n]?[@i] if (c = @c)?
+              Data[@c].id[@n]?[@i]
             record: ->
               Volume.records[@d]
             asset: ->
               @slot?.assets[@d]
             v: ->
-              Data[c][m][@n]?[@i] if (c = @c)? and (m = @m)?
+              Data[@c][@m]?[@n]?[@i]
 
           property = (v, f) ->
             get: f
@@ -371,24 +380,20 @@ app.directive 'spreadsheet', [
                   t = {asset:info.d}
                 else
                   a.className = "session icon hint-action-slot"
+                  #if Editing && !stop
+                  #  a = cell.insertBefore(document.createElement('a'), cell.firstChild)
+                  #  a.className = 'trash icon'
+                  #  $(a).on 'click', (event) ->
+                  #    $scope.$apply () ->
+                  #      removeSlot(cell, i, slot)
+                  #      return
+                  #    event.stopPropagation()
+                  #    return
                   v ?= if info.slot.id == Volume.top.id then constants.message('materials.top') else ''
                   t = {}
                 a.setAttribute('href', if Editing then info.slot.editRoute(t) else info.slot.route(t))
               else
                 v ?= ''
-              #if Editing && !stop
-              #  a = cell.insertBefore(document.createElement('a'), cell.firstChild)
-              #  a.className = 'trash icon'
-              #  $(a).on 'click', (event) ->
-              #    $scope.$apply () ->
-              #      removeSlot(cell, i, slot)
-              #      return
-              #    event.stopPropagation()
-              #    return
-              #
-              #  icon = cell.insertBefore(document.createElement('img'), cell.firstChild)
-              #  icon.src = a.icon
-              #  icon.className = "format hint-format-" + a.format.extension
             when 'release', 'classification'
               cn = constants.release[v || 0]
               info.cell.className = cn + ' release icon hint-release-' + cn
@@ -422,12 +427,12 @@ app.directive 'spreadsheet', [
           return
 
         generateMultiple = (info) -> # (col, cols, row, i, n, t) ->
-          t = Counts[info.i][info.c] || 0
-          return if (if info.n? then info.n < t else t == 1)
+          t = info.count
+          return if (if info.hasOwnProperty('n') then info.n < t else t == 1)
           td = info.row.appendChild(document.createElement('td'))
           width = info.cols.metrics.length
           td.setAttribute("colspan", width)
-          if info.n? || t <= 1
+          if info.hasOwnProperty('n') || t <= 1
             td.className = 'null'
             if !info.n || info.n == t
               if Editing && width > 1
@@ -460,10 +465,10 @@ app.directive 'spreadsheet', [
         generateRecord = (info) -> # (row, i, col, n) ->
           ms = info.cols.metrics
           return unless l = ms.length
-          t = Counts[info.i][info.c] || 0
+          t = info.count
           r = Data[info.c]
           if td = generateMultiple(info) # (col, l, row, i, n, t)
-            unless info.n?
+            unless info.hasOwnProperty('n')
               for n in [0..t-1] by 1
                 td.classList.add('ss-rec_' + r.id[n][info.i])
             return
@@ -481,26 +486,6 @@ app.directive 'spreadsheet', [
               info.cell.classList.add(ri + '_' + info.metric.id)
           return
 
-        #generateAsset = (row, i, n) ->
-        #  a = assets[i]
-        #  return if generateMultiple({category:pseudoCategory.asset}, 3, row, i, n, a.length)
-        #  b = i
-        #  if n == undefined
-        #    a = a[0]
-        #  else
-        #    a = a[n]
-        #    b += '_' + n
-        #  cell = generateCell(row, 'asset', a.name, ID + '-asset_' + b)
-        #  icon = cell.insertBefore(document.createElement('img'), cell.firstChild)
-        #  icon.src = a.icon
-        #  icon.onclick = () ->
-        #    t = {asset:a.id}
-        #    $location.url if Editing then Slots[i].editRoute(t) else Slots[i].route(t)
-        #  icon.className = "format hint-format-" + a.format.extension
-        #  generateCell(row, 'classification', a.release, ID + '-class_' + b)
-        #  generateCell(row, 'excerpt', a.excerpt?, ID + '-excerpt_' + b)
-        #  return
-
         # Fill out rows[i].
         generateRow = (i) ->
           info = new Info()
@@ -515,32 +500,9 @@ app.directive 'spreadsheet', [
           if Editing && info.slot.id == Volume.top.id
             row.className = 'top'
 
-          #name = slot.name
-          #if stop
-          #  name ?= constants.message('materials.top')
-          #cell = generateCell(row, 'name', name, ID + '-name_' + i)
-          #if Editing && !stop
-          #  a = cell.insertBefore(document.createElement('a'), cell.firstChild)
-          #  a.className = 'trash icon'
-          #  $(a).on 'click', (event) ->
-          #    $scope.$apply () ->
-          #      removeSlot(cell, i, slot)
-          #      return
-          #    event.stopPropagation()
-          #    return
-          #a = cell.insertBefore(document.createElement('a'), cell.firstChild)
-          #a.setAttribute('href', if Editing then slot.editRoute() else slot.route())
-          #a.className = "session icon hint-action-slot"
-
-          #unless slot.top
-          #  generateCell(row, 'date', slot.date, ID + '-date_' + i)
-          #  generateCell(row, 'release', slot.release, ID + '-release_' + i)
-
           for col in Groups
             info.category = (info.cols = col).category
             generateRecord(info)
-          #if assets
-          #  generateAsset(row, i)
           return
 
         # Update all age displays.
@@ -552,12 +514,12 @@ app.directive 'spreadsheet', [
             r = Data[info.c][info.metric.id]
             pre = ID + '-rec_'
             post = '_' + mi
-            if expandedCat == info.c && Counts[expanded][info.c] > 1
-              info.i = expanded
-              for n in [0..Counts[expanded][info.c]-1] by 1 when n of r
+            if expanded?.c == info.c && expanded.count > 1
+              info.i = expanded.i
+              for n in [0..info.count-1] by 1 when n of r
                 info.n = n
-                info.v = r[n][expanded]
-                info.cell = document.getElementById(pre + expanded + '_' + n + post)
+                info.v = r[n][info.i]
+                info.cell = document.getElementById(pre + info.i + '_' + n + post)
                 generateText(info) if info.cell
             return unless 0 of r
             r = r[0]
@@ -696,18 +658,6 @@ app.directive 'spreadsheet', [
             populate()
             return
 
-        #saveMeasure = (cell, record, metric, v) ->
-        #  return if record.measures[metric.id] == v
-        #  saveRun cell, record.measureSet(metric.id, v).then (rec) ->
-        #    rcm = Data[rec.category || 0][metric.id]
-        #    for i, n of Depends[record.id]
-        #      arr(rcm, n)[i] = v
-        #      # TODO age may have changed... not clear how to update.
-        #    l = TBody.getElementsByClassName('ss-rec_' + record.id + '_' + metric.id)
-        #    for li in l
-        #      generateText(li, metric.id, v, metric.assumed)
-        #    return
-
         setRecord = (info, record) ->
           add = ->
             if record
@@ -721,6 +671,7 @@ app.directive 'spreadsheet', [
               add()
 
           saveRun info.cell, act.then (record) ->
+            o = info.d
             if record
               r = record.id
               info.n = inc(Counts[info.i], info.c) unless info.record
@@ -739,7 +690,7 @@ app.directive 'spreadsheet', [
                   arr(rcm, n-1)[info.i] = arr(rcm, n)[info.i]
                 delete rcm[t][info.i] if t of rcm
 
-            delete Depends[info.r][info.i] if info.record
+            delete Depends[o][info.i] if o?
             obj(Depends, r)[info.i] = info.n if record
 
             collapse()
@@ -750,22 +701,13 @@ app.directive 'spreadsheet', [
             setFocus = undefined
             record
 
-        #saveAsset = (cell, info, v) ->
-        #  data = {}
-        #  t = info.t
-        #  t = 'name' if t == 'asset'
-        #  data[t] = v ? ''
-        #  return if info.asset[t] == data[t]
-        #  saveRun cell, info.asset.save(data).then () ->
-        #    generateText(cell, t, info.asset[t])
-        #    return
-
         saveDatum = (info, v) ->
           if info.c == 'slot'
             data = {}
             data[info.t] = v ? ''
             return if info.slot[info.t] == data[info.t]
             saveRun info.cell, info.slot.save(data).then () ->
+              info.v = Data[info.c][info.metric.id][info.n][info.i] = v
               generateText(info) #, cell, info.t, info.slot[info.t])
               return
           else if info.c == 'asset'
@@ -774,6 +716,7 @@ app.directive 'spreadsheet', [
             data[t] = v ? ''
             return if info.asset[t] == data[t]
             saveRun info.cell, info.asset.save(data).then () ->
+              info.v = Data[info.c][info.metric.id][info.n][info.i] = v
               generateText(info)
               return
           else
@@ -783,6 +726,7 @@ app.directive 'spreadsheet', [
               for i, n of Depends[info.d]
                 arr(rcm, n)[i] = v
                 # TODO age may have changed... not clear how to update.
+              info.v = v
               l = TBody.getElementsByClassName('ss-rec_' + info.d + '_' + info.metric.id)
               for li in l
                 info.cell = li
@@ -791,14 +735,13 @@ app.directive 'spreadsheet', [
 
         ################################# Interaction
 
-        expandedCat = undefined
-        expanded = undefined
+        expanded = undefined # Info
 
         # Collapse any expanded row.
         collapse = ->
-          return if expanded == undefined
-          i = expanded
-          expanded = expandedCat = undefined
+          return unless expanded
+          i = expanded.i
+          expanded = undefined
           row = Rows[i]
           row.classList.remove('expand')
           t = 0
@@ -815,34 +758,35 @@ app.directive 'spreadsheet', [
 
         # Expand (or collapse) a row
         expand = (info) ->
-          if expanded == info.i && expandedCat == info.c
+          if expanded?.i == info.i && `expanded.c == info.c`
             if info.t == 'more'
               collapse()
             return
           collapse()
 
-          expanded = info.i
-          expandedCat = info.c
-          row = Rows[expanded]
-          row.classList.add('expand')
+          expanded = new Info()
+          expanded.i = info.i
+          expanded.c = info.c
+          info.row.classList.add('expand')
 
-          max = Counts[expanded][expandedCat]
-          max++ if Editing && !info.category.fixed
+          max = expanded.count
+          max++ if Editing && !expanded.category.fixed
           return if max <= 1
-          next = row.nextSibling
-          start = Counts[expanded][expandedCat] == 1
+          next = info.row.nextSibling
+          start = expanded.count == 1
           for n in [+start..max-1] by 1
-            info.row = TBody.insertBefore(document.createElement('tr'), next)
-            info.row.data = expanded
-            info.row.className = 'expand'
-            info.n = n
-            generateRecord(info)
+            expanded.n = n
+            expanded.row = TBody.insertBefore(document.createElement('tr'), next)
+            expanded.row.data = expanded.i
+            expanded.row.className = 'expand'
+            generateRecord(expanded)
+          expanded.row = info.row
 
           max++ unless start
-          el = row.firstChild
+          el = info.row.firstChild
           while el
             info = new Info(el)
-            if `info.c != expandedCat`
+            if `info.c != expanded.c`
               el.setAttribute("rowspan", max)
             el = el.nextSibling
           return
@@ -857,7 +801,7 @@ app.directive 'spreadsheet', [
               if value == 'new'
                 setRecord(info)
               else if value == 'remove'
-                setRecord(info, null) if info.r?
+                setRecord(info, null) if info.d?
               else if v = stripPrefix(value, 'add_')
                 u = v.indexOf('_')
                 info.metric = constants.metric[v.slice(0,u)]
@@ -867,7 +811,7 @@ app.directive 'spreadsheet', [
                   saveDatum(info, v) if r
                   return
               else if !isNaN(v = parseInt(value, 10))
-                if v != info.r
+                if v != info.d
                   setRecord(info, Volume.records[v])
               return
             when 'metric'
@@ -894,13 +838,6 @@ app.directive 'spreadsheet', [
             return
 
           saveDatum(info, value)
-          #switch info.t
-          #  when 'name', 'date', 'release'
-          #    saveSlot(cell, info, value)
-          #  when 'rec'
-          #    saveMeasure(cell, info.record, info.metric, value)
-          #  when 'asset'
-          #    saveAsset(cell, info, value)
 
         editScope = $scope.$new(true)
         editScope.constants = constants
@@ -930,45 +867,58 @@ app.directive 'spreadsheet', [
 
         edit = (info) ->
           switch info.t
-            when 'rec', 'add'
+            when 'rec'
               if info.c == 'asset'
                 # for now, just go to slot edit
                 $location.url(info.slot.editRoute())
                 return
               return if info.slot.id == Volume.top.id
-              if info.t == 'rec' && info.metric.id == 'id'
+              m = info.metric.id
+              if m == 'id'
                 # trash/bullet: remove
                 setRecord(info, null)
                 return
-              if info.t == 'rec'
-                m = info.metric.id
-                # we need a real metric here:
-                return unless typeof m == 'number'
-                editInput.value = info.record?.measures[m] ? ''
-                if info.col.first
-                  editScope.type = 'ident'
-                  editScope.info = info
-                  rs = []
-                  mf = (r) -> (m) -> r.measures[m]
-                  for ri, r of Volume.records
-                    if (r.category || 0) == info.category.id && !(ri of Depends && info.i of Depends[ri])
-                      rs.push
-                        r:r
-                        v:(r.measures[info.metric.id] ? '').toLowerCase()
-                        d:recordDescription(r)
-                  editScope.records = rs.sort((a, b) -> byMagic(a.v, b.v))
-                else if info.metric.options
-                  editScope.type = 'options'
-                  editScope.options = info.metric.options
-                else if info.metric.long
-                  editScope.type = 'long'
+              return if info.metric.readonly
+              editScope.type = info.metric.type
+              switch info.c
+                when 'slot'
+                  v = info.slot[m]
+                  if m == 'release'
+                    ### jshint ignore:start ###
+                    v ||= 0
+                    ### jshint ignore:end ###
+                when 'asset' # not reached
+                  v = info.asset[m]
                 else
-                  editScope.type = info.metric.type
-                break
-            # when 'add', fall-through
+                  v = info.record?.measures[m]
+                  if info.col.first
+                    editScope.type = 'ident'
+                    editScope.info = info
+                    rs = []
+                    mf = (r) -> (m) -> r.measures[m]
+                    for ri, r of Volume.records
+                      if (r.category || 0) == info.category.id && !(ri of Depends && info.i of Depends[ri])
+                        rs.push
+                          r:r
+                          v:(r.measures[info.metric.id] ? '').toLowerCase()
+                          d:recordDescription(r)
+                    editScope.records = rs.sort((a, b) -> byMagic(a.v, b.v))
+                  else if info.metric.options
+                    editScope.type = 'options'
+                    editScope.options = info.metric.options
+                  else if info.metric.long
+                    editScope.type = 'long'
+                  break
+              editInput.value = (v ? '')+''
+            when 'add'
+              if info.c == 'asset'
+                # for now, just go to slot edit
+                $location.url(info.slot.editRoute())
+                return
+              return if info.slot.id == Volume.top.id
               c = info.category
-              if 'r' of info
-                editInput.value = info.r + ''
+              if info.d?
+                editInput.value = info.d + ''
               else
                 editInput.value = 'remove'
               editScope.type = 'record'
@@ -1041,7 +991,7 @@ app.directive 'spreadsheet', [
           unselect()
           expand(info)
           if info.t == 'rec'
-            for c, ci in info.cell.classList when c.startsWith('ss-rec_')
+            for c in info.cell.classList when c.startsWith('ss-rec_')
               styles.set('.' + c + '{background-color:' +
                 (if c.includes('_', 7) then 'rgba(226,217,0,0.6)' else 'rgba(242,238,100,0.4)') +
                 ';\n text-}')
@@ -1094,7 +1044,7 @@ app.directive 'spreadsheet', [
               run: f
               default: d && !defd
             defd ||= d
-          if info.r
+          if info.d?
             if input == info.record.measures[info.metric.id]
               add("Keep " + info.record.displayName,
                 () -> return,
@@ -1103,7 +1053,7 @@ app.directive 'spreadsheet', [
               add("Remove " + info.record.displayName + " from this session",
                 (info) -> setRecord(info, null),
                 true)
-          if !info.r || input && input != info.record.measures[info.metric.id]
+          if !info.d? || input && input != info.record.measures[info.metric.id]
             inputl = (input ? '').toLowerCase()
             set = (r) -> (info) ->
               setRecord(info, r)
@@ -1117,7 +1067,7 @@ app.directive 'spreadsheet', [
             if input && !os.length
               os = [input]
             os.forEach (i) ->
-              if info.r
+              if info.d?
                 add("Change all " + info.record.displayName + " " + info.metric.name + " to '" + i + "'",
                   (info) -> saveDatum(info, i),
                   input && !rs.length && os.length == 1 || i == input)
