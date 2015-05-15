@@ -384,6 +384,7 @@ app.directive 'spreadsheet', [
                       return
                   a.className = "session icon hint-action-slot"
                   v ?= if stop then constants.message('materials.top') else ''
+                  if stop then cell.classList.add('top-level-materials');
                   t = {}
                 a.setAttribute('href', if Editing then info.slot.editRoute(t) else info.slot.route(t))
               else
