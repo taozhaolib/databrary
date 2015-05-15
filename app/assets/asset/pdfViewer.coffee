@@ -15,6 +15,6 @@ app.directive 'pdfViewer', [
       $transclude (elem) ->
         _.each elem, (i) -> objectTag.appendChild i
       pdfElement.appendChild(objectTag)
-      return 
+      return
 
 ]

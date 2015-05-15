@@ -332,7 +332,7 @@ object PartyController extends PartyController {
 object PartyHtml extends PartyController with HtmlController {
   import PartyController._
 
-  def viewParty(implicit request : Request[_]) = 
+  def viewParty(implicit request : Request[_]) =
     for {
       parents <- request.obj.party.authorizeParents()
       children <- request.obj.party.authorizeChildren()
@@ -366,7 +366,7 @@ object PartyHtml extends PartyController with HtmlController {
         authorizeForms
     } yield (views.html.party.authorize(parents, forms))
   }
-  
+
   def edit(i : models.Party.Id, js : Option[Boolean]) =
     SiteAction.js.andThen(adminAction(i, true)).async { implicit request =>
       editForm(request.asInstanceOf[Request[_] with AuthSite]).Ok

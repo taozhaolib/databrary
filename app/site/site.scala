@@ -17,10 +17,10 @@ object Site {
   val appVersion = appName + "/" + version
 
   type DB = com.github.mauricio.async.db.Connection
-  lazy val dbPool : DB = 
+  lazy val dbPool : DB =
     Play.current.plugin[PostgresAsyncPlugin].fold(throw new Exception("PostgresAsyncPlugin not registered"))(_.pool)
 
-  lazy val accessLog = 
+  lazy val accessLog =
     Play.current.plugin[org.databrary.LogbackAccessPlugin].fold(throw new Exception("LogbackAccessPlugin not registered"))(_.api)
 
   val url = Play.current.configuration.getString("site.url").getOrElse("")

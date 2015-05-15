@@ -131,7 +131,7 @@ object SiteAction extends ActionBuilder[SiteRequest.Base] {
     request.session.get("session").flatMapAsync(models.SessionToken.get _).flatMap { session =>
       val site = SiteRequest[A](request, session)
       AngularController.analytics(site).flatMap(_ =>
-      SiteException.invokeBlock(site, 
+      SiteException.invokeBlock(site,
         if (session.exists(!_.valid)) { request : SiteRequest.Base[A] =>
           session.foreachAsync(_.remove).map { _ =>
             LoginController.needed("login.expired")(request)

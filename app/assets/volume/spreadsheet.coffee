@@ -239,7 +239,7 @@ app.directive 'spreadsheet', [
           info = new Info(el)
           info if info.c
 
-        ################################# Populate data structures 
+        ################################# Populate data structures
 
         # Fill all Data values for Row i
         populateSlot = (i, slot) ->
@@ -351,14 +351,14 @@ app.directive 'spreadsheet', [
           return
 
         ################################# Generate HTML
-        
+
         removeSlotEvent = (info) -> (event) ->
           $scope.$apply () ->
             removeSlot(info)
             return
           event.stopPropagation()
           return
-        
+
         # Add or replace the text contents of cell c for measure/type m with value v
         generateText = (info) ->
           $(cell = info.cell).empty()
@@ -383,8 +383,11 @@ app.directive 'spreadsheet', [
                     i.i = info.i
                     $(del).on 'click', removeSlotEvent(i)
                   a.className = "session icon hint-action-slot"
-                  v ?= if stop then constants.message('materials.top') else ''
-                  if stop then cell.classList.add('top-level-materials');
+                  if stop
+                    cell.classList.add('top-level-materials')
+                    v ?= constants.message('materials.top')
+                  else
+                    v ?= ''
                   t = {}
                 a.setAttribute('href', if Editing then info.slot.editRoute(t) else info.slot.route(t))
               else
@@ -535,7 +538,7 @@ app.directive 'spreadsheet', [
           return
 
         ################################# Place DOM elements
-        
+
         # Place all rows into spreadsheet.
         fill = ->
           collapse()

@@ -92,7 +92,7 @@ sealed class SlotAsset protected (override val asset : Asset, final val segment 
 
   override def pageName = asset.pageName
   override def pageParent = Some(container)
-    
+
   override def json : JsonObject = asset.json ++ super.json +
     ('container -> containerId)
 }
@@ -117,7 +117,7 @@ sealed class AssetSegment private[models] (val slotAsset : SlotAsset, _segment :
 
   override def pageName = _segment.toString
   override def pageParent = Some(slotAsset)
-    
+
   override def json : JsonObject = super.json ++ JsonObject.flatten(
     Some('asset -> slotAsset.json),
     if (format === asset.format) None else Some[JsonField]('format -> format.id),

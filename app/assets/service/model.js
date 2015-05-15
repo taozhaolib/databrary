@@ -69,7 +69,7 @@ app.factory('modelService', [
 	  if (v || !hasField(obj, o)) {
             opts[o] = v;
             need = opts;
-          } 
+          }
 	});
 
       return need;
@@ -476,7 +476,7 @@ app.factory('modelService', [
           return volumeMake(res.data);
         });
     };
-    
+
     Volume.search = function (data) {
       return router.http(router.controllers.VolumeApi.search, data)
         .then(function (res) {
@@ -1158,7 +1158,7 @@ app.factory('modelService', [
     };
 
     ///////////////////////////////// Tag
-    
+
     // no point in a model, really
     var Tag = {};
 

@@ -36,7 +36,7 @@ object TagName {
 
   /** Determine if the given tag name is valid.
     * @return the normalized name if valid or throw IllegalArgumentException */
-  def apply(name : String) : TagName = 
+  def apply(name : String) : TagName =
     validate(name).getOrElse(throw new IllegalArgumentException("invalid tag name"))
 
   implicit val sqlType : SQL.Type[TagName] = SQL.Type.transform[String,TagName]("varchar(32)", classOf[TagName])(n => Some(new TagName(n)), _.name)
@@ -113,7 +113,7 @@ private[models] object TagUse extends Table[Unit]("tag_use") {
     }
 
   private[models] def remove(tag : AbstractTag, slot : Slot, keyword : Boolean = false) : Future[Option[Tag]] =
-    (lsql"DELETE FROM ONLY " + table(keyword) 
+    (lsql"DELETE FROM ONLY " + table(keyword)
       ++ (tag match {
         case n : TagName => lsql" USING tag WHERE tag = tag.id AND name = $n"
         case t : Tag => lsql" WHERE tag = ${t.id}"

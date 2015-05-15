@@ -9,7 +9,7 @@ app.directive 'showInvestigators', [
     templateUrl: 'volume/showInvestigators.html',
     link: ($scope, $element, $attrs) ->
       $scope.title = $attrs.title
-      
+
       maxPerm = constants.permission[$attrs.maxlevel] ? constants.permission.length
       minPerm = constants.permission[$attrs.minlevel] ? 0
       $scope.investigators = $scope.volume.access.filter (i) ->

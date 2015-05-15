@@ -39,11 +39,11 @@ app.directive 'authSearchForm', [
             institution: form.principal == 'principal' || (if form.principal == 'affiliate' then false else undefined)
           ).then (data) ->
               form.validator.server {}
-              
+
               l = _.map data, (found) ->
                     text: found.name
                     select:select found
-                    
+
               l.push notfound
               l
             , (res) ->

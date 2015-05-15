@@ -47,7 +47,7 @@ private[models] object MeasureType {
     measureText,
     measureNumber,
     measureDate)
-    
+
   def apply(dataType : DataType.Value) : MeasureType[_] = all(dataType.id)
 }
 
@@ -183,7 +183,7 @@ object MeasureV extends Table[MeasureV[_]]("measure_all") {
       })
     )
   }
-  
+
   /** Retrieve the specific measure of the specified metric in the given record.
     * This does not check permissions so is unsafe.
     * @tparam T the type of the data value */

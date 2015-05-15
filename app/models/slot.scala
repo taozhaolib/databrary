@@ -223,7 +223,7 @@ private[models] object SlotRelease extends Table[SlotRelease]("slot_release") wi
   private[models] val release = Columns(
       SelectColumn[Release.Value]("release")
     )
-  private val columns = 
+  private val columns =
     (release ~+ segment).map(Row.apply _)
   private[models] def rowContainer(container : Container) : Selector[ContextSlot] =
     columns.map(_(container))

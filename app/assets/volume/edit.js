@@ -32,7 +32,7 @@ app.controller('volume/edit', [
       if (url.includes(volume ? volume.editRoute() : router.volumeCreate()))
         return;
       if (!leavingSoSoon())
-        return display.cancelRouteChange(event); 
+        return display.cancelRouteChange(event);
     });
 
     $scope.$watch(function () {

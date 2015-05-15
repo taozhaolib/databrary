@@ -114,7 +114,7 @@ app.factory('Segment', [
       return (isFinite(l) ? l : '') +
         ',' + (isFinite(u) ? u : '');
     };
-    
+
     Segment.prototype.toString = Segment.prototype.format;
 
     Segment.prototype.equals = function (that) {

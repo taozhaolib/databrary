@@ -37,7 +37,7 @@ app.directive('partyEditProfileForm', [
           });
         } else
           fd = form.data;
-        
+
         party.save(fd)
           .then(function () {
             form.validator.server({});

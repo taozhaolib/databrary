@@ -375,9 +375,9 @@ app.controller('volume/slot', [
           @choose()
         return
 
-      # Generic function that takes in a time, then will determine if it's 
+      # Generic function that takes in a time, then will determine if it's
       # close enough to do a premiere-esque "snap" feature to the nearest
-      # object. 
+      # object.
       snapping: (pos) ->
         # Let's start with an empty array, which will contain all the times
         # to compare against.
@@ -385,7 +385,7 @@ app.controller('volume/slot', [
 
         # First, let's make a giant array of all the items we want to compare
         # times against.  Then let's extract all the times for the objects into
-        # an even bigger array. 
+        # an even bigger array.
         ### jshint ignore:start ###
         for i in $scope.assets.concat(records, $scope.consents) when i isnt this
           # We don't want to have the item snap to itself.
@@ -604,7 +604,7 @@ app.controller('volume/slot', [
         @file = file
         @progress = 0
         file.store = this
-        
+
         router.http(router.controllers.AssetApi.uploadStart, slot.volume.id,
             filename: file.name
             size: file.size

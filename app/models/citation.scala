@@ -31,7 +31,7 @@ final case class Citation(val head : String, val title : Option[String] = None, 
       url orElse other.url,
       year orElse other.year)
 
-  def lookup(replace : Boolean = false) : Future[Citation] = 
+  def lookup(replace : Boolean = false) : Future[Citation] =
     if (!replace && head.nonEmpty && title.nonEmpty && year.nonEmpty)
       async(this)
     else

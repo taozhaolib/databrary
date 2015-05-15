@@ -13,10 +13,10 @@ object CSV {
   implicit private val executionContext = context.foreground
 
   def volume(vol: Volume): Future[String] = {
-    vol.records.flatMap{r => 
+    vol.records.flatMap{r =>
       vol.containers.flatMap{ ca =>
         val c = ca.filter(!_.top)
-        c.mapAsync(_.records).map{crs => 
+        c.mapAsync(_.records).map{crs =>
           val rml: Seq[Map[Option[RecordCategory], Seq[Record]]] = crs.map(_.map(_._2).groupBy(_.category))
           val header: Seq[(Option[RecordCategory], Int, Seq[Metric[_]])] = makeHeader(maxCats(rml), headerData(r))
           val body: Seq[Seq[String]] = rml.map(row(header, _))
@@ -50,10 +50,10 @@ object CSV {
   }
 
   private def row(h: Seq[(Option[RecordCategory], Int, Seq[Metric[_]])], data: Map[Option[RecordCategory], Seq[Record]]): Seq[String] = {
-    h.flatMap { case (c, i, ml) => 
+    h.flatMap { case (c, i, ml) =>
       val recList:Seq[Record] = data.getOrElse(c, Nil)
       recList.flatMap { r =>
-        ml.map { m => 
+        ml.map { m =>
           r.measures(m).fold("")(_.datum)
         }
       } ++ Seq.fill((i - recList.length) * ml.length)("")
@@ -63,14 +63,14 @@ object CSV {
   private def cData(cs: Seq[Container]): Seq[Seq[String]] = {
     cs.map(c => Seq(c._id.toString, c.name.getOrElse(""), c.getDate.fold("")(_.toString)))
   }
-  
+
   private def escapeCSV(s: String): String = {
     if (s.contains("\"") || s.contains("\n") || s.contains(","))
       "\"" + s.replaceAllLiterally("\"", "\"\"") + "\""
     else
       s
-  }   
-    
+  }
+
   private def expandHeader(h: Seq[(Option[RecordCategory], Int, Seq[Metric[_]])]): Seq[String] = {
     h.flatMap { case (c, n, ml) =>
       val cn = c.fold("")(_.name)
@@ -85,6 +85,6 @@ object CSV {
     val containerHeads = Seq("session-id", "session-name", "session-date")
     ((containerHeads, expandHeader(header)) +: cd.zip(body))
       .map(v => (v._1 ++ v._2).map(escapeCSV).mkString(",")).mkString("", "\n", "\n")
-  }    
+  }
 
 }

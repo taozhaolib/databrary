@@ -24,7 +24,7 @@ object HTTP extends HeaderNames {
     catching(classOf[IllegalArgumentException]).opt(asctimeDate.parseLocalDateTime(s))
   def date(d : Timestamp) : String =
     rfc1123Date.print(d)
-  
+
   private val rangeRegex = "bytes=([0-9]*)-([0-9]*)".r
   def parseRange(s : String, size : Long) : Option[(Long, Long)] =
     (s match {

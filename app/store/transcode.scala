@@ -24,7 +24,7 @@ object Transcode {
   private def procLogger(prefix : String) = {
     val pfx = if (prefix.nonEmpty) prefix + ": " else prefix
     scala.sys.process.ProcessLogger(
-      s => logger.info(pfx + s), 
+      s => logger.info(pfx + s),
       s => logger.warn(pfx + s))
   }
 
@@ -47,7 +47,7 @@ object Transcode {
   def start(id : models.Transcode.Id, args : Seq[String]) : Future[Int] =
     ctl(id, args : _*)
     .map(_.toInt)
-    .whenComplete { r => 
+    .whenComplete { r =>
       logger.debug("running " + id + ": " + r.toEither.merge.toString)
     }
 
