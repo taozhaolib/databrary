@@ -567,14 +567,11 @@ app.directive 'spreadsheet', [
 
         # Sort by column
         sortBy = (col, compare) ->
-          console.log(col.category.id)
-          console.log(col.metric.id)
           values = Data[col.category.id][col.metric.id][0]
           if currentSort == col
             currentSortDirection = !currentSortDirection
             Order.reverse()
           else
-            console.log(values)
             sort(values, compare)
             currentSort = col
             currentSortDirection = false
