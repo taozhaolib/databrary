@@ -76,7 +76,8 @@ Executable databrary
     bcrypt,
     http-client,
     mime-mail,
-    fast-logger
+    fast-logger,
+    digest
 
   Extensions: MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, ScopedTypeVariables, ConstraintKinds, PatternGuards
 
