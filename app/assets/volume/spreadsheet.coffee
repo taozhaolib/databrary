@@ -15,7 +15,7 @@ app.directive 'spreadsheet', [
         b = tb
       byDefault(a,b)
     byMagic = (a,b) ->
-      if isNaN(d = a-b) then byDefault(a,b) else d
+      if isNaN(d = a-b) then byType(a,b) else d
     bySortId = (a,b) ->
       (a.sort || a.id)-(b.sort || b.id)
 
@@ -73,7 +73,7 @@ app.directive 'spreadsheet', [
         name: 'age'
         type: 'number'
         release: constants.release.EXCERPTS
-        sort: constants.metric.birthdate + 0.5
+        sort: constants.metricName.birthdate.id + 0.5
         readonly: true
     constants.deepFreeze(pseudoMetric)
     getMetric = (m) ->
@@ -106,19 +106,13 @@ app.directive 'spreadsheet', [
         #   Metric_id = Database id of metric, or "id" for Record_id, or "age" (m)
         ###
 
-        ### jshint ignore:start #### fixed in jshint 2.5.7
-        Slots = (container for containerId, container of Volume.containers when Top != !container.top) # [Row] = Slot
-        ### jshint ignore:end ###
-
-        Order = if Slots.length then [0..Slots.length-1] else [] # Permutation Array of Row in display order
-
-        Data = {}                   # [Category_id][Metric_id][Count] :: Data
-        Counts = new Array(Slots.length) # [Row][Category_id] :: Count
-        Groups = []                 # [] Array over categories :: {category: Category, metrics[]: Array of Metric}
-        Cols = []                   # [] Array over metrics :: {category: Category, metric: Metric} (flattened version of Groups)
-        Depends = {}                # [Record_id][Row] :: Count
-
-        Rows = new Array(Slots.length) # [Row] :: DOM Element tr
+        Order = []      # Permutation Array of Row in display order
+        Data = {}       # [Category_id][Metric_id][Count] :: Data
+        Counts = []     # [Row][Category_id] :: Count
+        Groups = []     # [] Array over categories :: {category: Category, metrics[]: Array of Metric}
+        Cols = []       # [] Array over metrics :: {category: Category, metric: Metric} (flattened version of Groups)
+        Depends = {}    # [Record_id][Row] :: Count
+        Rows = []       # [Row] :: DOM Element tr
 
         TBody = $element[0].getElementsByTagName("tbody")[0]
 
@@ -159,7 +153,7 @@ app.directive 'spreadsheet', [
           #   count: Count[i][c]
           #   metric: Metric
           #   row: Rows[i]
-          #   slot: Slots[i]
+          #   slot: Container
           #   d: Data for id metric
           #   record: Record
           #   asset: Asset
@@ -172,25 +166,23 @@ app.directive 'spreadsheet', [
           parseId: (i) ->
             return unless (if i? then @id = i else i = @id) and (i = stripPrefix(i, ID+'-'))
             s = i.split '_'
-            return if s.length > 1 && isNaN(@i = parseInt(s[1], 10))
-            switch @t = s[0]
-              when 'rec'
-                if 3 of s
-                  @n = parseInt(s[2], 10)
-                  @m = parseInt(s[3], 10)
-                else
-                  @m = parseInt(s[2], 10)
+            switch s[0]
               when 'add', 'more'
+                @t = s[0]
+                @i = parseInt(s[1], 10)
                 @c = s[2]
               when 'metric'
-                @m = @i
-                delete @i
+                @t = s[0]
+                @m = parseInt(s[1], 10)
               when 'category'
-                @c = @i
-                delete @i
-              #when 'asset', 'class', 'excerpt'
-              #  @c = 'asset'
-              #  info.a = if 2 of s then parseInt(s[2], 10) else 0
+                @t = s[0]
+                @c = parseInt(s[1], 10)
+              else
+                @i = parseInt(s[0], 10)
+                @m = parseInt(s[1], 10)
+                if 2 of s
+                  @n = parseInt(s[2], 10)
+                else
             true
 
           properties =
@@ -216,10 +208,10 @@ app.directive 'spreadsheet', [
               @col?.metric
             row: ->
               Rows[@i]
-            slot: ->
-              Slots[@i]
             d: ->
               Data[@c].id[@n]?[@i]
+            slot: ->
+              Volume.containers[if @c == 'slot' then @d else Data.slot.id[0][@i]]
             record: ->
               Volume.records[@d]
             asset: ->
@@ -250,9 +242,7 @@ app.directive 'spreadsheet', [
         ################################# Populate data structures 
 
         # Fill all Data values for Row i
-        populateSlot = (i) ->
-          slot = Slots[i]
-
+        populateSlot = (i, slot) ->
           # r, n
           populateMeasure = (m, v) ->
             arr(arr(r, m), n)[i] = v
@@ -348,13 +338,26 @@ app.directive 'spreadsheet', [
           Data.slot = {id:[]}
           Data.asset = {id:[]} if Assets
           Depends = {}
-          for s, i in Slots
-            populateSlot(i)
+          Counts = []
+          i = 0
+          ### jshint ignore:start ###
+          for ci, c of Volume.containers when Top != !c.top
+            populateSlot(i++, c)
+          ### jshint ignore:end ###
           populateCols()
+          if Order.length != i
+            Order = if i then [0..i-1] else []
           generate()
           return
 
         ################################# Generate HTML
+        
+        removeSlotEvent = (info) -> (event) ->
+          $scope.$apply () ->
+            removeSlot(info)
+            return
+          event.stopPropagation()
+          return
         
         # Add or replace the text contents of cell c for measure/type m with value v
         generateText = (info) ->
@@ -375,13 +378,10 @@ app.directive 'spreadsheet', [
                   if Editing && !stop
                     del = cell.insertBefore(document.createElement('a'), a)
                     del.className = 'trash icon'
-                    i = info.i
-                    $(del).on 'click', (event) ->
-                      $scope.$apply () ->
-                        removeSlot(cell, i)
-                        return
-                      event.stopPropagation()
-                      return
+                    i = new Info()
+                    i.cell = cell
+                    i.i = info.i
+                    $(del).on 'click', removeSlotEvent(i)
                   a.className = "session icon hint-action-slot"
                   v ?= if stop then constants.message('materials.top') else ''
                   if stop then cell.classList.add('top-level-materials');
@@ -437,7 +437,7 @@ app.directive 'spreadsheet', [
               if Editing
                 info.metric = info.cols.metrics[0]
                 if info.metric.id != 'id'
-                  info.id = ID+'-rec_'+info.i+(if info.n? then '_'+info.n else '')+'_'+info.cols.start
+                  info.id = ID+'-'+info.i+'_'+info.cols.start+(if info.hasOwnProperty('n') then '_'+info.n else '')
                   info.v = undefined
                   info.d = undefined
                   generateCell(info)
@@ -462,22 +462,24 @@ app.directive 'spreadsheet', [
           return unless l = ms.length
           t = info.count
           r = Data[info.c]
+          cls = 'ss-'
+          if typeof info.c != 'number'
+            cls += info.c.charAt(0)
           if td = generateMultiple(info) # (col, l, row, i, n, t)
             unless info.hasOwnProperty('n')
               for n in [0..t-1] by 1
-                td.classList.add('ss-rec_' + r.id[n][info.i])
+                td.classList.add(cls + r.id[n][info.i])
             return
-          b = ID + '-rec_' + info.i + '_'
-          if info.hasOwnProperty('n')
-            b += info.n + '_'
+          pre = ID + '-' + info.i + '_'
+          post = if info.hasOwnProperty('n') then '_' + info.n else ''
           for mi in [0..l-1] by 1
             info.metric = ms[mi]
             info.v = r[info.metric.id][info.n]?[info.i]
             info.d = r.id[info.n][info.i]
-            info.id = b + (info.cols.start+mi)
+            info.id = pre + (info.cols.start+mi) + post
             generateCell(info)
             if info.v != null
-              info.cell.classList.add(ri = 'ss-rec_' + info.d)
+              info.cell.classList.add(ri = cls + info.d)
               info.cell.classList.add(ri + '_' + info.metric.id)
           return
 
@@ -507,7 +509,7 @@ app.directive 'spreadsheet', [
             continue unless m.metric.id == 'age'
             info.m = mi
             r = Data[info.c][info.metric.id]
-            pre = ID + '-rec_'
+            pre = ID + '-'
             post = '_' + mi
             if expanded?.c == info.c && expanded.count > 1
               info.i = expanded.i
@@ -527,7 +529,7 @@ app.directive 'spreadsheet', [
 
         # Generate all rows.
         generate = ->
-          for s, i in Slots
+          for i in Order
             generateRow(i)
           fill()
           return
@@ -550,36 +552,31 @@ app.directive 'spreadsheet', [
         sort = (values, compare) ->
           return unless values
           compare ?= byMagic
-          idx = new Array(Slots.length)
+          idx = new Array(Order.length)
           for o, i in Order
             idx[o] = i
           Order.sort (i, j) ->
             compare(values[i], values[j]) || idx[i] - idx[j]
           return
 
-        sort(Slots.map((s) -> s.date), byDefault)
-        currentSort = 'date'
+        currentSort = undefined
         currentSortDirection = false
-  
-        # Sort by values, called name.
-        sortBy = (key, values) ->
-          if currentSort == key
+
+        # Sort by column
+        sortBy = (col, compare) ->
+          console.log(col.category.id)
+          console.log(col.metric.id)
+          values = Data[col.category.id][col.metric.id][0]
+          if currentSort == col
             currentSortDirection = !currentSortDirection
             Order.reverse()
           else
-            sort(values)
-            currentSort = key
+            console.log(values)
+            sort(values, compare)
+            currentSort = col
             currentSortDirection = false
           fill()
           return
-
-        # Sort by one of the container columns.
-        sortBySlot = (f) ->
-          sortBy(f, Slots.map((s) -> s[f]))
-
-        # Sort by Category_id c's Metric_id m
-        sortByMetric = (col) ->
-          sortBy(col, Data[col.category.id][col.metric.id][0])
 
         $scope.colClasses = (col) ->
           cls = []
@@ -618,26 +615,26 @@ app.directive 'spreadsheet', [
         createSlot = (cell) ->
           saveRun cell, Volume.createContainer({top:Top}).then (slot) ->
             arr(slot, 'records')
-            i = Slots.push(slot)-1
+            i = Rows.length
             Order.push(i)
-            populateSlot(i)
+            populateSlot(i, slot)
             generateRow(i)
             TBody.appendChild(Rows[i])
             return
 
-        removeSlot = (cell, i) ->
+        removeSlot = (info) ->
           # assuming we have a container
-          saveRun cell, Slots[i].remove().then (done) ->
+          saveRun info.cell, info.slot.remove().then (done) ->
             unless done
               messages.add
                 body: constants.message('slot.remove.notempty')
                 type: 'red'
-                owner: cell
+                owner: info.cell
               return
             unedit(false)
             collapse()
-            $(Rows[i]).remove()
-            Slots.splice(i, 1)
+            i = info.i
+            $(info.row).remove()
             Counts.splice(i, 1)
             Rows.splice(i, 1)
             Order.remove(i)
@@ -714,7 +711,7 @@ app.directive 'spreadsheet', [
                 arr(rcm, n)[i] = v
                 # TODO age may have changed... not clear how to update.
               info.v = v
-              l = TBody.getElementsByClassName('ss-rec_' + info.d + '_' + info.metric.id)
+              l = TBody.getElementsByClassName('ss-' + info.d + '_' + info.metric.id)
               for li in l
                 info.cell = li
                 generateText(info)
@@ -854,7 +851,7 @@ app.directive 'spreadsheet', [
 
         edit = (info) ->
           switch info.t
-            when 'rec'
+            when undefined
               if info.c == 'asset'
                 # for now, just go to slot edit
                 $location.url(info.slot.editRoute({asset:info.d}))
@@ -975,10 +972,10 @@ app.directive 'spreadsheet', [
         select = (info) ->
           unselect()
           expand(info)
-          if info.t == 'rec'
-            for c in info.cell.classList when c.startsWith('ss-rec_')
+          if !info.t
+            for c in info.cell.classList when c.startsWith('ss-')
               styles.set('.' + c + '{background-color:' +
-                (if c.includes('_', 7) then 'rgba(226,217,0,0.6)' else 'rgba(242,238,100,0.4)') +
+                (if c.includes('_', 4) then 'rgba(226,217,0,0.6)' else 'rgba(242,238,100,0.4)') +
                 ';\n text-}')
 
           edit(info) if Editing
@@ -1000,7 +997,7 @@ app.directive 'spreadsheet', [
             while true
               c = if event.shiftKey then c.previousSibling else c.nextSibling
               return unless c && c.tagName == 'TD' && i = parseId(c)
-              break unless info.t == 'rec' && info.metric.id == 'id' # skip "delete" actions
+              break unless !info.t && info.metric.id == 'id' # skip "delete" actions
             select(i)
 
           return
@@ -1089,7 +1086,7 @@ app.directive 'spreadsheet', [
           return
 
         $scope.clickMetric = (col) ->
-          sortByMetric(col) if col.sortable
+          sortBy(col) if col.sortable
           return
 
         $scope.clickNew = ($event) ->
