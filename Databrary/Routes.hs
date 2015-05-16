@@ -27,6 +27,7 @@ import Databrary.Controller.Upload
 import Databrary.Controller.Asset
 import Databrary.Controller.AssetSegment
 import Databrary.Controller.Excerpt
+import Databrary.Controller.Zip
 import Databrary.Controller.Tag
 import Databrary.Controller.Comment
 import Databrary.Controller.Transcode
@@ -70,10 +71,12 @@ routeMap = fromRouteList
   , route deleteVolumeFunder
   , route createVolume
   , route queryVolumes
+  , route zipVolume
 
   , route createContainer
   , route viewSlot
   , route postContainer
+  , route zipContainer
 
   , route viewAsset
   , route postAsset

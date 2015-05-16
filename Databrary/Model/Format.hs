@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell, OverloadedStrings, RecordWildCards #-}
+{-# LANGUAGE TemplateHaskell, OverloadedStrings, RecordWildCards, ViewPatterns #-}
 module Databrary.Model.Format
   ( module Databrary.Model.Format.Types
   , unknownFormat
@@ -6,6 +6,7 @@ module Databrary.Model.Format
   , getFormat
   , getFormat'
   , getFormatByExtension
+  , addFormatExtension
   , getFormatByFilename
   , dropFormatExtension
   , videoFormat
@@ -22,7 +23,7 @@ import Data.Char (toLower)
 import qualified Data.IntMap.Strict as IntMap
 import qualified Data.Map.Strict as Map
 import Data.Maybe (catMaybes)
-import System.Posix.FilePath (RawFilePath, splitExtension, takeExtension)
+import System.Posix.FilePath (RawFilePath, splitExtension, takeExtension, addExtension)
 
 import Databrary.Ops
 import qualified Databrary.JSON as JSON
@@ -55,6 +56,10 @@ formatsByExtension = Map.fromList [ (e, a) | a <- allFormats, e <- formatExtensi
 
 getFormatByExtension :: BS.ByteString -> Maybe Format
 getFormatByExtension e = Map.lookup (BSC.map toLower e) formatsByExtension
+
+addFormatExtension :: RawFilePath -> Format -> RawFilePath
+addFormatExtension p (formatExtension -> (e:_)) = addExtension p e
+addFormatExtension p _ = p
 
 getFormatByFilename :: RawFilePath -> Maybe Format
 getFormatByFilename n = do

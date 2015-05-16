@@ -5,6 +5,7 @@ module Databrary.Model.Volume
   , lookupVolume
   , changeVolume
   , addVolume
+  , auditVolumeDownload
   , VolumeFilter(..)
   , findVolumes
   , getVolumeAlias
@@ -16,7 +17,7 @@ import Control.Monad (guard)
 import Data.Maybe (catMaybes)
 import Data.Monoid (Monoid(..), (<>))
 import qualified Data.Text as T
-import Database.PostgreSQL.Typed.Query (unsafeModifyQuery)
+import Database.PostgreSQL.Typed.Query (pgSQL, unsafeModifyQuery)
 import Database.PostgreSQL.Typed.Dynamic (pgSafeLiteral)
 import Database.PostgreSQL.Typed.Types (pgQuote)
 
@@ -56,6 +57,12 @@ addVolume bv = do
 
 getVolumeAlias :: Volume -> Maybe T.Text
 getVolumeAlias v = guard (volumePermission v >= PermissionREAD) >> volumeAlias v
+
+auditVolumeDownload :: MonadAudit c m => Bool -> Volume -> m ()
+auditVolumeDownload success vol = do
+  ai <- getAuditIdentity
+  dbExecute1' [pgSQL|$INSERT INTO audit.volume (audit_action, audit_user, audit_ip, id) VALUES
+    (${if success then AuditActionOpen else AuditActionAttempt}, ${auditWho ai}, ${auditIp ai}, ${volumeId vol})|]
 
 volumeJSON :: Volume -> JSON.Object
 volumeJSON v@Volume{..} = JSON.record volumeId $ catMaybes

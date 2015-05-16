@@ -111,13 +111,13 @@ serveAssetSegment dl as = do
 
 downloadAssetSegment :: AppRoute (Id Slot, Id Asset)
 downloadAssetSegment = action GET (pathSlotId </> pathId </< "download") $ \(si, ai) -> withAuth $ do
-  as <- getAssetSegment PermissionREAD si ai
+  as <- getAssetSegment PermissionPUBLIC si ai
   inline <- peeks $ lookupQueryParameters "inline"
   serveAssetSegment (null inline) as
 
 thumbAssetSegment :: AppRoute (Id Slot, Id Asset)
 thumbAssetSegment = action GET (pathSlotId </> pathId </< "thumb") $ \(si, ai) -> withAuth $ do
-  as <- getAssetSegment PermissionREAD si ai
+  as <- getAssetSegment PermissionPUBLIC si ai
   q <- peeks Wai.queryString
   let afmt = view as
   if formatIsImage (fromMaybe afmt (formatSample afmt))

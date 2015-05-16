@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Container
   ( getContainer
+  , viewContainer
   , createContainer
   , postContainer
   , containerDownloadName

@@ -11,10 +11,12 @@ module Databrary.Ops
   , fromMaybeM
   , orElseM
   , flatMapM
+  , mapMaybeM
   ) where
 
 import Control.Applicative
 import Data.Functor
+import Data.Maybe (catMaybes)
 import Data.Monoid (Monoid(..))
 
 infixl 1 <?, <!?
@@ -85,3 +87,6 @@ orElseM m _ = return m
 
 flatMapM :: Monad m => (a -> m (Maybe b)) -> Maybe a -> m (Maybe b)
 flatMapM = maybe (return Nothing)
+
+mapMaybeM :: (Functor m, Monad m) => (a -> m (Maybe b)) -> [a] -> m [b]
+mapMaybeM f l = catMaybes <$> mapM f l

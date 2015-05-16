@@ -2,12 +2,12 @@
 module Databrary.Store.Zip
   ( ZipEntryContent(..)
   , ZipEntry(..)
+  , blankZipEntry
   , streamZip
   , writeZipFile
   , fileZipEntry
   ) where
 
-import Control.Applicative ((<$>))
 import Control.Monad (when)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.RWS.Strict (RWST, runRWST, ask, local, tell)
@@ -19,7 +19,7 @@ import qualified Data.ByteString.Builder as B
 import qualified Data.ByteString.Builder.Extra as B (defaultChunkSize)
 import qualified Data.ByteString.Lazy as BSL
 import Data.Digest.CRC32 (crc32, crc32Update)
-import Data.Maybe (isJust, fromMaybe, fromJust, catMaybes)
+import Data.Maybe (isJust, fromMaybe, fromJust)
 import Data.Monoid (Monoid, mempty, (<>))
 import Data.Time.Calendar (toGregorian)
 import Data.Time.Clock (UTCTime(..), getCurrentTime)
@@ -33,6 +33,7 @@ import System.Posix.Directory.Traversals (getDirectoryContents)
 import System.Posix.FilePath ((</>), addTrailingPathSeparator)
 import System.Posix.Files.ByteString (getFileStatus, isDirectory, modificationTimeHiRes, fileSize)
 
+import Databrary.Ops
 import Databrary.Store
 
 data ZipEntryContent
@@ -51,6 +52,16 @@ data ZipEntry = ZipEntry
   , zipEntryComment :: BS.ByteString
   , zipEntryContent :: ZipEntryContent
   } deriving (Show, Eq)
+
+blankZipEntry :: ZipEntry
+blankZipEntry = ZipEntry
+  { zipEntryName = BS.empty
+  , zipEntryTime = Nothing
+  , zipEntryCRC32 = Nothing
+  , zipEntrySize = Nothing
+  , zipEntryComment = BS.empty
+  , zipEntryContent = ZipEntryPure BSL.empty
+  }
 
 getEntryCRC32 :: ZipEntry -> Maybe Word32
 getEntryCRC32 ZipEntry{ zipEntryContent = ZipDirectory _ } = return 0
@@ -105,8 +116,8 @@ data ZipCEntry = ZipCEntry
   , zipCEntry :: !ZipEntry
   }
 
-streamZip :: (B.Builder -> IO ()) -> [ZipEntry] -> BS.ByteString -> IO ()
-streamZip write entries comment = do
+streamZip :: [ZipEntry] -> BS.ByteString -> (B.Builder -> IO ()) -> IO ()
+streamZip entries comment write = do
   t <- getCurrentTime
   ((), off, centries) <- runRWST (streamZipEntries entries) (BS.empty, t) 0
   (z64s, csize) <- runStateT (mapM streamZipCEntry centries) 0
@@ -132,7 +143,6 @@ streamZip write entries comment = do
     <> zipSize off
     <> B.word16LE (fromIntegral $ BS.length comment)
     <> B.byteString comment
-  write mempty
   where
   slash (ZipDirectory _) = addTrailingPathSeparator
   slash _ = id
@@ -237,20 +247,19 @@ streamZip write entries comment = do
 
 writeZipFile :: FilePath -> [ZipEntry] -> BS.ByteString -> IO ()
 writeZipFile f e c =
-  withFile f WriteMode $ \h ->
-    streamZip (B.hPutBuilder h) e c
+  withFile f WriteMode $ streamZip e c . B.hPutBuilder
 
 fileZipEntry :: RawFilePath -> IO ZipEntry
-fileZipEntry f = do
-  s <- getFileStatus f
+fileZipEntry src = do
+  s <- getFileStatus src
   let t = posixSecondsToUTCTime $ modificationTimeHiRes s
   if isDirectory s
-    then dir f f (Just t)
-    else return $ file' f f (fileSize s) t
+    then dir src src (Just t)
+    else return $ file' src src (fileSize s) t
   where
   dir d n t = do
     l <- getDirectoryContents d
-    c <- catMaybes <$> mapM (ent d) l
+    c <- mapMaybeM (ent d) l
     return ZipEntry
       { zipEntryName = n
       , zipEntryTime = t

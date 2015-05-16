@@ -88,7 +88,7 @@ assetJSONQuery :: (MonadDB m, MonadHasIdentity c m) => AssetSlot -> JSON.Query -
 assetJSONQuery vol = JSON.jsonQuery (assetSlotJSON vol) (assetJSONField vol)
 
 assetDownloadName :: Asset -> [T.Text]
-assetDownloadName a = maybeToList $ assetName a
+assetDownloadName a = T.pack (show (assetId a)) : maybeToList (assetName a)
 
 viewAsset :: AppRoute (API, Id Asset)
 viewAsset = action GET (pathAPI </> pathId) $ \(api, i) -> withAuth $ do
@@ -251,6 +251,6 @@ deleteAsset = action DELETE (pathAPI </> pathId) $ \(api, ai) -> withAuth $ do
 
 downloadAsset :: AppRoute (Id Asset)
 downloadAsset = action GET (pathId </< "download") $ \ai -> withAuth $ do
-  as <- getAsset PermissionREAD ai
+  as <- getAsset PermissionPUBLIC ai
   inline <- peeks $ lookupQueryParameters "inline"
   serveAssetSegment (null inline) $ assetSlotSegment as

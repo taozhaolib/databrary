@@ -18,7 +18,7 @@ import Databrary.Store
 import Databrary.HTTP.Request
 import Databrary.HTTP
 import Databrary.Action
-import Databrary.Model.Format (Format, formatMimeType, formatExtension)
+import Databrary.Model.Format
 
 fileResponse :: (MonadAction c m, MonadIO m) => RawFilePath -> Format -> Maybe BS.ByteString -> BS.ByteString -> m (ResponseHeaders, Maybe Wai.FilePart)
 fileResponse file fmt save etag = do
@@ -29,7 +29,7 @@ fileResponse file fmt save etag = do
         , (hLastModified, formatHTTPTimestamp mt)
         , (hContentType, formatMimeType fmt)
         , ("content-disposition", maybe "inline" (\n -> "attachment; filename="
-            <> quoteHTTP (n <> case formatExtension fmt of { [] -> "" ; (e:_) -> "." <> e })) save)
+            <> quoteHTTP (addFormatExtension n fmt)) save)
         , (hCacheControl, "max-age=31556926, private")
         ]
   req <- peek

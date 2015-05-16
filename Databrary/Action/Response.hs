@@ -43,6 +43,9 @@ instance ResponseData BS.ByteString where
 instance ResponseData StreamingBody where
   response = responseStream
 
+instance ResponseData ((BSB.Builder -> IO ()) -> IO ()) where
+  response s h f = responseStream s h (\w _ -> f w)
+
 instance ResponseData (FilePath, Maybe FilePart) where
   response s h (f, p) = responseFile s h' f p where
     h'
