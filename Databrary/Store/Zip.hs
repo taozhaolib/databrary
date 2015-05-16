@@ -1,8 +1,10 @@
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE RecordWildCards, OverloadedStrings #-}
 module Databrary.Store.Zip
   ( ZipEntryContent(..)
   , ZipEntry(..)
   , streamZip
+  , writeZipFile
+  , fileZipEntry
   ) where
 
 import Control.Applicative ((<$>))
@@ -17,15 +19,19 @@ import qualified Data.ByteString.Builder as B
 import qualified Data.ByteString.Builder.Extra as B (defaultChunkSize)
 import qualified Data.ByteString.Lazy as BSL
 import Data.Digest.CRC32 (crc32, crc32Update)
-import Data.Maybe (isJust, fromMaybe, fromJust)
+import Data.Maybe (isJust, fromMaybe, fromJust, catMaybes)
 import Data.Monoid (Monoid, mempty, (<>))
 import Data.Time.Calendar (toGregorian)
 import Data.Time.Clock (UTCTime(..), getCurrentTime)
+import Data.Time.Clock.POSIX (posixSecondsToUTCTime)
 import Data.Time.LocalTime (TimeOfDay(..), timeToTimeOfDay)
 import Data.Word (Word32, Word64)
-import System.IO (withFile, IOMode(ReadMode))
+import System.IO (withFile, IOMode(ReadMode, WriteMode))
 import System.IO.Error (mkIOError, eofErrorType)
-import System.Posix.FilePath (addTrailingPathSeparator)
+import System.Posix.Directory.Foreign (dtDir, dtReg)
+import System.Posix.Directory.Traversals (getDirectoryContents)
+import System.Posix.FilePath ((</>), addTrailingPathSeparator)
+import System.Posix.Files.ByteString (getFileStatus, isDirectory, modificationTimeHiRes, fileSize)
 
 import Databrary.Store
 
@@ -33,6 +39,7 @@ data ZipEntryContent
   = ZipDirectory [ZipEntry]
   | ZipEntryPure BSL.ByteString
   | ZipEntryFile RawFilePath
+  deriving (Show, Eq)
 
 type ZipPath = BS.ByteString
 
@@ -43,12 +50,13 @@ data ZipEntry = ZipEntry
   , zipEntrySize :: Maybe Word64
   , zipEntryComment :: BS.ByteString
   , zipEntryContent :: ZipEntryContent
-  }
+  } deriving (Show, Eq)
 
 getEntryCRC32 :: ZipEntry -> Maybe Word32
 getEntryCRC32 ZipEntry{ zipEntryContent = ZipDirectory _ } = return 0
 getEntryCRC32 ZipEntry{ zipEntryCRC32 = Just c } = return c
 getEntryCRC32 ZipEntry{ zipEntryContent = ZipEntryPure b } = return $ crc32 b
+getEntryCRC32 ZipEntry{ zipEntrySize = Just 0 } = return 0
 getEntryCRC32 _ = Nothing
 
 getEntrySize :: ZipEntry -> IO Word64
@@ -226,3 +234,44 @@ streamZip write entries comment = do
         else mempty)
       <> B.byteString (zipEntryComment zipCEntry)
     return z64
+
+writeZipFile :: FilePath -> [ZipEntry] -> BS.ByteString -> IO ()
+writeZipFile f e c =
+  withFile f WriteMode $ \h ->
+    streamZip (B.hPutBuilder h) e c
+
+fileZipEntry :: RawFilePath -> IO ZipEntry
+fileZipEntry f = do
+  s <- getFileStatus f
+  let t = posixSecondsToUTCTime $ modificationTimeHiRes s
+  if isDirectory s
+    then dir f f (Just t)
+    else return $ file' f f (fileSize s) t
+  where
+  dir d n t = do
+    l <- getDirectoryContents d
+    c <- catMaybes <$> mapM (ent d) l
+    return ZipEntry
+      { zipEntryName = n
+      , zipEntryTime = t
+      , zipEntryCRC32 = Nothing
+      , zipEntrySize = Nothing
+      , zipEntryComment = BS.empty
+      , zipEntryContent = ZipDirectory c
+      }
+  ent d (t,n)
+    | n == "." || n == ".." = return Nothing
+    | t == dtDir = Just <$> dir (d </> n) n Nothing
+    | t == dtReg = Just <$> file (d </> n) n
+    | otherwise = return Nothing
+  file f n = do
+    Just (s, t) <- fileInfo f
+    return $ file' f n s t
+  file' f n s t = ZipEntry
+    { zipEntryName = n
+    , zipEntryTime = Just t
+    , zipEntryCRC32 = Nothing
+    , zipEntrySize = Just $ fromIntegral s
+    , zipEntryComment = BS.empty
+    , zipEntryContent = ZipEntryFile f
+    }
