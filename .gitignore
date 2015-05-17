@@ -1,5 +1,6 @@
 /dist/
 /log/
 /store/
+/Setup
 *.hi
 *.o
