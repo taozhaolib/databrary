@@ -1,6 +1,7 @@
-{-# LANGUAGE DefaultSignatures, GeneralizedNewtypeDeriving, OverloadedStrings #-}
+{-# LANGUAGE FlexibleInstances, FlexibleContexts, ConstraintKinds, DefaultSignatures, GeneralizedNewtypeDeriving, OverloadedStrings #-}
 module Databrary.Service.DB
-  ( DBConn
+  ( withPGConnection
+  , DBConn
   , initDB
   , finiDB
   , MonadDB
@@ -19,7 +20,7 @@ module Databrary.Service.DB
   ) where
 
 import Control.Applicative (Applicative, (<$>))
-import Control.Exception (onException, tryJust)
+import Control.Exception (onException, tryJust, bracket)
 import Control.Monad (unless, (<=<))
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Reader (ReaderT(..))
@@ -134,8 +135,26 @@ dbTransaction f = liftDB $ \c -> do
     return r)
     (pgSimpleQuery c "ROLLBACK")
 
+
+-- For connections outside runtime:
+
+loadPGDatabase :: IO PGDatabase
+loadPGDatabase = getPGDatabase . C.subconfig "db" =<< C.load [C.Required "databrary.conf"]
+
+newtype PGConnectionM a = PGConnectionM { runPGConnection :: ReaderT PGConnection IO a }
+  deriving (Functor, Applicative, Monad, MonadIO)
+
+instance MonadDB PGConnectionM where
+  liftDB = PGConnectionM . ReaderT
+
+withPGConnection :: PGConnectionM a -> IO a
+withPGConnection f = bracket
+  (pgConnect =<< loadPGDatabase)
+  pgDisconnect
+  (runReaderT $ runPGConnection f)
+
 loadTPG :: TH.DecsQ
-loadTPG = useTPGDatabase =<< TH.runIO (getPGDatabase . C.subconfig "db" =<< C.load [C.Required "databrary.conf"])
+loadTPG = useTPGDatabase =<< TH.runIO loadPGDatabase
 
 {-# NOINLINE usedTPG #-}
 usedTPG :: IORef Bool

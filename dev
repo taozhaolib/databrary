@@ -1,5 +1,11 @@
-#!/bin/sh -ex
+#!/bin/sh -e
+declare -A opt
+while getopts 'fn' o ; do
+	opt[$o]=$OPTARG
+done
 ghc -Wall -fwarn-tabs --make Setup.hs
-[[ -f dist/setup-config ]] || ./Setup configure --user -f devel
+[[ -z ${opt[f]+set} && -f dist/setup-config ]] || ./Setup configure --user -f devel
 ./Setup build
+[[ -z ${opt[n]+set} ]] || exit 0
+echo "Starting databrary..."
 databrary_datadir=. databrary_sysconfdir=. dist/build/databrary/databrary "$@"

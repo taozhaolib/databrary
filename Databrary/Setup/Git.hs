@@ -1,4 +1,4 @@
-module Databrary.Build.Git
+module Databrary.Setup.Git
   ( setGitVersion
   ) where
 

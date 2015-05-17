@@ -1,4 +1,4 @@
-{-# LANGUAGE ConstraintKinds, TemplateHaskell, TypeSynonymInstances, LiberalTypeSynonyms #-}
+{-# LANGUAGE MultiParamTypeClasses, FlexibleInstances, ConstraintKinds, TemplateHaskell, TypeSynonymInstances, LiberalTypeSynonyms #-}
 module Databrary.Has
   ( Has(..)
   , MonadHas

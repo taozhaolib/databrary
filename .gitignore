@@ -4,3 +4,5 @@
 /Setup
 *.hi
 *.o
+*.dyn_hi
+*.dyn_o
