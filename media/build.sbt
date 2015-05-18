@@ -9,7 +9,7 @@ resourceGenerators in Compile <+= (streams, baseDirectory in Compile, resourceMa
 	if (src.exists(FileInfo.lastModified(_).lastModified >= outmod)) {
 		val slash = java.io.File.separator
 		val pkg = try {
-			"pkg-config --cflags --libs libavformat libswscale".!!
+			"pkg-config --cflags --libs libavformat libswscale libavcodec libavutil".!!
 		} catch {
 			case _ : java.lang.Exception => "-I/usr/local/lib -L/usr/local/lib -lavformat -lavcodec -lavutil"
 		}
