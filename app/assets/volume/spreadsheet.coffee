@@ -580,7 +580,7 @@ app.directive 'spreadsheet', [
           fill()
           if Rows.length > Order.length
             for r in Rows.splice(Order.length)
-              TBody.removeChild(r)
+              TBody.removeChild(r) if r.parentNode
           return
 
         ################################# Place DOM elements
