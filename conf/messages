@@ -596,6 +596,7 @@ asset.remove.success=Removed "{0}" successfully.  You may restore it by selectin
 asset.remove.error=Unable to remove "{0}".
 asset.remove.confirm=Are you sure you want to remove this file?
 asset.add=(new file)
+asset.empty=(New file. Edits can be made in the viewer.)
 
 asset.display.unavailable=Preview unavailable
 asset.display.nopermission=You are not authorized to view this file
