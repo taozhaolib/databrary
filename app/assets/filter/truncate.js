@@ -13,7 +13,7 @@ app.filter('truncate', [
 
       if (text.length <= max)
         return text;
-      
+
       var p = text.lastIndexOf(' ', max);
       if (p <= max/2)
         p = max;

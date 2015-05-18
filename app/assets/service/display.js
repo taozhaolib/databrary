@@ -66,7 +66,7 @@ app.factory('displayService', [
       return $filter('age')(value, ageKey);
     };
 
-    /*$routeChangeStart is always fires before $locationChangeStart*/ 
+    /*$routeChangeStart is always fires before $locationChangeStart*/
     display.cancelRouteChange = function(event){
       display.loading = false;
       event.preventDefault();

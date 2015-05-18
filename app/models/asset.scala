@@ -28,7 +28,7 @@ sealed class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype 
     if (!store.Transcode.enabled) None
     else if (isVideo) Some(AssetFormat.Video)
     else None
-  
+
   def description = name
 
   def stripExtension(filename : String) : String =

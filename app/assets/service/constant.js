@@ -2,7 +2,7 @@
 
 app.factory('constantService', [
   '$log', '$sce', 'constantData', function ($log, $sce, constants) {
-    
+
     constants.regex = {
       doi: /^(?:[dD][oO][iI]:|(?:http:\/\/)?dx\.doi\.org\/)?(10\.[0-9\.]+\/\S+)\s*$/,
     };

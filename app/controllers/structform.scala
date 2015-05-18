@@ -101,14 +101,14 @@ abstract class StructForm(val _action : Call) {
     csrf().copy(value = _csrf)
   private[this] def csrfCheck(implicit request : Request[AnyContent]) {
     if (request.headers.get("X-Requested-With").isDefined ||
-      !(request.method.equals("GET") || (request.method.equals("POST") && 
+      !(request.method.equals("GET") || (request.method.equals("POST") &&
         request.contentType.exists(t =>
-            t.equals("application/x-www-form-urlencoded") || t.equals("text/plain") || t.equals("multipart/form-data")))) || 
+            t.equals("application/x-www-form-urlencoded") || t.equals("text/plain") || t.equals("multipart/form-data")))) ||
       csrf.get.equals(_csrf))
       return
     csrf.withError("csrf.failed")
   }
-    
+
   private[this] def getValMembers : Iterator[Member[_]] =
     getClass.getMethods.toIterator
       .filter(f => f.getModifiers == java.lang.reflect.Modifier.PUBLIC && f.getName()(0).isLower && f.getParameterTypes.isEmpty && f.getTypeParameters.isEmpty && classOf[Member[_]].isAssignableFrom(f.getReturnType))

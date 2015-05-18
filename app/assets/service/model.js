@@ -69,7 +69,7 @@ app.factory('modelService', [
 	  if (v || !hasField(obj, o)) {
             opts[o] = v;
             need = opts;
-          } 
+          }
 	});
 
       return need;
@@ -476,7 +476,7 @@ app.factory('modelService', [
           return volumeMake(res.data);
         });
     };
-    
+
     Volume.search = function (data) {
       return router.http(router.controllers.VolumeApi.search, data)
         .then(function (res) {
@@ -801,8 +801,8 @@ app.factory('modelService', [
       return router.slot([this.volume.id, this.container.id, this.segment.format()], params);
     };
 
-    Slot.prototype.editRoute = function () {
-      return router.slotEdit([this.volume.id, this.container.id, this.segment.format()]);
+    Slot.prototype.editRoute = function (params) {
+      return router.slotEdit([this.volume.id, this.container.id, this.segment.format()], params);
     };
 
     Slot.prototype.zipRoute = function () {
@@ -1158,7 +1158,7 @@ app.factory('modelService', [
     };
 
     ///////////////////////////////// Tag
-    
+
     // no point in a model, really
     var Tag = {};
 

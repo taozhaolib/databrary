@@ -41,15 +41,15 @@ app.controller('volume/slot', [
             return
         p:
           get: ->
-            if '_o' of @
+            if '_p' of @
+              @_p
+            else if '_o' of @
               o = @_o
               @_p = (o - ruler.range.base) / (ruler.range.u - ruler.range.l)
             else if '_x' of @
               x = @_x
               tlr = tl.getBoundingClientRect()
               @_p = (x - tlr.left) / tlr.width
-            else
-              @_p
           set: (p) ->
             return if p == @_p
             @_p = p
@@ -70,6 +70,14 @@ app.controller('volume/slot', [
             delete @_o
             delete @_p
             return
+
+      reset: ->
+        if '_o' of @
+          delete @_p
+          delete @_x
+        else if '_x' of @
+          delete @_p
+        return
 
       clip: ->
         p = @p
@@ -146,6 +154,10 @@ app.controller('volume/slot', [
           t = t.o
         super(t)
 
+      reset: ->
+        @lt.reset()
+        @ut.reset()
+
       style: ->
         style = {}
         l = @lt.p
@@ -209,14 +221,23 @@ app.controller('volume/slot', [
     byPosition = (a, b) -> a.l - b.l
     finite = (args...) -> args.find(isFinite)
 
+    resetRange = () ->
+      for c in [$scope.assets, records, $scope.consents, $scope.tags]
+        for t in c
+          t.reset()
+      ruler.selection.reset()
+      return
+
     updateRange = () ->
       l = Infinity
       u = -Infinity
-      for t in $scope.assets.concat(records, $scope.consents)
-        l = t.l if isFinite(t.l) && t.l < l
-        u = t.u if isFinite(t.u) && t.u > u
+      for c in [$scope.assets, records, $scope.consents]
+        for t in c
+          l = t.l if isFinite(t.l) && t.l < l
+          u = t.u if isFinite(t.u) && t.u > u
       fullRange.l = finite(slot.segment.l, l, 0)
       fullRange.u = finite(slot.segment.u, u, 0)
+      resetRange()
       return
 
     ################################### Video/playback controls
@@ -375,9 +396,9 @@ app.controller('volume/slot', [
           @choose()
         return
 
-      # Generic function that takes in a time, then will determine if it's 
+      # Generic function that takes in a time, then will determine if it's
       # close enough to do a premiere-esque "snap" feature to the nearest
-      # object. 
+      # object.
       snapping: (pos) ->
         # Let's start with an empty array, which will contain all the times
         # to compare against.
@@ -385,7 +406,7 @@ app.controller('volume/slot', [
 
         # First, let's make a giant array of all the items we want to compare
         # times against.  Then let's extract all the times for the objects into
-        # an even bigger array. 
+        # an even bigger array.
         ### jshint ignore:start ###
         for i in $scope.assets.concat(records, $scope.consents) when i isnt this
           # We don't want to have the item snap to itself.
@@ -457,6 +478,7 @@ app.controller('volume/slot', [
       else
         ruler.range = fullRange
         ruler.zoomed = false
+      resetRange()
       searchLocation($location.replace())
       return
 
@@ -486,6 +508,12 @@ app.controller('volume/slot', [
         return
 
       type: 'asset'
+
+      reset: ->
+        super()
+        for e in @excerpts
+          e.reset()
+        return
 
       setAsset: (@asset) ->
         @fillData()
@@ -604,7 +632,7 @@ app.controller('volume/slot', [
         @file = file
         @progress = 0
         file.store = this
-        
+
         router.http(router.controllers.AssetApi.uploadStart, slot.volume.id,
             filename: file.name
             size: file.size
@@ -1061,6 +1089,12 @@ app.controller('volume/slot', [
         return
 
       type: 'tag'
+
+      reset: ->
+        for f in (if editing then ['keyword'] else ['coverage','vote','keyword'])
+          for t in this[f]
+            t.reset()
+        return
 
       fillData: (t) ->
         @weight = t.weight

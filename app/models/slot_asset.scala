@@ -92,7 +92,7 @@ sealed class SlotAsset protected (override val asset : Asset, final val segment 
 
   override def pageName = asset.pageName
   override def pageParent = Some(container)
-    
+
   override def json : JsonObject = asset.json ++ super.json +
     ('container -> containerId)
 }
@@ -117,7 +117,7 @@ sealed class AssetSegment private[models] (val slotAsset : SlotAsset, _segment :
 
   override def pageName = _segment.toString
   override def pageParent = Some(slotAsset)
-    
+
   override def json : JsonObject = super.json ++ JsonObject.flatten(
     Some('asset -> slotAsset.json),
     if (format === asset.format) None else Some[JsonField]('format -> format.id),
@@ -166,7 +166,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") with TableSlot[SlotAsset
     ).map { case (segment, asset, context, excerpt) =>
       SlotAsset(asset, segment, context, excerpt)
     }
-    .SELECT(sql"WHERE slot_asset.segment && ${slot.segment}")
+    .SELECT(sql"WHERE slot_asset.segment && ${slot.segment} ORDER BY slot_asset.segment, asset.id")
     .list
 
   def getVolume(volume : Volume, top : Option[Boolean]) : Future[Seq[SlotAsset]] =
