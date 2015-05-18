@@ -11,6 +11,7 @@ module Databrary.Service.DB
   , dbExecuteSimple
   , dbExecute1
   , dbExecute1'
+  , dbExecute_
   , dbQuery
   , dbQuery1
   , dbQuery1'
@@ -106,6 +107,9 @@ dbExecute1' :: (MonadDB m, PGQuery q ()) => q -> m ()
 dbExecute1' q = do
   r <- dbExecute1 q
   unless r $ fail $ "pgExecute1': failed"
+
+dbExecute_ :: (MonadDB m) => String -> m ()
+dbExecute_ q = liftDB $ \c -> pgSimpleQueries_ c q
 
 dbQuery :: (MonadDB m, PGQuery q a) => q -> m [a]
 dbQuery q = liftDB $ \c -> pgQuery c q

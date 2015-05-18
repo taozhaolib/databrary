@@ -4,7 +4,7 @@ module Databrary.Service.DB.Schema
 
 import Control.Applicative ((<$>))
 import Control.Arrow (first, second)
-import Control.Monad (void, guard)
+import Control.Monad (guard)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.List (sort)
 import Data.Monoid ((<>))
@@ -34,13 +34,10 @@ confirm s = liftIO $ do
     ('Y':_) -> return ()
     _ -> schemaError "Schema update aborted."
 
-sqlExecute :: MonadDB m => String -> m ()
-sqlExecute = void . dbExecuteSimple . void . rawPGSimpleQuery
-
 sqlFile :: (MonadDB m, MonadIO m) => FilePath -> m ()
 sqlFile f = do
   sql <- liftIO $ readFile f
-  sqlExecute sql
+  dbExecute_ sql
 
 schemaList :: [FilePath] -> Maybe [String]
 schemaList l = case sort [ n | (n, ".sql") <- map splitExtension l ] of
@@ -66,7 +63,7 @@ updateDBSchema dir = do
     Left _ -> do
       confirm "No schema found. Initialize?"
       sqlFile base
-      sqlExecute $ "CREATE TABLE " <> schemaTable <> " (name varchar(64) Primary Key, applied timestamptz NOT NULL Default now())"
+      dbExecute_ $ "CREATE TABLE " <> schemaTable <> " (name varchar(64) Primary Key, applied timestamptz NOT NULL Default now())"
       return []
     Right (_, l) -> return l
 

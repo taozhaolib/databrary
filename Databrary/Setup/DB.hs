@@ -6,4 +6,4 @@ import Databrary.Service.DB (withPGConnection)
 import Databrary.Service.DB.Schema
 
 updateDB :: IO ()
-updateDB = withPGConnection $ updateDBSchema "db/schema"
+updateDB = withPGConnection $ updateDBSchema "schema"
