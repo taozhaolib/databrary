@@ -70,14 +70,14 @@
                     <dl class="cf">
                       <dt ng-repeat-start="m in current.sortedMetrics" ng-init="metric=page.constants.metric[m]" ng-bind="::metric.name"></dt><br>
                       <dd ng-repeat-end ng-switch="::metric.options ? 'select' : (metric.long ? 'long' : metric.type)">
-                        <select ng-switch-when="select" name="{{::m}}" ng-model="current.data.measures[m]" ng-options="o for o in metric.options"/>
+                        <select ng-switch-when="select" name="{{::m}}" ng-model="current.data.measures[m]" ng-options="o for o in metric.options"></select>
                         <input ng-switch-when="text" type="text" name="{{::m}}" ng-model="current.data.measures[m]"/>
                         <textarea ng-switch-when="long" name="m" ng-model="current.data.measures[m]"></textarea>
                         <input ng-switch-when="date" input-date name="{{::m}}" ng-model="current.data.measures[m]" placeholder="YYYY-MM-DD"/>
                         <input ng-switch-when="number" type="text" name="{{::m}}" ng-model="current.data.measures[m]"/>
                       </dd>
                       <dt>
-                        <select class="add" name="add" ng-model="current.data.add" ng-options="metric.id+'' as metric.name for metric in current.addOptions()" ng-change="current.add()"/>
+                        <select class="add" name="add" ng-model="current.data.add" ng-options="metric.id+'' as metric.name for metric in current.addOptions()" ng-change="current.add()"></select>
                       </dt>
                     </dl>
                     </ng-form>

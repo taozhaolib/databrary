@@ -86,13 +86,14 @@ app.directive 'spreadsheet', [
     controller: [
       '$scope', '$element', '$attrs',
       ($scope, $element, $attrs) ->
-        Volume = $scope.volume
+        volume = $scope.volume
 
         Editing = $scope.editing = $attrs.edit != undefined
         Top = $scope.top = 'top' of $attrs
         Assets = 'assets' of $attrs
         ID = $scope.id = $attrs.id ? if Top then 'sst' else 'ss'
         Limit = $attrs.limit
+        Key = undefined
 
         ###
         # We use the following types of data structures:
@@ -211,9 +212,9 @@ app.directive 'spreadsheet', [
             d: ->
               Data[@c].id[@n]?[@i]
             slot: ->
-              Volume.containers[if @c == 'slot' then @d else Data.slot.id[0][@i]]
+              volume.containers[if @c == 'slot' then @d else Data.slot.id[0][@i]]
             record: ->
-              Volume.records[@d]
+              volume.records[@d]
             asset: ->
               @slot?.assets[@d]
             v: ->
@@ -241,23 +242,36 @@ app.directive 'spreadsheet', [
 
         ################################# Populate data structures
 
+        populateDatum = (i, c, n, m, v) ->
+          arr(arr(Data[c] ||= {id:[]}, m), n)[i] = v
+          return
+
+        populateSlotData = (i, n, slot) ->
+          populateDatum(i, 'slot', n, 'id', slot.id)
+          populateDatum(i, 'slot', n, 'name', slot.name)
+          if !slot.top || slot.date
+            populateDatum(i, 'slot', n, 'date', slot.date)
+          if !slot.top || slot.release
+            populateDatum(i, 'slot', n, 'release', slot.release)
+          return
+
+        populateRecordData = (i, n, record) ->
+          c = record.category || 0
+          populateDatum(i, c, n, 'id', record.id)
+          for m, v of record.measures
+            populateDatum(i, c, n, m, v)
+
+        populateAssetData = (i, n, asset) ->
+          populateDatum(i, 'asset', n, 'id', asset.id)
+          populateDatum(i, 'asset', n, 'name', asset.name)
+          populateDatum(i, 'asset', n, 'classification', asset.release)
+          populateDatum(i, 'asset', n, 'excerpt', asset.excerpt?)
+          return
+
         # Fill all Data values for Row i
         populateSlot = (i, slot) ->
-          # r, n
-          populateMeasure = (m, v) ->
-            arr(arr(r, m), n)[i] = v
-            return
-
           count = Counts[i] = {slot: 1}
-          c = 'slot'
-          r = Data[c]
-          n = 0
-          populateMeasure('id', slot.id)
-          populateMeasure('name', slot.name)
-          if !slot.top || slot.date
-            populateMeasure('date', slot.date)
-          if !slot.top || slot.release
-            populateMeasure('release', slot.release)
+          populateSlotData(i, 0, slot)
 
           for rr in slot.records
             record = rr.record
@@ -272,37 +286,67 @@ app.directive 'spreadsheet', [
             else
               Depends[record.id] = {}
 
-            # populate records:
-            r = if c of Data then Data[c] else Data[c] = {id:[]}
-
             # determine Count:
             n = inc(count, c)
 
-            # populate measures:
-            populateMeasure('id', record.id)
+            populateRecordData(i, n, record)
             if !Editing && 'age' of rr
-              populateMeasure('age', rr.age)
-            for m, v of record.measures
-              populateMeasure(m, v)
+              populateDatum(i, c, n, 'age', rr.age)
 
             Depends[record.id][i] = n
 
           if Assets
-            c = 'asset'
-            r = Data[c]
             for assetId, asset of slot.assets
-              n = inc(count, c)
-              populateMeasure('id', asset.id)
-              populateMeasure('name', asset.name)
-              populateMeasure('classification', asset.release)
-              populateMeasure('excerpt', asset.excerpt?)
+              n = inc(count, 'asset')
+              populateAssetData(i, n, asset)
 
           return
+
+        populateSlots = () ->
+          i = 0
+          ### jshint ignore:start ###
+          for ci, slot of volume.containers when Top != !slot.top
+            populateSlot(i++, slot)
+          ### jshint ignore:end ###
+          i
+
+        populateRecords = () ->
+          i = 0
+
+          populateMeasure = (m, v) ->
+            arr(arr(r, m), n)[i] = v
+            return
+
+          records = {}
+          ### jshint ignore:start #### fixed in jshint 2.5.7
+          for r, record of volume.records when (record.category || 0) == Key.id
+            Counts[i] = {slot: 0}
+            Counts[i][record.category || 0] = 1
+
+            populateRecordData(i, 0, record)
+
+            Depends[r] = {}
+            Depends[r][i] = 1
+
+            records[r] = i++
+
+          for s, slot of volume.containers when Top != !slot.top
+            for rr in slot.records
+              if (j = records[rr.id])?
+                n = inc(Counts[j], 'slot')
+                populateSlotData(j, n, slot)
+          ### jshint ignore:end ###
+
+          i
 
         # Fill Cols and Groups from records
         populateCols = ->
           Cols = []
-          $scope.groups = Groups = Object.keys(Data).map(getCategory).sort(bySortId).map (category) ->
+          cats = Object.keys(Data).map(getCategory)
+          cats.remove(Key)
+          cats.sort(bySortId)
+          cats.unshift(Key)
+          $scope.groups = Groups = cats.map (category) ->
             d = Data[category.id]
             if Editing
               for m in category.template
@@ -335,18 +379,17 @@ app.directive 'spreadsheet', [
         # Call all populate functions
         populate = ->
           Data = {}
-          Data.slot = {id:[]}
-          Data.asset = {id:[]} if Assets
+          Data[Key.id] = {id:[]}
           Depends = {}
           Counts = []
-          i = 0
-          ### jshint ignore:start ###
-          for ci, c of Volume.containers when Top != !c.top
-            populateSlot(i++, c)
-          ### jshint ignore:end ###
+          if Key.id == 'slot'
+            Data.asset = {id:[]} if Assets
+            n = populateSlots()
+          else
+            n = populateRecords()
           populateCols()
-          if Order.length != i
-            Order = if i then [0..i-1] else []
+          if Order.length != n
+            Order = if n then [0..n-1] else []
           generate()
           return
 
@@ -374,8 +417,8 @@ app.directive 'spreadsheet', [
                   v ?= ''
                   t = {asset:info.d}
                 else
-                  stop = info.slot.id == Volume.top.id
-                  if Editing && !stop
+                  stop = info.slot.id == volume.top.id
+                  if Editing && Key.id == info.c && !stop
                     del = cell.insertBefore(document.createElement('a'), a)
                     del.className = 'trash icon'
                     i = new Info()
@@ -497,7 +540,7 @@ app.directive 'spreadsheet', [
               Rows[i] = document.createElement('tr')
           row.id = ID + '_' + i
           row.data = i
-          if Editing && info.slot.id == Volume.top.id
+          if Editing && info.slot.id == volume.top.id
             row.className = 'top'
 
           for col in Groups
@@ -532,9 +575,12 @@ app.directive 'spreadsheet', [
 
         # Generate all rows.
         generate = ->
-          for i in Order
+          for i, n in Order
             generateRow(i)
           fill()
+          if Rows.length > Order.length
+            for r in Rows.splice(Order.length)
+              TBody.removeChild(r)
           return
 
         ################################# Place DOM elements
@@ -613,7 +659,7 @@ app.directive 'spreadsheet', [
               return
 
         createSlot = (cell) ->
-          saveRun cell, Volume.createContainer({top:Top}).then (slot) ->
+          saveRun cell, volume.createContainer({top:Top}).then (slot) ->
             arr(slot, 'records')
             i = Rows.length
             Order.push(i)
@@ -796,7 +842,7 @@ app.directive 'spreadsheet', [
                   return
               else if !isNaN(v = parseInt(value, 10))
                 if v != info.d
-                  setRecord(info, Volume.records[v])
+                  setRecord(info, volume.records[v])
               return
             when 'metric'
               if value != undefined
@@ -856,7 +902,7 @@ app.directive 'spreadsheet', [
                 # for now, just go to slot edit
                 $location.url(info.slot.editRoute({asset:info.d}))
                 return
-              return if info.slot.id == Volume.top.id
+              return if info.slot.id == volume.top.id
               m = info.metric.id
               if m == 'id'
                 # trash/bullet: remove
@@ -879,7 +925,7 @@ app.directive 'spreadsheet', [
                   editScope.info = info
                   rs = []
                   mf = (r) -> (m) -> r.measures[m]
-                  for ri, r of Volume.records
+                  for ri, r of volume.records
                     if (r.category || 0) == info.category.id && !(ri of Depends && info.i of Depends[ri])
                       rs.push
                         r:r
@@ -897,7 +943,7 @@ app.directive 'spreadsheet', [
                 # for now, just go to slot edit
                 $location.url(info.slot.editRoute())
                 return
-              return if info.slot.id == Volume.top.id
+              return if info.slot.id == volume.top.id
               c = info.category
               if info.d?
                 editInput.value = info.d + ''
@@ -907,7 +953,7 @@ app.directive 'spreadsheet', [
               editScope.options =
                 new: 'Create new ' + c.name
                 remove: c.not
-              for ri, r of Volume.records
+              for ri, r of volume.records
                 if (r.category || 0) == c.id && (!(ri of Depends && info.i of Depends[ri]) || ri == editInput.value)
                   editScope.options[ri] = r.displayName
               # detect special cases: singleton or unitary records
@@ -926,7 +972,7 @@ app.directive 'spreadsheet', [
                 delete editScope.options['new']
                 for o in m.options
                   found = false
-                  for ri, r of Volume.records
+                  for ri, r of volume.records
                     if (r.category || 0) == c.id && r.measures[m.id] == o
                       found = true
                       break
@@ -1078,20 +1124,24 @@ app.directive 'spreadsheet', [
         $scope.clickAdd = ($event) ->
           unselect()
           edit({cell:$event.target, t:'head'})
-          return
+          false
 
         $scope.clickCategoryAdd = ($event, col) ->
           unselect()
-          edit({cell:$event.target.parentNode, t:'category', c:col.category.id}) if Editing
-          return
+          edit({cell:$event.target.parentNode, t:'category', c:col.category.id})
+          $event.stopPropagation()
+          false
 
         $scope.clickMetric = (col) ->
           sortBy(col) if col.sortable
-          return
+          false
 
         $scope.clickNew = ($event) ->
-          createSlot($event.target)
-          return
+          if Key.id == 'slot'
+            createSlot($event.target)
+          else
+            # TODO
+          false
 
         $scope.unlimit = ->
           Limit = undefined
@@ -1105,13 +1155,13 @@ app.directive 'spreadsheet', [
 
         ################################# main
 
-        $scope.refresh = ->
+        $scope.setKey = (key) ->
+          Key = $scope.key = key? && getCategory(key) || pseudoCategory.slot
           unedit()
           collapse()
           populate()
-          return
 
-        populate()
+        $scope.setKey($attrs.key)
         return
     ]
     }
