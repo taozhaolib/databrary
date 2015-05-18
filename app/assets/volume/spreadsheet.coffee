@@ -123,7 +123,6 @@ app.directive 'spreadsheet', [
             name: if Top then 'materials' else 'session'
             template: if Top then ['name'] else ['name', 'date', 'release']
             sort: -10000
-            fixed: true
           0:
             id: 0
             name: 'record'
@@ -135,7 +134,6 @@ app.directive 'spreadsheet', [
             not: 'No files'
             template: ['name', 'classification', 'excerpt']
             sort: 10000
-            fixed: true
         constants.deepFreeze(pseudoCategory)
         getCategory = (c) ->
           pseudoCategory[c || 0] || constants.category[c]
@@ -416,7 +414,7 @@ app.directive 'spreadsheet', [
                   icon.className = "format hint-format-" + info.asset.format.extension
                   v ?= ''
                   t = {asset:info.d}
-                else
+                else # if info.c == 'slot'
                   stop = info.slot.id == volume.top.id
                   if Editing && Key.id == info.c && !stop
                     del = cell.insertBefore(document.createElement('a'), a)
@@ -540,7 +538,7 @@ app.directive 'spreadsheet', [
               Rows[i] = document.createElement('tr')
           row.id = ID + '_' + i
           row.data = i
-          if Editing && info.slot.id == volume.top.id
+          if Editing && info.slot?.id == volume.top.id
             row.className = 'top'
 
           for col in Groups
@@ -800,7 +798,7 @@ app.directive 'spreadsheet', [
           info.row.classList.add('expand')
 
           max = expanded.count
-          max++ if Editing && !expanded.category.fixed
+          max++ if Editing && expanded.category != Key
           return if max <= 1
           next = info.row.nextSibling
           start = expanded.count == 1
@@ -902,7 +900,7 @@ app.directive 'spreadsheet', [
                 # for now, just go to slot edit
                 $location.url(info.slot.editRoute({asset:info.d}))
                 return
-              return if info.slot.id == volume.top.id
+              return if info.slot?.id == volume.top.id
               m = info.metric.id
               if m == 'id'
                 # trash/bullet: remove
@@ -911,7 +909,7 @@ app.directive 'spreadsheet', [
               return if info.metric.readonly
               editScope.type = info.metric.type
               if info.c == 'slot'
-                v = info.slot[m]
+                v = info.slot?[m]
                 if m == 'release'
                   ### jshint ignore:start ###
                   v ||= 0
@@ -920,7 +918,7 @@ app.directive 'spreadsheet', [
                 v = info.asset[m]
               else
                 v = info.record?.measures[m]
-                if info.col.first
+                if info.col.first && info.category != Key
                   editScope.type = 'ident'
                   editScope.info = info
                   rs = []
@@ -943,7 +941,7 @@ app.directive 'spreadsheet', [
                 # for now, just go to slot edit
                 $location.url(info.slot.editRoute())
                 return
-              return if info.slot.id == volume.top.id
+              return if info.slot?.id == volume.top.id
               c = info.category
               if info.d?
                 editInput.value = info.d + ''
