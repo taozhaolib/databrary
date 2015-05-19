@@ -1,0 +1,13 @@
+{
+  "name": "databrary",
+  "version": "0.0.0",
+  "description": "Databrary web build-time dependencies",
+  "repository": "databrary/databrary",
+  "private": true,
+  "dependencies": {
+    "jshint": "^2.7.0",
+    "uglify-js": "^2.4.21",
+    "stylus": "^0.51.1",
+    "normalize.styl": "^3.0.0"
+  }
+}
