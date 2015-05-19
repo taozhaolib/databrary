@@ -18,6 +18,8 @@ app.directive 'spreadsheet', [
       if isNaN(d = a-b) then byType(a,b) else d
     bySortId = (a,b) ->
       (a.sort || a.id)-(b.sort || b.id)
+    parseIntish = (c) ->
+      if isNaN(i = parseInt(c, 10)) then c else i
 
     stripPrefix = (s, prefix) ->
       if s.startsWith(prefix) then s.substr(prefix.length)
@@ -169,13 +171,13 @@ app.directive 'spreadsheet', [
               when 'add', 'more'
                 @t = s[0]
                 @i = parseInt(s[1], 10)
-                @c = s[2]
+                @c = parseIntish(s[2])
               when 'metric'
                 @t = s[0]
                 @m = parseInt(s[1], 10)
               when 'category'
                 @t = s[0]
-                @c = parseInt(s[1], 10)
+                @c = parseIntish(s[1])
               else
                 @i = parseInt(s[0], 10)
                 @m = parseInt(s[1], 10)
@@ -211,8 +213,8 @@ app.directive 'spreadsheet', [
               Data[@c].id[@n]?[@i]
             p: ->
               cls = 'ss-'
-              if typeof @c != 'number'
-                cls += @c.charAt(0)
+              if typeof (c = @c) != 'number'
+                cls += c.charAt(0)
               cls
             slot: ->
               volume.containers[if @c == 'slot' then @d else Data.slot.id[0][@i]]
@@ -557,13 +559,14 @@ app.directive 'spreadsheet', [
             info.m = mi
             r = Data[info.c][info.metric.id]
             pre = ID + '-'
-            post = '_' + mi
+            mid = '_' + mi
             if expanded?.c == info.c && expanded.count > 1
               info.i = expanded.i
-              for n in [0..info.count-1] by 1 when n of r
+              premid = pre + info.i + mid + '_'
+              for n in [0..expanded.count-1] by 1 when n of r
                 info.n = n
                 info.v = r[n][info.i]
-                info.cell = document.getElementById(pre + info.i + '_' + n + post)
+                info.cell = document.getElementById(premid + n)
                 generateText(info) if info.cell
             return unless 0 of r
             r = r[0]
@@ -571,7 +574,7 @@ app.directive 'spreadsheet', [
               if Counts[i][info.c] == 1
                 info.i = i
                 info.v = d
-                info.cell = document.getElementById(pre + i + post)
+                info.cell = document.getElementById(pre + i + mid)
                 generateText(info) if info.cell
 
         # Generate all rows.
