@@ -181,7 +181,7 @@ GET     /api/record                                                             
 GET     /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.get(recordId : models.Record.Id)
 POST    /api/record                                                                               controllers.RecordApi.create(volume : models.Volume.Id, category : Option[models.RecordCategory.Id] ?= None)
 POST    /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.update(recordId : models.Record.Id)
-#                                                                                                 TODO: DELETE /api/record/recordId<[0-9]+>
+DELETE  /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.remove(recordId : models.Record.Id)
 POST    /api/record/$recordId<[0-9]+>/measure/$metricId<-?[0-9]+>                                 controllers.RecordApi.measureUpdate(recordId : models.Record.Id, metricId : models.Metric.Id)
 POST    /api/slot/$containerId<[0-9]+>/record                                                     controllers.RecordApi.add(containerId : models.Container.Id, segment : dbrary.Segment)
 POST    /api/record/$recordId<[0-9]+>/slot/$containerId<[0-9]+>                                   controllers.RecordApi.move(recordId : models.Record.Id, containerId : models.Container.Id)

@@ -69,6 +69,12 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
         new Record(id, volume, category.getOrElse(this.category), release, measures_)
       }
 
+  def remove : Future[Boolean] =
+    Audit.remove("record", sqlKey).execute
+    .recover {
+      case SQLException(e) if e.startsWith("update or delete on table \"record\" violates foreign key constraint ") => false
+    }
+
   /** The set of measures on the current volume readable by the current user. */
   lazy val measures : MeasuresView =
     Release.read(permission).fold[MeasuresView](Measures.empty)(r => measures_.filter(Maybe(_).orElse(release) >= r))

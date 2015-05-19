@@ -123,6 +123,7 @@ app.directive 'spreadsheet', [
           slot:
             id: 'slot'
             name: if Top then 'materials' else 'session'
+            not: 'No ' + (if Top then 'materials' else 'sessions')
             template: if Top then ['name'] else ['name', 'date', 'release']
             sort: -10000
           0:
@@ -242,6 +243,7 @@ app.directive 'spreadsheet', [
             properties
 
         parseId = (el) ->
+          return unless el.tagName == 'TD'
           info = new Info(el)
           info if info.c
 
@@ -315,6 +317,12 @@ app.directive 'spreadsheet', [
           ### jshint ignore:end ###
           i
 
+        populateRecord = (i, record) ->
+          Counts[i] = {slot: 0}
+          Counts[i][record.category || 0] = 1
+
+          populateRecordData(i, 0, record)
+
         populateRecords = () ->
           i = 0
 
@@ -325,10 +333,7 @@ app.directive 'spreadsheet', [
           records = {}
           ### jshint ignore:start #### fixed in jshint 2.5.7
           for r, record of volume.records when (record.category || 0) == Key.id
-            Counts[i] = {slot: 0}
-            Counts[i][record.category || 0] = 1
-
-            populateRecordData(i, 0, record)
+            populateRecord(i, record)
             records[r] = i++
 
           for s, slot of volume.containers when Top != !slot.top
@@ -400,44 +405,37 @@ app.directive 'spreadsheet', [
 
         ################################# Generate HTML
 
-        removeSlotEvent = (info) -> (event) ->
-          $scope.$apply () ->
-            removeSlot(info)
-            return
-          event.stopPropagation()
-          return
-
         # Add or replace the text contents of cell c for measure/type m with value v
         generateText = (info) ->
           $(cell = info.cell).empty()
           v = info.v
+          stop = info.slot?.id == volume.top.id
+          if info.col.first && info.d?
+            if info.c == 'asset'
+              a = cell.appendChild(document.createElement('a'))
+              icon = a.appendChild(document.createElement('img'))
+              icon.src = info.asset.icon
+              icon.className = "format hint-format-" + info.asset.format.extension
+              t = {asset:info.d}
+              a.setAttribute('href', if Editing then info.slot.editRoute(t) else info.slot.route(t))
+            else
+              if Editing && Key.id == info.c && !stop
+                del = cell.appendChild(document.createElement('a'))
+                del.className = 'trash icon'
+                i = new Info()
+                i.i = info.i
+                i.c = info.c
+                i.cell = cell
+                $(del).on 'click', $scope.$lift(clickRemove)
+              if info.c == 'slot'
+                a = cell.appendChild(document.createElement('a'))
+                a.className = "session icon hint-action-slot"
+                a.setAttribute('href', if Editing then info.slot.editRoute() else info.slot.route())
           switch info.metric.id
             when 'name'
-              if info.d?
-                a = cell.appendChild(document.createElement('a'))
-                if info.c == 'asset'
-                  icon = a.appendChild(document.createElement('img'))
-                  icon.src = info.asset.icon
-                  icon.className = "format hint-format-" + info.asset.format.extension
-                  v ?= ''
-                  t = {asset:info.d}
-                else # if info.c == 'slot'
-                  stop = info.slot.id == volume.top.id
-                  if Editing && Key.id == info.c && !stop
-                    del = cell.insertBefore(document.createElement('a'), a)
-                    del.className = 'trash icon'
-                    i = new Info()
-                    i.cell = cell
-                    i.i = info.i
-                    $(del).on 'click', removeSlotEvent(i)
-                  a.className = "session icon hint-action-slot"
-                  if stop
-                    cell.classList.add('top-level-materials')
-                    v ?= constants.message('materials.top')
-                  else
-                    v ?= ''
-                  t = {}
-                a.setAttribute('href', if Editing then info.slot.editRoute(t) else info.slot.route(t))
+              if stop && info.c == 'slot'
+                cell.classList.add('top-level-materials')
+                v ?= constants.message('materials.top')
               else
                 v ?= ''
             when 'release', 'classification'
@@ -484,12 +482,8 @@ app.directive 'spreadsheet', [
           if info.hasOwnProperty('n') || t <= 1
             td.className = 'null'
             if !info.n || info.n == t
-              if Editing && width > 1
-                td.appendChild(document.createTextNode("\u2190 add " + info.category.name))
-              else if !info.n
-                td.appendChild(document.createTextNode(info.category.not))
-              if Editing
-                info.metric = info.cols.metrics[0]
+              if Editing && info.c != 'slot'
+                info.m = info.cols.start
                 if info.metric.id != 'id'
                   info.id = ID+'-'+info.i+'_'+info.cols.start+(if info.hasOwnProperty('n') then '_'+info.n else '')
                   info.v = undefined
@@ -504,6 +498,10 @@ app.directive 'spreadsheet', [
                 else
                   td.className = 'null add'
                   td.id = ID + '-add_' + info.i + '_' + info.c
+                if width > 1
+                  td.appendChild(document.createTextNode("\u2190 add " + info.category.name))
+              else if !info.n
+                td.appendChild(document.createTextNode(info.category.not))
           else
             td.appendChild(document.createTextNode(t + " " + info.category.name + "s"))
             td.className = 'more'
@@ -525,7 +523,7 @@ app.directive 'spreadsheet', [
           pre = ID + '-' + info.i + '_'
           post = if info.hasOwnProperty('n') then '_' + info.n else ''
           for mi in [0..l-1] by 1
-            info.metric = ms[mi]
+            info.m = info.cols.start+mi
             info.v = r[info.metric.id][info.n]?[info.i]
             info.d = r.id[info.n][info.i]
             info.id = pre + (info.cols.start+mi) + post
@@ -666,11 +664,31 @@ app.directive 'spreadsheet', [
           saveRun cell, volume.createContainer({top:Top}).then (slot) ->
             arr(slot, 'records')
             i = Rows.length
-            Order.push(i)
             populateSlot(i, slot)
+            Order.push(i)
             generateRow(i)
             TBody.appendChild(Rows[i])
             return
+
+        createRecord = (cell, c) ->
+          saveRun cell, volume.createRecord(c || undefined).then (record) ->
+            i = Rows.length
+            populateRecord(i, record)
+            Order.push(i)
+            generateRow(i)
+            TBody.appendChild(Rows[i])
+            return
+
+        removeRow = (i) ->
+          unedit(false)
+          collapse()
+          $(Rows[i]).remove()
+          Counts.splice(i, 1)
+          Rows.splice(i, 1)
+          Order.remove(i)
+          Order = Order.map (j) -> j - (j > i)
+          populate()
+          return
 
         removeSlot = (info) ->
           # assuming we have a container
@@ -681,15 +699,18 @@ app.directive 'spreadsheet', [
                 type: 'red'
                 owner: info.cell
               return
-            unedit(false)
-            collapse()
-            i = info.i
-            $(info.row).remove()
-            Counts.splice(i, 1)
-            Rows.splice(i, 1)
-            Order.remove(i)
-            Order = Order.map (j) -> j - (j > i)
-            populate()
+            removeRow(info.i)
+            return
+
+        removeRecord = (info) ->
+          saveRun info.cell, info.record.remove().then (done) ->
+            unless done
+              messages.add
+                body: constants.message('record.remove.notempty')
+                type: 'red'
+                owner: info.cell
+              return
+            removeRow(info.i)
             return
 
         setRecord = (info, record) ->
@@ -769,7 +790,7 @@ app.directive 'spreadsheet', [
               return
           else
             return if info.record.measures[info.metric.id] == v
-            saveRun info.cell, info.record.measureSet(info.metric.id, v).then (rec) ->
+            saveRun info.cell, info.record.measureSet(info.metric.id, v).then () ->
               updateDatum(info, v)
               return
 
@@ -1035,8 +1056,7 @@ app.directive 'spreadsheet', [
           return
 
         $scope.click = (event) ->
-          el = event.target
-          return unless el.tagName == 'TD' && info = parseId(el)
+          return unless info = parseId(event.target)
 
           select(info)
           if info.metric?.id == 'age'
@@ -1049,7 +1069,7 @@ app.directive 'spreadsheet', [
             c = info.cell
             while true
               c = if event.shiftKey then c.previousSibling else c.nextSibling
-              return unless c && c.tagName == 'TD' && i = parseId(c)
+              return unless c && i = parseId(c)
               break unless !info.t && info.metric.id == 'id' # skip "delete" actions
             select(i)
 
@@ -1143,11 +1163,20 @@ app.directive 'spreadsheet', [
           sortBy(col) if col.sortable
           false
 
-        $scope.clickNew = ($event) ->
+        $scope.clickNew = (event) ->
           if Key.id == 'slot'
-            createSlot($event.target)
-          else
-            # TODO
+            createSlot(event.target)
+          else if typeof Key.id == 'number'
+            createRecord(event.target, Key.id)
+          false
+
+        clickRemove = (event) ->
+          return unless info = parseId(event.target.parentNode)
+          if info.c == 'slot'
+            removeSlot(info)
+          else if typeof info.c == 'number'
+            removeRecord(info)
+          event.stopPropagation()
           false
 
         $scope.unlimit = ->

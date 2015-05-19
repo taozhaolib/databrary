@@ -854,11 +854,34 @@ app.factory('modelService', [
         });
     };
 
+    Volume.prototype.createRecord = function (c) {
+      var v = this;
+      return router.http(router.controllers.RecordApi.create, this.id, c)
+        .then(function (res) {
+          return new Record(v, res.data);
+        });
+    };
+
     Record.prototype.save = function (data) {
       var r = this;
       return router.http(router.controllers.RecordApi.update, this.id, data)
         .then(function (res) {
           return r.update(res.data);
+        });
+    };
+
+    Record.prototype.remove = function () {
+      var r = this;
+      return router.http(router.controllers.RecordApi.remove, this.id)
+        .then(function () {
+          delete r.volume.records[r.id];
+          return true;
+        }, function (res) {
+          if (res.status == 409) {
+            r.update(res.data);
+            return false;
+          }
+          return $q.reject(res);
         });
     };
 

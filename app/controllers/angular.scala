@@ -142,9 +142,11 @@ object AngularController extends SiteController {
     , RecordHtml.view
     , RecordHtml.edit
     , RecordApi.get
+    , RecordApi.create
     , RecordApi.add
     , RecordApi.move
     , RecordApi.update
+    , RecordApi.remove
     , RecordApi.measureUpdate
     , CommentApi.post
     , TagApi.search

@@ -216,4 +216,11 @@ object RecordApi extends RecordController with ApiController {
       val form = new MoveForm(containerId)._bind
       super.move(containerId, form.src.get, form.dst.get)
     }
+
+  def remove(i : Record.Id) =
+    Action(i, Permission.EDIT).async { implicit request =>
+      request.obj.remove.map { r =>
+        if (r) NoContent else Conflict(request.obj.json)
+      }
+    }
 }
