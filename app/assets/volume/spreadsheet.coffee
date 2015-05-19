@@ -339,7 +339,7 @@ app.directive 'spreadsheet', [
                 populateSlotData(j, n, slot)
                 if !Editing && 'age' of rr
                   populateDatum(j, 'slot', n, 'age', rr.age)
-                deps[j] = 1
+                deps[j] = n
           ### jshint ignore:end ###
 
           i
@@ -413,7 +413,7 @@ app.directive 'spreadsheet', [
           v = info.v
           switch info.metric.id
             when 'name'
-              if info.d
+              if info.d?
                 a = cell.appendChild(document.createElement('a'))
                 if info.c == 'asset'
                   icon = a.appendChild(document.createElement('img'))
@@ -460,6 +460,10 @@ app.directive 'spreadsheet', [
             cell.classList.add('blank')
             v = info.metric.assumed || ''
           cell.appendChild(document.createTextNode(v))
+          cell.id = info.id
+          if info.d?
+            cell.classList.add(cls = info.p + info.d)
+            cell.classList.add(cls + '_' + info.metric.id)
           return
 
         # Add a td element to tr r with value c and id i
@@ -469,7 +473,6 @@ app.directive 'spreadsheet', [
             info.cell.className = 'null'
           else
             generateText(info)
-            info.cell.id = info.id
           return
 
         generateMultiple = (info) -> # (col, cols, row, i, n, t) ->
@@ -513,9 +516,9 @@ app.directive 'spreadsheet', [
           return unless l = ms.length
           t = info.count
           r = Data[info.c]
-          cls = info.p
           if td = generateMultiple(info) # (col, l, row, i, n, t)
             unless info.hasOwnProperty('n')
+              cls = info.p
               for n in [0..t-1] by 1
                 td.classList.add(cls + r.id[n][info.i])
             return
@@ -527,9 +530,6 @@ app.directive 'spreadsheet', [
             info.d = r.id[info.n][info.i]
             info.id = pre + (info.cols.start+mi) + post
             generateCell(info)
-            if info.v != null
-              info.cell.classList.add(ri = cls + info.d)
-              info.cell.classList.add(ri + '_' + info.metric.id)
           return
 
         # Fill out rows[i].
