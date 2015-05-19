@@ -335,7 +335,7 @@ app.directive 'spreadsheet', [
               if (j = records[rr.id])?
                 n = inc(Counts[j], 'slot')
                 populateSlotData(j, n, slot)
-                if !Editing && age of rr
+                if !Editing && 'age' of rr
                   populateDatum(j, 'slot', n, 'age', rr.age)
                 deps[j] = 1
           ### jshint ignore:end ###
