@@ -209,6 +209,11 @@ app.directive 'spreadsheet', [
               Rows[@i]
             d: ->
               Data[@c].id[@n]?[@i]
+            p: ->
+              cls = 'ss-'
+              if typeof @c != 'number'
+                cls += @c.charAt(0)
+              cls
             slot: ->
               volume.containers[if @c == 'slot' then @d else Data.slot.id[0][@i]]
             record: ->
@@ -278,7 +283,7 @@ app.directive 'spreadsheet', [
             c = record.category || 0
 
             # populate depends:
-            if record.id of Depends
+            if Depends[record.id]
               # skip duplicates:
               continue if i of Depends[record.id]
             else
@@ -322,17 +327,17 @@ app.directive 'spreadsheet', [
             Counts[i][record.category || 0] = 1
 
             populateRecordData(i, 0, record)
-
-            Depends[r] = {}
-            Depends[r][i] = 1
-
             records[r] = i++
 
           for s, slot of volume.containers when Top != !slot.top
+            deps = Depends[slot.id] = {}
             for rr in slot.records
               if (j = records[rr.id])?
                 n = inc(Counts[j], 'slot')
                 populateSlotData(j, n, slot)
+                if !Editing && age of rr
+                  populateDatum(j, 'slot', n, 'age', rr.age)
+                deps[j] = 1
           ### jshint ignore:end ###
 
           i
@@ -443,7 +448,7 @@ app.directive 'spreadsheet', [
               v = ''
             when 'id'
               if v?
-                cell.className = 'icon ' + if Editing then 'trash' else 'bullet'
+                cell.className = 'icon ' + if Editing && Key.id != info.c then 'trash' else 'bullet'
                 v = ''
             when 'age'
               v = display.formatAge(v)
@@ -506,9 +511,7 @@ app.directive 'spreadsheet', [
           return unless l = ms.length
           t = info.count
           r = Data[info.c]
-          cls = 'ss-'
-          if typeof info.c != 'number'
-            cls += info.c.charAt(0)
+          cls = info.p
           if td = generateMultiple(info) # (col, l, row, i, n, t)
             unless info.hasOwnProperty('n')
               for n in [0..t-1] by 1
@@ -729,14 +732,29 @@ app.directive 'spreadsheet', [
             setFocus = undefined
             record
 
+        updateDatum = (info, v) ->
+          info.v = v
+          rcm = Data[info.c][info.metric.id]
+          if info.c == Key.c || info.c == 'asset'
+            rcm[info.n][info.i] = v
+            generateText(info)
+          else
+            for i, n of Depends[info.d]
+              arr(rcm, n)[i] = v
+              # TODO age may have changed... not clear how to update.
+            l = TBody.getElementsByClassName(info.p + info.d + '_' + info.metric.id)
+            for li in l
+              info.cell = li
+              generateText(info)
+          return
+
         saveDatum = (info, v) ->
           if info.c == 'slot'
             data = {}
             data[info.metric.id] = v ? ''
             return if info.slot[info.metric.id] == v
             saveRun info.cell, info.slot.save(data).then () ->
-              info.v = Data[info.c][info.metric.id][info.n][info.i] = v
-              generateText(info) #, cell, info.t, info.slot[info.t])
+              updateDatum(info, v)
               return
           else if info.c == 'asset'
             data = {}
@@ -744,21 +762,12 @@ app.directive 'spreadsheet', [
             data[t] = v ? ''
             return if info.asset[t] == data[t]
             saveRun info.cell, info.asset.save(data).then () ->
-              info.v = Data[info.c][info.metric.id][info.n][info.i] = v
-              generateText(info)
+              updateDatum(info, v)
               return
           else
             return if info.record.measures[info.metric.id] == v
             saveRun info.cell, info.record.measureSet(info.metric.id, v).then (rec) ->
-              rcm = Data[rec.category || 0][info.metric.id]
-              for i, n of Depends[info.d]
-                arr(rcm, n)[i] = v
-                # TODO age may have changed... not clear how to update.
-              info.v = v
-              l = TBody.getElementsByClassName('ss-' + info.d + '_' + info.metric.id)
-              for li in l
-                info.cell = li
-                generateText(info)
+              updateDatum(info, v)
               return
 
         ################################# Interaction
@@ -798,7 +807,7 @@ app.directive 'spreadsheet', [
           info.row.classList.add('expand')
 
           max = expanded.count
-          max++ if Editing && expanded.category != Key
+          max++ if Editing && expanded.c != Key.id && expanded.c != 'slot'
           return if max <= 1
           next = info.row.nextSibling
           start = expanded.count == 1
@@ -904,7 +913,7 @@ app.directive 'spreadsheet', [
               m = info.metric.id
               if m == 'id'
                 # trash/bullet: remove
-                setRecord(info, null)
+                setRecord(info, null) if info.c != Key.id
                 return
               return if info.metric.readonly
               editScope.type = info.metric.type
@@ -924,7 +933,7 @@ app.directive 'spreadsheet', [
                   rs = []
                   mf = (r) -> (m) -> r.measures[m]
                   for ri, r of volume.records
-                    if (r.category || 0) == info.category.id && !(ri of Depends && info.i of Depends[ri])
+                    if (r.category || 0) == info.c && !Depends[ri]?[info.i]
                       rs.push
                         r:r
                         v:(r.measures[info.metric.id] ? '').toLowerCase()
@@ -943,16 +952,13 @@ app.directive 'spreadsheet', [
                 return
               return if info.slot?.id == volume.top.id
               c = info.category
-              if info.d?
-                editInput.value = info.d + ''
-              else
-                editInput.value = 'remove'
+              editInput.value = (info.d ? 'remove')+''
               editScope.type = 'record'
               editScope.options =
                 new: 'Create new ' + c.name
                 remove: c.not
               for ri, r of volume.records
-                if (r.category || 0) == c.id && (!(ri of Depends && info.i of Depends[ri]) || ri == editInput.value)
+                if (r.category || 0) == c.id && (!Depends[ri]?[info.i] || ri == editInput.value)
                   editScope.options[ri] = r.displayName
               # detect special cases: singleton or unitary records
               for mi of Data[c.id]
