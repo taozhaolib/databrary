@@ -725,7 +725,8 @@ app.directive 'spreadsheet', [
             else
               add()
 
-          saveRun info.cell, act.then (record) ->
+          saveRun info.cell, act.then (rr) ->
+            record = rr?.record
             o = info.d
             if record
               r = record.id

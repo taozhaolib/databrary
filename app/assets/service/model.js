@@ -735,16 +735,17 @@ app.factory('modelService', [
         });
     };
 
-    function recordAdd(slot, record) {
+    function recordAdd(slot, record, seg) {
       var r = {
         id: record.id,
-        segment: slot.segment,
+        segment: seg || slot.segment,
         record: record,
       };
       if ('records' in slot)
         slot.records.push(r);
       if (slot.container !== slot && 'records' in slot.container)
         slot.container.records.push(r);
+      return r;
     }
 
     Slot.prototype.addRecord = function (r, seg) {
@@ -753,8 +754,8 @@ app.factory('modelService', [
       var s = this;
       return router.http(router.controllers.RecordApi.add, this.container.id, seg.format(), {record:r.id})
         .then(function (res) {
-          recordAdd(s, r);
-          return r.update(res.data);
+          r.update(res.data);
+          return recordAdd(s, r, seg);
         });
     };
 
@@ -765,8 +766,7 @@ app.factory('modelService', [
       return router.http(router.controllers.RecordApi.add, this.container.id, this.segment.format(), {category:c})
         .then(function (res) {
           var r = new Record(s.volume, res.data);
-          recordAdd(s, r);
-          return r;
+          return recordAdd(s, r);
         });
     };
 
