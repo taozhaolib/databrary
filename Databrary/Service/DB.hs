@@ -25,6 +25,7 @@ import Control.Exception (onException, tryJust, bracket)
 import Control.Monad (unless, (<=<))
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Reader (ReaderT(..))
+import qualified Data.ByteString.Lazy as BSL
 import qualified Data.Configurator as C
 import qualified Data.Configurator.Types as C
 import Data.IORef (IORef, newIORef, atomicModifyIORef')
@@ -108,7 +109,7 @@ dbExecute1' q = do
   r <- dbExecute1 q
   unless r $ fail $ "pgExecute1': failed"
 
-dbExecute_ :: (MonadDB m) => String -> m ()
+dbExecute_ :: (MonadDB m) => BSL.ByteString -> m ()
 dbExecute_ q = liftDB $ \c -> pgSimpleQueries_ c q
 
 dbQuery :: (MonadDB m, PGQuery q a) => q -> m [a]

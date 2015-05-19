@@ -15,7 +15,7 @@ module Databrary.Model.Authorize
 import Control.Applicative ((<$>))
 import Control.Monad (when)
 import Data.Maybe (fromMaybe)
-import Data.Monoid (mempty)
+import Data.Monoid (mempty, (<>))
 import Database.PostgreSQL.Typed.Query (PGQuery, unsafeModifyQuery)
 
 import Databrary.Has (peek, view)
@@ -38,7 +38,7 @@ selfAuthorize p =
 
 filterAll :: PGQuery a b => Bool -> a -> a
 filterAll True = id
-filterAll False = (`unsafeModifyQuery` (++ "WHERE expires IS NULL OR expires > CURRENT_TIMESTAMP"))
+filterAll False = (`unsafeModifyQuery` (<> "WHERE expires IS NULL OR expires > CURRENT_TIMESTAMP"))
 
 lookupAuthorizedParents :: (MonadDB m, MonadHasIdentity c m) => Party -> Bool -> m [Authorize]
 lookupAuthorizedParents child al = do

@@ -7,8 +7,9 @@ module Databrary.Model.Audit.SQL
   ) where
 
 import Data.List (intercalate)
+import Data.Monoid ((<>))
 import Database.PostgreSQL.Typed.Query (makePGQuery, parseQueryFlags)
-import Database.PostgreSQL.Typed.Dynamic (pgSafeLiteral)
+import Database.PostgreSQL.Typed.Dynamic (pgSafeLiteralString)
 import qualified Language.Haskell.TH as TH
 
 import Databrary.Model.SQL.Select
@@ -25,9 +26,9 @@ auditQuery :: AuditAction -> TH.Name -- ^ @'AuditIdentity'
 auditQuery action ident tablef stmt =
   maybe (makePGQuery flags sql) (makeQuery flags ((sql ++) . (" RETURNING " ++)))
   where
-  sql = "WITH audit_row AS (" ++ actionCmd action ++ ' ' : table ++ ' ' : stmt
-    ++ " RETURNING *) INSERT INTO audit." ++ table
-    ++ " SELECT CURRENT_TIMESTAMP, ${auditWho " ++ idents ++ "}, ${auditIp " ++ idents ++ "}, " ++ pgSafeLiteral action ++ ", * FROM audit_row"
+  sql = "WITH audit_row AS (" <> actionCmd action <> " " <> table <> " " <> stmt
+    <> " RETURNING *) INSERT INTO audit." <> table
+    <> " SELECT CURRENT_TIMESTAMP, ${auditWho " <> idents <> "}, ${auditIp " <> idents <> "}, " <> pgSafeLiteralString action <> ", * FROM audit_row"
   idents = nameRef ident
   (flags, table) = parseQueryFlags tablef
 

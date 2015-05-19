@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Databrary.Service.DB.Schema
   ( updateDBSchema
   ) where
@@ -6,8 +7,8 @@ import Control.Applicative ((<$>))
 import Control.Arrow (first, second)
 import Control.Monad (guard)
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import qualified Data.ByteString.Lazy as BSL
 import Data.List (sort)
-import Data.Monoid ((<>))
 import Database.PostgreSQL.Typed.Protocol (pgErrorCode)
 import Database.PostgreSQL.Typed.Query (rawPGSimpleQuery)
 import Database.PostgreSQL.Typed.Dynamic (pgDecodeRep)
@@ -16,9 +17,6 @@ import System.FilePath ((</>), (<.>), splitExtension)
 import System.IO (stderr, hPutStr, hPutChar, hFlush)
 
 import Databrary.Service.DB
-
-schemaTable :: String
-schemaTable = "schema"
 
 schemaError :: Monad m => String -> m a
 schemaError = fail
@@ -36,7 +34,7 @@ confirm s = liftIO $ do
 
 sqlFile :: (MonadDB m, MonadIO m) => FilePath -> m ()
 sqlFile f = do
-  sql <- liftIO $ readFile f
+  sql <- liftIO $ BSL.readFile f
   dbExecute_ sql
 
 schemaList :: [FilePath] -> Maybe [String]
@@ -58,12 +56,12 @@ updateDBSchema dir = do
     =<< schemaList <$> liftIO (getDirectoryContents dir)
 
   lr <- dbTryQuery (guard . ("42P01" ==) . pgErrorCode)
-    $ pgDecodeRep . head <$> rawPGSimpleQuery ("SELECT name FROM " <> schemaTable <> " ORDER BY name")
+    $ pgDecodeRep . head <$> rawPGSimpleQuery ("SELECT name FROM schema ORDER BY name")
   dl <- case lr of
     Left _ -> do
       confirm "No schema found. Initialize?"
       sqlFile base
-      dbExecute_ $ "CREATE TABLE " <> schemaTable <> " (name varchar(64) Primary Key, applied timestamptz NOT NULL Default now())"
+      dbExecute_ $ "CREATE TABLE schema (name varchar(64) Primary Key, applied timestamptz NOT NULL Default now())"
       return []
     Right (_, l) -> return l
 

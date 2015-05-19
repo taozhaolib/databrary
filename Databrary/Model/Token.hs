@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell, QuasiQuotes #-}
+{-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes #-}
 module Databrary.Model.Token
   ( module Databrary.Model.Token.Types
   , loginTokenId
@@ -67,7 +67,7 @@ createToken insert = do
           Nothing -> insert tok
           Just _ -> loop
   dbTransaction $ do
-    _ <- dbQuery "LOCK TABLE token IN SHARE ROW EXCLUSIVE MODE"
+    _ <- dbExecuteSimple "LOCK TABLE token IN SHARE ROW EXCLUSIVE MODE"
     loop
 
 createLoginToken :: (MonadDB m, EntropyM c m) => SiteAuth -> Bool -> m LoginToken

@@ -10,7 +10,7 @@ import Data.Int (Int32)
 import Data.List (intercalate)
 import Data.Maybe (fromMaybe)
 import Database.PostgreSQL.Typed.Query (makePGQuery, simpleQueryFlags)
-import Database.PostgreSQL.Typed.Dynamic (pgLiteralRep)
+import Database.PostgreSQL.Typed.Dynamic (pgLiteralString)
 import qualified Language.Haskell.TH as TH
 
 import Databrary.Model.SQL.Select
@@ -57,8 +57,8 @@ tagCoverageColumns acct = do
   return
     [ ("weight", "count(*)::integer")
     , ("coverage", "segments_union(segment)")
-    , ("keywords", "segments_union(CASE WHEN tableoid = " ++ pgLiteralRep keywordUseOID ++ " THEN segment ELSE 'empty' END)")
-    , ("votes", "segments_union(CASE WHEN tableoid = " ++ pgLiteralRep tagUseOID ++ " AND who = ${partyId " ++ nameRef acct ++ "} THEN segment ELSE 'empty' END)")
+    , ("keywords", "segments_union(CASE WHEN tableoid = " ++ pgLiteralString keywordUseOID ++ " THEN segment ELSE 'empty' END)")
+    , ("votes", "segments_union(CASE WHEN tableoid = " ++ pgLiteralString tagUseOID ++ " AND who = ${partyId " ++ nameRef acct ++ "} THEN segment ELSE 'empty' END)")
     ]
 
 selectTagCoverage :: TH.Name -- ^ @'Party'@

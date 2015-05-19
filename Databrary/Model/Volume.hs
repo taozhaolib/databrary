@@ -14,12 +14,12 @@ module Databrary.Model.Volume
 
 import Control.Applicative ((<|>))
 import Control.Monad (guard)
+import qualified Data.ByteString as BS
 import Data.Maybe (catMaybes)
 import Data.Monoid (Monoid(..), (<>))
 import qualified Data.Text as T
 import Database.PostgreSQL.Typed.Query (pgSQL, unsafeModifyQuery)
-import Database.PostgreSQL.Typed.Dynamic (pgSafeLiteral)
-import Database.PostgreSQL.Typed.Types (pgQuote)
+import Database.PostgreSQL.Typed.Dynamic (pgLiteralRep)
 
 import Databrary.Ops
 import Databrary.Has (peek, view)
@@ -83,22 +83,23 @@ instance Monoid VolumeFilter where
   mappend (VolumeFilter q1 p1) (VolumeFilter q2 p2) =
     VolumeFilter (q1 <> q2) (p1 <|> p2)
 
-volumeFilter :: VolumeFilter -> String
-volumeFilter VolumeFilter{..} =
-  withq volumeFilterParty (const " JOIN volume_access ON volume.id = volume_access.volume")
-  ++ withq volumeFilterQuery (\n -> " JOIN volume_text_idx ON volume.id = volume_text_idx.volume, plainto_tsquery('english', " ++ pgQuote n ++ ") query")
-  ++ " WHERE volume.id > 0 "
-  ++ withq volumeFilterParty (\p -> " AND volume_access.party = " ++ pgSafeLiteral p ++ " volume_access.individual >= 'EDIT'")
-  ++ withq volumeFilterQuery (const " AND ts @@ query")
-  ++ " ORDER BY "
-  ++ withq volumeFilterQuery (const "ts_rank(ts, query) DESC,")
-  ++ withq volumeFilterParty (const "volume_access.individual DESC,")
-  ++ "volume.id DESC"
+volumeFilter :: VolumeFilter -> BS.ByteString
+volumeFilter VolumeFilter{..} = BS.concat
+  [ withq volumeFilterParty (const " JOIN volume_access ON volume.id = volume_access.volume")
+  , withq volumeFilterQuery (\n -> " JOIN volume_text_idx ON volume.id = volume_text_idx.volume, plainto_tsquery('english', " <> pgLiteralRep n <> ") query")
+  , " WHERE volume.id > 0 "
+  , withq volumeFilterParty (\p -> " AND volume_access.party = " <> pgLiteralRep p <> " AND volume_access.individual >= 'EDIT'")
+  , withq volumeFilterQuery (const " AND ts @@ query")
+  , " ORDER BY "
+  , withq volumeFilterQuery (const "ts_rank(ts, query) DESC,")
+  , withq volumeFilterParty (const "volume_access.individual DESC,")
+  , "volume.id DESC"
+  ]
   where
   withq v f = maybe "" f v
 
-findVolumes :: (MonadHasIdentity c m, MonadDB m) => VolumeFilter -> Int -> Int -> m [Volume]
+findVolumes :: (MonadHasIdentity c m, MonadDB m) => VolumeFilter -> Int32 -> Int32 -> m [Volume]
 findVolumes pf limit offset = do
   ident <- peek
   dbQuery $ unsafeModifyQuery $(selectQuery (selectVolume 'ident) "")
-    (++ volumeFilter pf ++ " LIMIT " ++ show limit ++ " OFFSET " ++ show offset)
+    (<> volumeFilter pf <> " LIMIT " <> pgLiteralRep limit <> " OFFSET " <> pgLiteralRep offset)

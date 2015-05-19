@@ -19,6 +19,7 @@ import qualified Crypto.BCrypt as BCrypt
 import qualified Data.Aeson as JSON
 import qualified Data.ByteString as BS
 import qualified Data.Foldable as Fold
+import Data.Int (Int32)
 import Data.Monoid ((<>))
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
@@ -88,7 +89,7 @@ passwordForm acct = do
   pw <- liftIO $ BCrypt.hashPasswordUsingPolicy passwordPolicy p
   deformMaybe' "Error processing password." pw
 
-paginationForm :: (Applicative m, Monad m) => DeformT m (Int, Int)
+paginationForm :: (Applicative m, Monad m) => DeformT m (Int32, Int32)
 paginationForm = (,)
   <$> ("limit" .:> (deformCheck "Invalid limit" (\l -> l > 0 && l <= 129) =<< deform) <|> return 32)
   <*> ("offset" .:> (deformCheck "Invalid offset" (>= 0) =<< deform) <|> return 0)

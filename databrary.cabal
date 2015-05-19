@@ -64,7 +64,7 @@ Executable databrary
     configurator,
     resource-pool,
     scientific,
-    postgresql-typed == 0.3.4,
+    postgresql-typed == 0.4.0,
     cryptohash,
     entropy,
     resourcet,

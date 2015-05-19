@@ -22,6 +22,7 @@ module Databrary.Model.Party
 
 import Control.Applicative ((<|>))
 import Control.Monad (guard)
+import qualified Data.ByteString as BS
 import Data.Int (Int64)
 import Data.List (intercalate)
 import Data.Maybe (catMaybes, isNothing, fromMaybe)
@@ -29,8 +30,7 @@ import Data.Monoid (Monoid(..), (<>))
 import qualified Data.Text as T
 import Database.PostgreSQL.Typed (pgSQL)
 import Database.PostgreSQL.Typed.Query (unsafeModifyQuery)
-import Database.PostgreSQL.Typed.Dynamic (pgLiteralRep, pgSafeLiteral)
-import Database.PostgreSQL.Typed.Types (pgQuote)
+import Database.PostgreSQL.Typed.Dynamic (pgLiteralRep, pgLiteralString, pgSafeLiteral)
 
 import Databrary.Ops
 import Databrary.Has (Has(..), peek)
@@ -150,16 +150,17 @@ instance Monoid PartyFilter where
   mappend (PartyFilter q1 a1 i1 p1 v1) (PartyFilter q2 a2 i2 p2 v2) =
     PartyFilter (q1 <> q2) (a1 <|> a2) (i1 <|> i2) (p1 <|> p2) (v1 <|> v2)
 
-partyFilter :: PartyFilter -> Identity -> String
-partyFilter PartyFilter{..} ident =
-  withq partyFilterAccess (const " JOIN authorize_view ON party.id = child AND parent = 0")
-  ++ " WHERE id > 0"
-  ++ withq partyFilterQuery (\n -> " AND " ++ queryVal ++ " ILIKE " ++ pgQuote (wordPat n))
-  ++ withq partyFilterAccess (\a -> " AND site = " ++ pgSafeLiteral a)
-  ++ withq partyFilterInstitution (\i -> if i then " AND account.id IS NULL" else " AND account.password IS NOT NULL")
-  ++ withq partyFilterAuthorize (\a -> let i = pgSafeLiteral (partyId a) in " AND party.id <> " ++ i ++ " AND id NOT IN (SELECT child FROM authorize WHERE parent = " ++ i ++ " UNION SELECT parent FROM authorize WHERE child = " ++ i ++ ")")
-  ++ withq partyFilterVolume (\v -> " AND id NOT IN (SELECT party FROM volume_access WHERE volume = " ++ pgSafeLiteral (volumeId v) ++ ")")
-  ++ " ORDER BY sortname, prename"
+partyFilter :: PartyFilter -> Identity -> BS.ByteString
+partyFilter PartyFilter{..} ident = BS.concat
+  [ withq partyFilterAccess (const " JOIN authorize_view ON party.id = child AND parent = 0")
+  , " WHERE id > 0"
+  , withq partyFilterQuery (\n -> " AND " <> queryVal <> " ILIKE " <> pgLiteralRep (wordPat n))
+  , withq partyFilterAccess (\a -> " AND site = " <> pgSafeLiteral a)
+  , withq partyFilterInstitution (\i -> if i then " AND account.id IS NULL" else " AND account.password IS NOT NULL")
+  , withq partyFilterAuthorize (\a -> let i = pgSafeLiteral (partyId a) in " AND party.id <> " <> i <> " AND id NOT IN (SELECT child FROM authorize WHERE parent = " <> i <> " UNION SELECT parent FROM authorize WHERE child = " <> i <> ")")
+  , withq partyFilterVolume (\v -> " AND id NOT IN (SELECT party FROM volume_access WHERE volume = " <> pgSafeLiteral (volumeId v) <> ")")
+  , " ORDER BY sortname, prename"
+  ]
   where
   withq v f = maybe "" f v
   wordPat = intercalate "%" . ("":) . (++[""]) . words
@@ -167,15 +168,15 @@ partyFilter PartyFilter{..} ident =
     | showEmail ident = "(name || COALESCE(' ' || email, ''))"
     | otherwise = "name"
 
-findParties :: (MonadHasIdentity c m, MonadDB m) => PartyFilter -> Int -> Int -> m [Party]
+findParties :: (MonadHasIdentity c m, MonadDB m) => PartyFilter -> Int32 -> Int32 -> m [Party]
 findParties pf limit offset = do
   ident <- peek
   dbQuery $ unsafeModifyQuery $(selectQuery (selectParty 'ident) "")
-    (++ partyFilter pf ident ++ " LIMIT " ++ show limit ++ " OFFSET " ++ show offset)
+    (<> partyFilter pf ident <> " LIMIT " <> pgLiteralRep limit <> " OFFSET " <> pgLiteralRep offset)
 
 lookupAvatar :: MonadDB m => Id Party -> m (Maybe Asset)
 lookupAvatar p =
-  dbQuery1 $ ($ coreVolume) <$> $(selectQuery selectVolumeAsset $ "$JOIN avatar ON asset.id = avatar.asset WHERE avatar.party = ${p} AND asset.volume = " ++ pgLiteralRep (volumeId coreVolume))
+  dbQuery1 $ ($ coreVolume) <$> $(selectQuery selectVolumeAsset $ "$JOIN avatar ON asset.id = avatar.asset WHERE avatar.party = ${p} AND asset.volume = " ++ pgLiteralString (volumeId coreVolume))
 
 changeAvatar :: MonadAudit c m => Party -> Maybe Asset -> m Bool
 changeAvatar p Nothing = do
