@@ -5,10 +5,8 @@ module Databrary.Setup.Node
   ) where
 
 import Distribution.Simple.Program
-import Distribution.Simple.Utils (rawSystemExit)
 import Distribution.Simple.LocalBuildInfo (LocalBuildInfo, withPrograms)
 import Distribution.Verbosity (Verbosity)
-import System.FilePath ((</>))
 
 nodeProgram :: Program
 nodeProgram = (simpleProgram "node")
