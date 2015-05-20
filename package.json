@@ -6,6 +6,7 @@
   "private": true,
   "dependencies": {
     "bower": "*",
+    "coffee-script": "^1.7.1",
     "jshint": "^2.7.0",
     "uglify-js": "^2.4.21",
     "stylus": "^0.51.1",
