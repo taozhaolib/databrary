@@ -489,7 +489,7 @@ app.directive 'spreadsheet', [
           if info.hasOwnProperty('n') || t <= 1
             td.className = 'null'
             if !info.n || info.n == t
-              if Editing && info.c != 'slot'
+              if Editing && info.c != 'slot' && info.c != Key.id
                 info.m = info.cols.start
                 if info.metric.id != 'id'
                   info.id = ID+'-'+info.i+'_'+info.cols.start+(if info.hasOwnProperty('n') then '_'+info.n else '')
