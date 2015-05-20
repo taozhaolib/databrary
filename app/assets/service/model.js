@@ -779,19 +779,22 @@ app.factory('modelService', [
       var s = this;
       return router.http(router.controllers.RecordApi.move, r.id, this.container.id, {src: Segment.data(src), dst: Segment.data(dst)})
         .then(function (res) {
-          if (!('container' in res.data))
+          if ('measures' in res.data) {
+            r.update(res.data);
             return null;
-          var d = new Slot(s.container, res.data);
+          }
+          var d = new Segment(res.data.segment);
           if (s.records) {
             var ss = Segment.make(src);
-            for (var ri = 0; ri < s.records.length; ri ++)
+            for (var ri = 0; ri < s.records.length; ri ++) {
               if (s.records[ri].id === r.id && ss.contains(s.records[ri].segment)) {
-                if (d.segment.empty)
+                if (d.empty)
                   s.records.splice(ri, 1);
                 else
-                  s.records[ri].segment = d.segment;
+                  s.records[ri].segment = d;
                 break;
               }
+            }
           }
           return d;
         });
