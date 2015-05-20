@@ -30,10 +30,4 @@ npmProgram = (simpleProgram "npm")
   }
 
 nodeInstall :: Verbosity -> LocalBuildInfo -> IO ()
-nodeInstall v info = do
-  npm_ ["install"]
-  bin <- npm ["bin"]
-  rawSystemExit v (bin </> "bower") ["install"]
-  where
-  npm_ = rawSystemProgramConf v npmProgram (withPrograms info)
-  npm = rawSystemProgramStdoutConf v npmProgram (withPrograms info)
+nodeInstall v info = rawSystemProgramConf v npmProgram (withPrograms info) ["install"]

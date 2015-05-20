@@ -8,3 +8,4 @@
 *.o
 *.dyn_hi
 *.dyn_o
+/npm-debug.log

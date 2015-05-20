@@ -5,9 +5,13 @@
   "repository": "databrary/databrary",
   "private": true,
   "dependencies": {
+    "bower": "*",
     "jshint": "^2.7.0",
     "uglify-js": "^2.4.21",
     "stylus": "^0.51.1",
     "normalize.styl": "^3.0.0"
+  },
+  "scripts": {
+    "postinstall": "bower install"
   }
 }
