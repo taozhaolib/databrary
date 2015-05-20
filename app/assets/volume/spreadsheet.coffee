@@ -303,15 +303,16 @@ app.directive 'spreadsheet', [
             Depends[record.id][i] = n
 
           if Assets
+            count.asset = 0
             for assetId, asset of slot.assets
-              n = inc(count, 'asset')
+              n = count.asset++
               populateAssetData(i, n, asset)
 
           return
 
         populateSlots = () ->
           i = 0
-          ### jshint ignore:start ###
+          ### jshint ignore:start #### fixed in jshint 2.5.7
           for ci, slot of volume.containers when Top != !slot.top
             populateSlot(i++, slot)
           ### jshint ignore:end ###
@@ -326,28 +327,34 @@ app.directive 'spreadsheet', [
         populateRecords = () ->
           i = 0
 
-          populateMeasure = (m, v) ->
-            arr(arr(r, m), n)[i] = v
-            return
-
           records = {}
           ### jshint ignore:start #### fixed in jshint 2.5.7
           for r, record of volume.records when (record.category || 0) == Key.id
             populateRecord(i, record)
             records[r] = i++
+          ### jshint ignore:end ###
+          Counts[count = i] = {slot: 0}
+          Counts[i][Key.id] = 0
 
+          ### jshint ignore:start #### fixed in jshint 2.5.7
           for s, slot of volume.containers when Top != !slot.top
             deps = Depends[slot.id] = {}
+            any = false
             for rr in slot.records
-              if (j = records[rr.id])?
-                n = inc(Counts[j], 'slot')
-                populateSlotData(j, n, slot)
+              if (i = records[rr.id])?
+                n = Counts[i].slot++
+                populateSlotData(i, n, slot)
                 if !Editing && 'age' of rr
-                  populateDatum(j, 'slot', n, 'age', rr.age)
-                deps[j] = n
+                  populateDatum(i, 'slot', n, 'age', rr.age)
+                deps[i] = n
+                any = true
+            unless any
+              n = Counts[count].slot++
+              populateSlotData(count, n, slot)
+              deps[count] = n
           ### jshint ignore:end ###
 
-          i
+          count+!!Counts[count].slot
 
         # Fill Cols and Groups from records
         populateCols = ->
