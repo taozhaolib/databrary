@@ -2,11 +2,19 @@ module Databrary.Setup.Node
   ( nodeProgram
   , npmProgram
   , nodeInstall
+  , nodeModuleGenerate
   ) where
 
-import Distribution.Simple.Program
+import Data.List (intercalate)
+import qualified Distribution.ModuleName as Mod
+import Distribution.PackageDescription (PackageDescription)
+import Distribution.Simple.BuildPaths (autogenModulesDir, autogenModuleName)
 import Distribution.Simple.LocalBuildInfo (LocalBuildInfo, withPrograms)
+import Distribution.Simple.Program
+import Distribution.Simple.Utils (createDirectoryIfMissingVerbose, rewriteFile)
+import Distribution.Text (display)
 import Distribution.Verbosity (Verbosity)
+import System.FilePath ((</>), (<.>), takeDirectory)
 
 nodeProgram :: Program
 nodeProgram = (simpleProgram "node")
@@ -28,4 +36,16 @@ npmProgram = (simpleProgram "npm")
   }
 
 nodeInstall :: Verbosity -> LocalBuildInfo -> IO ()
-nodeInstall v info = rawSystemProgramConf v npmProgram (withPrograms info) ["install"]
+nodeInstall verb info = rawSystemProgramConf verb npmProgram (withPrograms info) ["install"]
+
+nodeModuleGenerate :: Verbosity -> PackageDescription -> LocalBuildInfo -> IO ()
+nodeModuleGenerate verb desc info = do
+  bin <- rawSystemProgramStdoutConf verb npmProgram (withPrograms info) ["bin"]
+  createDirectoryIfMissingVerbose verb True $ takeDirectory file
+  rewriteFile file
+    $ "module " ++ display mod ++ "(binDir) where\n\
+    \binDir :: FilePath\n\
+    \binDir = " ++ show bin ++ "\n"
+  where
+  file = autogenModulesDir info </> Mod.toFilePath mod <.> "hs"
+  mod = Mod.fromString $ intercalate "." $ Mod.components (autogenModuleName desc) ++ ["Node"]
