@@ -5,6 +5,7 @@ module Databrary.Web.Files
   , webDir
   , findWebFiles
   , webRegenerate
+  , webLinkFile
   ) where
 
 import Control.Applicative ((<$>), (<$))
@@ -13,12 +14,14 @@ import Control.Monad (void, ap, liftM2)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import Data.Maybe (isNothing)
+import qualified Data.Traversable as Trav
 import System.Directory (createDirectoryIfMissing)
 import qualified System.FilePath.Posix as FP
 import System.Posix.Directory.ByteString (openDirStream, closeDirStream)
 import System.Posix.Directory.Foreign (dtDir, dtReg)
 import System.Posix.Directory.Traversals (readDirEnt)
 import System.Posix.FilePath ((</>), takeDirectory)
+import System.Posix.Files.ByteString (createLink)
 
 import Paths_databrary (getDataFileName)
 import Databrary.Model.Time
@@ -67,3 +70,10 @@ webRegenerate _ f ft g = True <$
       then createDirectoryIfMissing True . unRawFilePath . takeDirectory
       else void . removeFile)
     g (webDir </> f)
+
+webLinkFile :: FilePath -> RawFilePath -> Maybe Timestamp -> IO (Maybe Bool)
+webLinkFile d f t = do
+  wf <- rawFilePath <$> getDataFileName (d FP.</> unRawFilePath f)
+  wi <- fileInfo wf
+  Trav.forM wi $ \(_, wt) ->
+    webRegenerate wt f t $ createLink wf

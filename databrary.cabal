@@ -9,14 +9,6 @@ Stability:           Experimental
 Category:            Web
 Build-type:          Custom
 Cabal-version:       >=1.6
-Source-Repository head
-  Type:	git
-  Location: https://github.com/dylex/databrary
-
-Flag devel
-  description: Enable development mode
-  default: True
-  manual: True
 
 extra-tmp-files: node_modules, bower_components
 data-files: messages.conf,
@@ -31,6 +23,15 @@ data-files: messages.conf,
   bower_components/ng-flow/dist/ng-flow-standalone.min.js,
   bower_components/lodash/lodash.js,
   bower_components/lodash/lodash.min.js
+
+Source-Repository head
+  Type:	git
+  Location: https://github.com/dylex/databrary
+
+Flag devel
+  description: Enable development mode
+  default: True
+  manual: True
 
 Executable databrary
   main-is: Databrary/Warp.hs
