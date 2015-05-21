@@ -17,6 +17,23 @@ object Zip {
   private def enum[A](a : A, e2 : Future[Enumerator[A]]) : Enumerator[A] =
     Enumerator(a) >>> Enumerator.flatten(e2)
 
+
+  private def slotAssetList(slot : Slot, prefix : String) : Future[Seq[String]] =
+    slot.assets.map { assets =>
+      val names = mutable.Set.empty[String]
+      Seq(assets.flatMap(cast[SlotFileAsset](_).filter(_.checkPermission(Permission.VIEW))).map { sa =>
+        val base = sa.asset.name.getOrElse(sa.asset.format.name)
+        val ext = sa.format.extension.fold("")("." + _)
+        var name = base + ext
+        var i = 1
+        while (!names.add(name)) {
+          i += 1
+          name = base + i + ext
+        }
+        name 
+      } : _*)
+    }
+
   private def slotAssets(slot : Slot, prefix : String) : Future[Enumerator[ZipFile.StreamEntry]] =
     slot.assets.map { assets =>
       val names = mutable.Set.empty[String]
@@ -35,6 +52,8 @@ object Zip {
           comment = comment(sa))
       } : _*)
     }
+
+
 
   private def slotName(slot : Slot) : Future[String] =
     slot.fileName.map(_ + "-" + slot.containerId)

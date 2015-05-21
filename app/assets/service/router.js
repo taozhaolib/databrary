@@ -341,7 +341,30 @@ app.provider('routerService', [
     routes.volumeThumb = makeRoute(controllers.VolumeController.thumb, ['id', 'size']);
     routes.volumeZip = makeRoute(controllers.VolumeController.zip, ['id']);
     routes.volumeCSV = makeRoute(controllers.VolumeController.csv, ['id']);
-    routes.slotZip = makeRoute(controllers.SlotController.zip, ['vid', 'id', 'segment']);
+    routes.slotZip = makeRoute(controllers.SlotController.zip, ['vid', 'id', 'segment'], {
+      controller: 'asset/zipView',
+      templateUrl: 'asset/zipView.html', 
+      resolve: {
+        asset: [
+        'pageService', function(page){
+            return page;
+          }
+        ],
+        slot: [
+          'pageService', function (page) {
+            return page.models.Volume.get(page.$route.current.params.vid).then(function(v){
+              return v.getSlot(page.$route.current.params.id, page.$route.current.params.segment);
+            }); 
+            // var r = page.models.Volume.get(page.$route.current.params.vid, ['containers', 'records']);
+            // return (r)
+            //   .then(function (volume) {
+            //     return volume.getSlot(page.$route.current.params.id, page.$route.current.params.segment,
+            //       ['releases', 'records', 'assets', 'excerpts', 'tags', 'comments']);
+            //   });
+          },
+        ],
+      }
+    });
     routes.assetThumb = makeRoute(controllers.AssetSlotController.thumb, ['cid', 'segment', 'id', 'size']);
     routes.assetDownload = makeRoute(controllers.AssetSlotController.download, ['cid', 'segment', 'id', 'inline']);
     routes.partyAvatar = makeRoute(controllers.PartyHtml.avatar, ['id', 'size']);
