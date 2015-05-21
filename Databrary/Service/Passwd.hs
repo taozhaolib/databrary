@@ -7,7 +7,6 @@ module Databrary.Service.Passwd
   , initPasswd
   ) where
 
-import Control.Applicative ((<$>))
 import Control.Concurrent.MVar (MVar, newMVar, withMVar)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import qualified Crypto.BCrypt as BCrypt
@@ -15,6 +14,7 @@ import qualified Data.ByteString as BS
 import Foreign.C.String (CString)
 import Foreign.Ptr (nullPtr)
 
+import Databrary.Ops
 import Databrary.Has (makeHasRec, peeks)
 
 passwordPolicy :: BCrypt.HashingPolicy
@@ -43,6 +43,4 @@ passwdCheck passwd user name = do
       BS.useAsCString user $ \u ->
         BS.useAsCString name $ \n -> do
           r <- fascistCheckUser p nullPtr u n
-          if r == nullPtr
-            then return Nothing
-            else Just <$> BS.packCString r
+          r /= nullPtr ?$> BS.packCString r

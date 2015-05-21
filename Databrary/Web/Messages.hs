@@ -14,8 +14,8 @@ import Databrary.Store
 import Databrary.Model.Time
 import Databrary.Web.Files
 
-generateMessagesJS :: Maybe Timestamp -> RawFilePath -> IO Bool
-generateMessagesJS t f = do
+generateMessagesJS :: RawFilePath -> Maybe Timestamp -> IO Bool
+generateMessagesJS f t = do
   -- it'd be nice to use Service.Messages here but there's no good way
   mf <- getDataFileName "messages.conf"
   fileInfo (rawFilePath mf) >>= maybe (return False) (\(_, mt) ->

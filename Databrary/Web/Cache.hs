@@ -9,6 +9,7 @@ import Control.Applicative ((<$>), (<*>))
 import Control.Concurrent.MVar (modifyMVar)
 #endif
 import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Trans.Maybe (MaybeT(..))
 import qualified Data.HashMap.Strict as HM
 import Data.Maybe (fromJust)
 import System.Posix.FilePath ((</>))
@@ -39,7 +40,7 @@ lookupWebFile f = do
           return (HM.insert f wf' wm, Just wf')
         else
           return (wm, wf))
-      =<< generateWebFile f (webFileTimestamp <$> wf)
+      =<< runMaybeT (generateWebFile f (webFileTimestamp <$> wf))
 #else
   return $ HM.lookup f wc
 #endif

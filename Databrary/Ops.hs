@@ -1,10 +1,12 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Databrary.Ops
   ( (<$>)
-  , (<$), ($>)
-  , (<?), (?>)
-  , (<!?), (?!>)
-  , (>$), ($<)
+  , (<$)  ,   ($>)
+  , (<?)  ,   (?>)
+  , (<!?) ,  (?!>)
+  , (<$?) ,  (?$>)
+  , (<$!?), (?!$>)
+  , (>$)  ,   ($<)
   , Min(..)
   , Max(..)
   , maybeA
@@ -46,6 +48,34 @@ a <!? False = pure a
 {-# SPECIALIZE (<?) :: a -> Bool -> Maybe a #-}
 {-# SPECIALIZE (?!>) :: Bool -> a -> Maybe a #-}
 {-# SPECIALIZE (<!?) :: a -> Bool -> Maybe a #-}
+
+infixl 1 <$?, <$!?
+infixr 1 ?$>, ?!$>
+
+-- |@liftM . (?>)@ 
+(?$>) :: (Applicative m, Alternative f) => Bool -> m a -> m (f a)
+False ?$> _ = pure empty
+True ?$> f = pure <$> f
+
+-- |@flip '(?$>)'@
+(<$?) :: (Applicative m, Alternative f) => m a -> Bool -> m (f a)
+_ <$? False = pure empty
+f <$? True = pure <$> f
+
+-- |@'(?$>)' . not@
+(?!$>) :: (Applicative m, Alternative f) => Bool -> m a -> m (f a)
+True ?!$> _ = pure empty
+False ?!$> f = pure <$> f
+
+-- |@flip '(?!$>)'@
+(<$!?) :: (Applicative m, Alternative f) => m a -> Bool -> m (f a)
+_ <$!? True = pure empty
+f <$!? False = pure <$> f
+
+{-# SPECIALIZE (?$>) :: Applicative m => Bool -> m a -> m (Maybe a) #-}
+{-# SPECIALIZE (<$?) :: Applicative m => m a -> Bool -> m (Maybe a) #-}
+{-# SPECIALIZE (?!$>) :: Applicative m => Bool -> m a -> m (Maybe a) #-}
+{-# SPECIALIZE (<$!?) :: Applicative m => m a -> Bool -> m (Maybe a) #-}
 
 infix 4 >$, $<
 

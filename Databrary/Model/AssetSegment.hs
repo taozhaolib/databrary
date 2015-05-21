@@ -44,10 +44,8 @@ lookupSlotAssetSegment (Id (SlotId ci seg)) ai = do
 
 lookupAssetSlotSegment :: MonadDB m => AssetSlot -> Segment -> m (Maybe AssetSegment)
 lookupAssetSlotSegment a s =
-  if segmentEmpty seg
-    then return Nothing
-    else Just . as <$>
-      dbQuery1 $(selectQuery excerptRow "$WHERE asset = ${view a :: Id Asset} AND segment @> ${seg}")
+  segmentEmpty seg ?!$> as <$>
+    dbQuery1 $(selectQuery excerptRow "$WHERE asset = ${view a :: Id Asset} AND segment @> ${seg}")
   where
   as = makeExcerpt a s
   seg = assetSegment $ as Nothing

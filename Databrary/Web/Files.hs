@@ -11,10 +11,11 @@ module Databrary.Web.Files
 import Control.Applicative ((<$>), (<$))
 import Control.Exception (bracket)
 import Control.Monad (void, ap, liftM2)
+import Control.Monad.Trans.Class (lift)
+import Control.Monad.Trans.Maybe (MaybeT(..))
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import Data.Maybe (isNothing)
-import qualified Data.Traversable as Trav
 import System.Directory (createDirectoryIfMissing)
 import qualified System.FilePath.Posix as FP
 import System.Posix.Directory.ByteString (openDirStream, closeDirStream)
@@ -26,6 +27,7 @@ import System.Posix.Files.ByteString (createLink)
 import Paths_databrary (getDataFileName)
 import Databrary.Model.Time
 import Databrary.Store
+import Databrary.Web.Types
 
 listFiles :: RawFilePath -> IO [RawFilePath]
 listFiles dir = loop "" dir where
@@ -71,9 +73,8 @@ webRegenerate _ f ft g = True <$
       else void . removeFile)
     g (webDir </> f)
 
-webLinkFile :: FilePath -> RawFilePath -> Maybe Timestamp -> IO (Maybe Bool)
+webLinkFile :: FilePath -> WebGenerator
 webLinkFile d f t = do
-  wf <- rawFilePath <$> getDataFileName (d FP.</> unRawFilePath f)
-  wi <- fileInfo wf
-  Trav.forM wi $ \(_, wt) ->
-    webRegenerate wt f t $ createLink wf
+  wf <- lift $ rawFilePath <$> getDataFileName (d FP.</> unRawFilePath f)
+  (_, wt) <- MaybeT $ fileInfo wf
+  lift $ webRegenerate wt f t $ createLink wf

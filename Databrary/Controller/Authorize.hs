@@ -89,7 +89,7 @@ postAuthorize = action POST (pathAPI </>> pathPartyTarget </> pathAuthorizeTarge
           minexp = fromGregorian 2000 1 1
       a <- runForm (api == HTML ?> htmlAuthorizeForm c') $ do
         delete <- "delete" .:> deform
-        if delete then return Nothing else Just <$> do
+        delete ?!$> do
           site <- "site" .:> deform
           member <- "member" .:> deform
           expires <- "expires" .:> (deformCheck "Expiration must be within two years." (Fold.all (\e -> su || e > minexp && e <= maxexp))

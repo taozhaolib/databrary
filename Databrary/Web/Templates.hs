@@ -3,7 +3,8 @@ module Databrary.Web.Templates
   ( generateTemplatesJS
   ) where
 
-import Control.Monad (forM_)
+import Control.Monad (guard, forM_)
+import Control.Monad.Trans.Class (lift)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Char8 as BSC
@@ -15,7 +16,7 @@ import System.Posix.FilePath ((</>))
 
 import qualified Databrary.JSON as JSON
 import Databrary.Store
-import Databrary.Model.Time
+import Databrary.Web.Types
 import Databrary.Web.Files
 
 processTemplate :: RawFilePath -> (BS.ByteString -> IO ()) -> IO ()
@@ -28,10 +29,11 @@ processTemplate f g = withFile (unRawFilePath f) ReadMode go where
 templateFiles :: IO [RawFilePath]
 templateFiles = findWebFiles ".html"
 
-generateTemplatesJS :: Maybe Timestamp -> RawFilePath -> IO Bool
-generateTemplatesJS t f = do
-  tl <- templateFiles
-  if null tl then return False else do
+generateTemplatesJS :: WebGenerator
+generateTemplatesJS f t = do
+  tl <- lift $ templateFiles
+  guard (not $ null tl)
+  lift $ do
   ti <- mapM (fmap (maybe (posixSecondsToUTCTime 0) snd) . fileInfo . (webDir </>)) tl
   webRegenerate (maximum ti) f t $ \wf -> do
     withFile (unRawFilePath wf) WriteMode $ \h -> do

@@ -7,7 +7,6 @@ module Databrary.Controller.AssetSegment
   , thumbAssetSegment
   ) where
 
-import Control.Applicative ((<$>))
 import Control.Monad (when)
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.ByteString as BS
@@ -20,6 +19,7 @@ import qualified Data.Text as T
 import qualified Database.PostgreSQL.Typed.Range as Range
 import qualified Network.Wai as Wai
 
+import Databrary.Ops
 import Databrary.Has (view, peek, peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.Service.DB
@@ -80,7 +80,7 @@ serveAssetSegment dl as = do
         [Just n] -> fst <$> BSC.readInt n
         _ -> Nothing
   when dl $ auditAssetSegmentDownload True as
-  dlname <- if dl then Just . makeFilename <$> assetSegmentDownloadName as else return Nothing
+  dlname <- dl ?$> makeFilename <$> assetSegmentDownloadName as
   (hd, part) <- fileResponse store (view as) dlname etag
   av <- peek
   let samp p = do

@@ -214,9 +214,7 @@ errorFile NoFile = return Nothing
 errorFile (FileName f) = return $ Just f
 errorFile (FileContext a) = do
   n <- #{peek AVFormatContext, filename} a
-  if n == nullPtr
-    then return Nothing
-    else Just <$> BS.packCString n
+  n /= nullPtr ?$> BS.packCString n
 
 throwAVError :: CInt -> String -> ErrorFile -> IO a
 throwAVError e c f = throwIO . AVError e c =<< errorFile f
