@@ -23,6 +23,7 @@ import Databrary.Web.Routes
 import Databrary.Web.Templates
 import Databrary.Web.Messages
 import Databrary.Web.Coffee
+import Databrary.Web.Uglify
 import Databrary.Web.Libs
 
 generateWebFile :: WebGenerator
@@ -31,6 +32,7 @@ generateWebFile f@"constants.js" t = lift $ maybe (generateConstantsJS f) (const
 generateWebFile f@"routes.js" t = lift $ maybe (generateRoutesJS f) (const $ return False) t
 generateWebFile f@"messages.js" t = lift $ generateMessagesJS f t
 generateWebFile f@"templates.js" t = generateTemplatesJS f t
+generateWebFile f@"app.min.js" t = generateUglifyJS f t
 generateWebFile f t =
   webLinkFile "web" f t
   <|> generateCoffeeJS f t
@@ -50,4 +52,4 @@ generateWebFiles = do
   mapMaybeM regenerateWebFile $
     wd ++ 
     [ b <.> ".js" | (b, ".coffee") <- map splitExtension wd ] ++
-    [ "constants.json", "constants.js", "routes.js", "messages.js", "templates.js" ]
+    [ "constants.json", "constants.js", "routes.js", "messages.js", "templates.js", "app.min.js" ]

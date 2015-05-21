@@ -21,7 +21,7 @@ import qualified System.FilePath.Posix as FP
 import System.Posix.Directory.ByteString (openDirStream, closeDirStream)
 import System.Posix.Directory.Foreign (dtDir, dtReg)
 import System.Posix.Directory.Traversals (readDirEnt)
-import System.Posix.FilePath ((</>), takeDirectory)
+import System.Posix.FilePath ((</>), takeDirectory, takeExtensions)
 import System.Posix.Files.ByteString (createLink)
 
 import Paths_databrary (getDataFileName)
@@ -62,7 +62,7 @@ webFiles :: IO [RawFilePath]
 webFiles = listFiles webDir
 
 findWebFiles :: BS.ByteString -> IO [RawFilePath]
-findWebFiles ext = filter (BS.isSuffixOf ext) <$> webFiles
+findWebFiles ext = filter ((ext ==) . takeExtensions) <$> webFiles
 
 webRegenerate :: Timestamp -> RawFilePath -> Maybe Timestamp -> (RawFilePath -> IO ()) -> IO Bool
 webRegenerate src _ (Just dst) _ | dst >= src = return False

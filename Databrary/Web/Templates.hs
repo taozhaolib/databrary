@@ -26,12 +26,9 @@ processTemplate f g = withFile (unRawFilePath f) ReadMode go where
     g $ BSC.dropWhile isSpace l
     go h
 
-templateFiles :: IO [RawFilePath]
-templateFiles = findWebFiles ".html"
-
 generateTemplatesJS :: WebGenerator
 generateTemplatesJS f t = do
-  tl <- lift $ templateFiles
+  tl <- lift $ findWebFiles ".html"
   guard (not $ null tl)
   lift $ do
   ti <- mapM (fmap (maybe (posixSecondsToUTCTime 0) snd) . fileInfo . (webDir </>)) tl
