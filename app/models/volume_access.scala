@@ -49,10 +49,10 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
     row(Volume.fixed(volume), Party.row)
     .SELECT(sql"WHERE individual >= $access ORDER BY individual DESC")
     .list
-  /** Retrieve the volume access entries granted to a party for (at least) READ. */
-  private[models] def getVolumes(party : Party)(implicit site : Site) : Future[Seq[VolumeAccess]] =
+  /** Retrieve the volume access entries directly granted to a party for at least (READ). */
+  private[models] def getVolumes(party : Party, access : Permission.Value = Permission.READ)(implicit site : Site) : Future[Seq[VolumeAccess]] =
     row(Volume.row, Party.fixed(party))
-    .SELECT(sql"WHERE individual >= 'READ' AND " + Volume.condition + " ORDER BY individual DESC")
+    .SELECT(sql"WHERE individual >= $access AND " + Volume.condition + " ORDER BY individual DESC")
     .list
 
   /** Update or add volume access in the database.

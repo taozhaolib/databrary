@@ -117,6 +117,7 @@ GET     /api/null                                                               
 GET     /api/activity                                                                             controllers.SiteApi.activity
 
 # ----- LOGIN ----- #
+# GET            ?volumes
 GET     /api/user                                                                                 controllers.LoginApi.get
 POST    /api/user/login                                                                           controllers.LoginApi.post
 POST    /api/user/logout                                                                          controllers.LoginApi.logout

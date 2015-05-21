@@ -1,7 +1,9 @@
 package site
 
-import play.api.mvc._
+import scala.concurrent.Future
 import play.api.Play
+import play.api.mvc._
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import macros._
 import dbrary._
 import models._
@@ -62,8 +64,13 @@ trait Site {
   final def json =
     identity.json(this) ++
     JsonObject.flatten(
-      Some('access -> access.site),
-      if (access.isAdmin) Some('superuser -> superuser) else None
+      Some('access -> access.site)
+    , if (access.isAdmin) Some('superuser -> superuser) else None
+    )
+
+  def json(options : JsonOptions.Options) : Future[JsonRecord] =
+    JsonOptions(json, options
+    , "volumes" -> (opt => Volume.getAccess()(this).map(JsonArray.map(_.json)))
     )
 }
 

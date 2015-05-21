@@ -222,16 +222,15 @@ COMMENT ON TABLE "volume_access" IS 'Permissions over volumes assigned to users.
 SELECT audit.CREATE_TABLE ('volume_access');
 CREATE INDEX "volume_share_activity_idx" ON audit."volume_access" ("audit_time" DESC) WHERE "audit_action" = 'add' AND "party" = 0 AND "children" > 'NONE';
 
-CREATE FUNCTION "volume_access_check" ("volume" integer, "party" integer) RETURNS permission LANGUAGE sql STABLE AS $$
-	SELECT access FROM (
-		SELECT individual AS access
-		  FROM volume_access
-		 WHERE volume = $1 AND party = $2
+CREATE VIEW "volume_access_view" ("volume", "party", "access") AS
+	SELECT volume, party, individual FROM volume_access
 	UNION ALL
-		SELECT MAX(LEAST(children, CASE WHEN children <= 'SHARED' THEN site ELSE member END)) AS access
-		  FROM volume_access JOIN authorize_view ON party = parent
-		 WHERE volume = $1 AND child = $2
-	) a LIMIT 1
+	SELECT volume, child, MAX(LEAST(children, CASE WHEN children <= 'SHARED' THEN site ELSE member END))
+	  FROM volume_access JOIN authorize_view ON party = parent GROUP BY volume, child;
+COMMENT ON VIEW "volume_access_view" IS 'Expanded list of effective volume access.';
+
+CREATE FUNCTION "volume_access_check" ("volume" integer, "party" integer) RETURNS permission LANGUAGE sql STABLE AS $$
+	SELECT access FROM volume_access_view WHERE volume = $1 AND party = $2 LIMIT 1
 $$;
 COMMENT ON FUNCTION "volume_access_check" (integer, integer) IS 'Permission level the party has on the given volume, either directly, delegated, or inherited.';
 
