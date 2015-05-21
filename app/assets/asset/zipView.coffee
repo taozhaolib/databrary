@@ -5,7 +5,7 @@ app.controller 'asset/zipView', [
   ($scope, display, asset, slot) ->
     $scope.close = ->
       window.history.back()
-    $scope.asset = slot
+    $scope.asset = $scope.slot = slot
     console.log $scope.asset
     display.title = asset.displayName
     $scope.volume = asset.volume

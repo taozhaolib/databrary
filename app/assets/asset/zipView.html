@@ -14,11 +14,11 @@
           <span ng-if="::asset.container.date" ng-bind="::' (' + asset.container.date + ')'"></span>
         </a>
       </li>
-      <li ng-if="::!asset.segment.full && asset.segment.length">
-        <span>Duration: </span>
-        <span ng-bind="::asset.segment.length | timecode"></span>
-      </li>
+      <li>File format: {{asset.format.extension}}</li>
     </ul>
+  </div>
+  <div>
+      <li ng-repeat="asset in slot.assets"> {{asset.name}} </li>
   </div>
   <div ng-if="::hasThumbnail">
     <img class="popup-thumb" ng-src="{{::asset.thumbRoute(480)}}">
@@ -31,7 +31,7 @@
     <span class="popup-classification-title" ng-bind="::'release.'+page.constants.release[asset.release]+'.title' | message"></span>: 
     <span ng-bind="::'release.'+page.constants.release[asset.release]+'.description' | message"></span>.
   </div>
-  <a ng-href="{{::asset.downloadRoute(false)}}" class=" button green" target="_self" tooltip="'excerpts.download' | message">
+  <a ng-href="{{::slot.zipRoute()}}" class=" button green" target="_self" tooltip="'excerpts.download' | message">
     <span class="download icon"></span><span>Download</span>
   </a>  
 </div>
