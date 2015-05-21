@@ -54,6 +54,15 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
     .run.list(SQL.Cols[RecordCategory.Id].map(byId(_)))
 
   val Participant = byName("participant")
+
+  implicit object optionOrdering extends Ordering[Option[RecordCategory]] {
+    def compare(x : Option[RecordCategory], y : Option[RecordCategory]) = (x, y) match {
+      case (None, None) => 0
+      case (None, _) => 1
+      case (_, None) => -1
+      case (Some(x), Some(y)) => IntId.ordering.compare(x, y)
+    }
+  }
 }
 
 /** A set of Measures. */
@@ -188,14 +197,14 @@ object Record extends TableId[Record]("record") {
   /** Retrieve the list of all records that cover the given slot. */
   private[models] def getSlotFull(slot : Slot) : Future[Seq[Record]] =
     rowVolume(slot.volume)
-    .SELECT(sql"JOIN slot_record ON record.id = slot_record.record WHERE slot_record.container = ${slot.containerId} AND slot_record.segment @> ${slot.segment}::segment ORDER BY record.category NULLS LAST")
+    .SELECT(sql"JOIN slot_record ON record.id = slot_record.record WHERE slot_record.container = ${slot.containerId} AND slot_record.segment @> ${slot.segment}::segment ORDER BY record.category NULLS LAST, record.id")
     .list
 
   /** Retrieve the list of all records that apply to the given slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[(Segment,Record)]] =
     SlotRecord.columns
     .join(rowVolume(slot.volume) on "slot_record.record = record.id")
-    .SELECT(sql"WHERE slot_record.container = ${slot.containerId} AND slot_record.segment && ${slot.segment}::segment ORDER BY record.category NULLS LAST")
+    .SELECT(sql"WHERE slot_record.container = ${slot.containerId} AND slot_record.segment && ${slot.segment}::segment ORDER BY record.category NULLS LAST, record.id")
     .list
 
   /** Retrieve all the categorized records associated with the given volume.
@@ -229,4 +238,7 @@ object Record extends TableId[Record]("record") {
     Audit.add("record", SQLTerms('volume -> volume.id, 'category -> category.map(_.id)), "id")
     .single(SQL.Cols[Id].map(new Record(_, volume, category)))
   }
+
+  /** Based on category (RecordCategory.OptionOrdering), id */
+  implicit object ordering extends Orderings[Record](RecordCategory.optionOrdering.on(_.category), IntId.ordering.on(_.id))
 }

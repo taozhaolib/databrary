@@ -212,7 +212,7 @@ object Volume extends TableId[Volume]("volume") {
       var cc : Container = l.head._1
       val cr = Seq.newBuilder[(Segment, Record)]
       def next() {
-        cc._records.set(cr.result)
+        cc._records.set(cr.result.sortBy(_._2)(Record.ordering))
         cr.clear
         r += cc
       }

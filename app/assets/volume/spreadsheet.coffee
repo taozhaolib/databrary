@@ -77,6 +77,13 @@ app.directive 'spreadsheet', [
         release: constants.release.EXCERPTS
         sort: constants.metricName.birthdate.id + 0.5
         readonly: true
+      summary: # slot
+        id: 'summary'
+        name: 'summary'
+        display: ' '
+        type: 'text'
+        sort: 10000
+        readonly: true
     constants.deepFreeze(pseudoMetric)
     getMetric = (m) ->
       pseudoMetric[m] || constants.metric[m]
@@ -340,17 +347,18 @@ app.directive 'spreadsheet', [
           for s, slot of volume.containers when Top != !slot.top
             deps = Depends[slot.id] = {}
             any = false
-            for rr in slot.records
-              if (i = records[rr.id])?
-                n = Counts[i].slot++
-                populateSlotData(i, n, slot)
-                if !Editing && 'age' of rr
-                  populateDatum(i, 'slot', n, 'age', rr.age)
-                deps[i] = n
-                any = true
+            for rr in slot.records when (i = records[rr.id])?
+              n = Counts[i].slot++
+              populateSlotData(i, n, slot)
+              if !Editing && 'age' of rr
+                populateDatum(i, 'slot', n, 'age', rr.age)
+              populateDatum(i, 'slot', n, 'summary', (rrr.record.displayName for rrr in slot.records when rrr.id != rr.id).join(', '))
+              deps[i] = n
+              any = true
             unless any
               n = Counts[count].slot++
               populateSlotData(count, n, slot)
+              populateDatum(count, 'slot', n, 'summary', (rrr.record.displayName for rrr in slot.records).join(', '))
               deps[count] = n
           ### jshint ignore:end ###
 

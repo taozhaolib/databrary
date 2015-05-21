@@ -956,8 +956,6 @@ app.controller('volume/slot', [
         return
 
       @place = () ->
-        records.sort (a, b) ->
-          a.record.category - b.record.category || a.record.id - b.record.id
         t = []
         overlaps = (rr) -> rr.record.id != r.record.id && r.overlaps(rr)
         for r in records
