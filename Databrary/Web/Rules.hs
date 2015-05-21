@@ -5,15 +5,16 @@ module Databrary.Web.Rules
   ) where
 
 import Control.Applicative ((<|>))
-import Control.Monad (when, forM)
+import Control.Monad (when)
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Trans.Maybe (MaybeT(..))
 import qualified Data.ByteString.Char8 as BSC
 import Data.Maybe (isNothing)
 import Data.Monoid ((<>))
 import System.IO (stderr)
-import System.Posix.FilePath ((</>))
+import System.Posix.FilePath ((</>), (<.>), splitExtension)
 
+import Databrary.Ops
 import Databrary.Store
 import Databrary.Web.Types
 import Databrary.Web.Files
@@ -35,17 +36,18 @@ generateWebFile f t =
   <|> generateCoffeeJS f t
   <|> generateLib f t
 
-allWebFiles :: [RawFilePath]
-allWebFiles =
-  [ "constants.json", "constants.js", "routes.js", "messages.js" {-, "templates.js"-}
-  ]
+regenerateWebFile :: RawFilePath -> IO (Maybe RawFilePath)
+regenerateWebFile f = do
+  _ <- removeFile (webDir </> f)
+  r <- runMaybeT $ generateWebFile f Nothing
+  when (isNothing r) $
+    BSC.hPutStrLn stderr ("regenerateWebFile: " <> f)
+  return $ f <$ r
 
 generateWebFiles :: IO [RawFilePath]
 generateWebFiles = do
   wd <- webDataFiles
-  forM (wd ++ allWebFiles) $ \f -> do
-    _ <- removeFile (webDir </> f)
-    r <- runMaybeT $ generateWebFile f Nothing
-    when (isNothing r) $
-      BSC.hPutStrLn stderr ("generateWebFile: " <> f)
-    return f
+  mapMaybeM regenerateWebFile $
+    wd ++ 
+    [ b <.> ".js" | (b, ".coffee") <- map splitExtension wd ] ++
+    [ "constants.json", "constants.js", "routes.js", "messages.js", "templates.js" ]

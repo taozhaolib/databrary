@@ -49,7 +49,7 @@ pathStatic :: PathParser (Maybe StaticPath)
 pathStatic = invMap parseStaticPath (maybe [] $ map TE.decodeLatin1 . splitDirectories . staticFilePath) PathAny
 
 webFile :: AppRoute (Maybe StaticPath)
-webFile = action GET ("public" >/> pathStatic) $ \sp -> do
+webFile = action GET ("web" >/> pathStatic) $ \sp -> do
   StaticPath p <- maybeAction sp
   wf <- maybeAction =<< lookupWebFile p
   let f = webDir </> p

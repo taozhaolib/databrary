@@ -26,6 +26,7 @@ import {-# SOURCE #-} Databrary.Controller.Angular
 import {-# SOURCE #-} Databrary.Controller.Root
 import {-# SOURCE #-} Databrary.Controller.Login
 import {-# SOURCE #-} Databrary.Controller.Party
+import Databrary.Controller.Web
 
 htmlHeader :: Wai.Request -> H.Html
 htmlHeader req = do
@@ -35,7 +36,7 @@ htmlHeader req = do
       H.! HA.href (builderValue nojs)
   H.link
     H.! HA.rel "shortcut icon"
-    H.! HA.href "/public/icons/favicon.png"
+    H.! HA.href (builderValue $ actionURL Nothing webFile (Just $ staticPath ["icons", "favicon.png"]) [])
   H.link
     H.! HA.rel "start"
     H.! actionLink viewRoot HTML hasjs []

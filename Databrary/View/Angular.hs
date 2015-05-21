@@ -26,8 +26,8 @@ import {-# SOURCE #-} Databrary.Controller.Angular
 ngAttribute :: String -> H.AttributeValue -> H.Attribute
 ngAttribute = H.customAttribute . H.stringTag . ("ng-" <>)
 
-public :: [BS.ByteString] -> H.AttributeValue
-public p = builderValue $ actionURL Nothing webFile (Just $ staticPath p) []
+webURL :: [BS.ByteString] -> H.AttributeValue
+webURL p = builderValue $ actionURL Nothing webFile (Just $ staticPath p) []
 
 htmlAngular :: AuthRequest -> H.Html
 htmlAngular auth = H.docTypeHtml H.! ngAttribute "ng-app" "databraryModule" $ do
@@ -49,18 +49,18 @@ htmlAngular auth = H.docTypeHtml H.! ngAttribute "ng-app" "databraryModule" $ do
     forM_ [Just "114x114", Just "72x72", Nothing] $ \size ->
       H.link
         H.! HA.rel "apple-touch-icon-precomposed"
-        H.! HA.href (public ["icons", "apple-touch-icon" <> maybe "" (BSC.cons '-') size <> ".png"])
+        H.! HA.href (webURL ["icons", "apple-touch-icon" <> maybe "" (BSC.cons '-') size <> ".png"])
         !? (HA.sizes . byteStringValue <$> size)
     H.link
       H.! HA.rel "stylesheet"
-      H.! HA.href (public ["app.min.css"])
+      H.! HA.href (webURL ["app.min.css"])
     H.script $ do
       H.preEscapedString "window.$play={user:"
       H.unsafeLazyByteString $ JSON.encode $ identityJSON (view auth)
       H.preEscapedString "};"
     forM_ [["constants.js"], ["templates.js"]] $ \js ->
       H.script
-        H.! HA.src (public js)
+        H.! HA.src (webURL js)
         $ return ()
   H.body
     H.! H.customAttribute "flow-prevent-drop" mempty
