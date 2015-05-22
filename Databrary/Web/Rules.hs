@@ -24,6 +24,7 @@ import Databrary.Web.Templates
 import Databrary.Web.Messages
 import Databrary.Web.Coffee
 import Databrary.Web.Uglify
+import Databrary.Web.Stylus
 import Databrary.Web.Libs
 
 generateWebFile :: WebGenerator
@@ -36,6 +37,7 @@ generateWebFile f@"app.min.js" t = generateUglifyJS f t
 generateWebFile f t =
   webLinkFile "web" f t
   <|> generateCoffeeJS f t
+  <|> generateStylusCSS f t
   <|> generateLib f t
 
 regenerateWebFile :: RawFilePath -> IO (Maybe RawFilePath)
@@ -52,4 +54,4 @@ generateWebFiles = do
   mapMaybeM regenerateWebFile $
     wd ++ 
     [ b <.> ".js" | (b, ".coffee") <- map splitExtension wd ] ++
-    [ "constants.json", "constants.js", "routes.js", "messages.js", "templates.js", "app.min.js" ]
+    [ "constants.json", "constants.js", "routes.js", "messages.js", "templates.js", "app.min.js", "app.min.css" ]
