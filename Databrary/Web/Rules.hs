@@ -58,4 +58,5 @@ generateWebFiles = do
   wd <- allWebFiles
   mapMaybeM regenerateWebFile $
     [ b <.> ".js" | (b, ".coffee") <- map splitWebFileExtensions wd ] ++
+    allLibs ++
     [ "constants.json", "constants.js", "routes.js", "messages.js", "templates.js", "app.min.js", "app.min.css" ]

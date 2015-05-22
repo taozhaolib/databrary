@@ -1,0 +1,9 @@
+/lib/
+*.min.*
+*.map
+/constants.js
+/constants.json
+/messages.js
+/routes.js
+/templates.js
+/app.css

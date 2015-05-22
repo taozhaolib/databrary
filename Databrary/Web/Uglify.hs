@@ -3,8 +3,10 @@ module Databrary.Web.Uglify
   ( generateUglifyJS
   ) where
 
+import Control.Applicative ((<$>))
 import Control.Monad (guard)
 import Control.Monad.Trans.Class (lift)
+import Data.List (isPrefixOf)
 import qualified System.FilePath as FP
 import System.Process (callProcess)
 
@@ -13,7 +15,7 @@ import Databrary.Web.Files
 
 generateUglifyJS :: WebGenerator
 generateUglifyJS f t = do
-  jl <- lift $ findWebFiles ".js"
+  jl <- lift $ filter (not . isPrefixOf "lib/" . webFileRel) <$> findWebFiles ".js"
   guard (not $ null jl)
   jt <- mapM webFileTime jl
   lift $ webRegenerate (maximum jt) f t $ \wf -> do
