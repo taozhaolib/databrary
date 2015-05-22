@@ -3,7 +3,7 @@ module Databrary.Web.Templates
   ( generateTemplatesJS
   ) where
 
-import Control.Monad (guard, forM_)
+import Control.Monad (guard, unless, forM_)
 import Control.Monad.Trans.Class (lift)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Builder as BSB
@@ -11,7 +11,7 @@ import qualified Data.ByteString.Char8 as BSC
 import Data.Char (isSpace)
 import Data.Monoid ((<>))
 import Data.Time.Clock.POSIX (posixSecondsToUTCTime)
-import System.IO (withFile, IOMode(ReadMode, WriteMode), hPutStr)
+import System.IO (withFile, IOMode(ReadMode, WriteMode), hPutStr, hIsEOF)
 import System.Posix.FilePath ((</>))
 
 import qualified Databrary.JSON as JSON
@@ -22,9 +22,11 @@ import Databrary.Web.Files
 processTemplate :: RawFilePath -> (BS.ByteString -> IO ()) -> IO ()
 processTemplate f g = withFile (unRawFilePath f) ReadMode go where
   go h = do
-    l <- BS.hGetLine h
-    g $ BSC.dropWhile isSpace l
-    go h
+    e <- hIsEOF h
+    unless e $ do
+      l <- BS.hGetLine h
+      g $ BSC.dropWhile isSpace l
+      go h
 
 generateTemplatesJS :: WebGenerator
 generateTemplatesJS f t = do
