@@ -27,7 +27,7 @@ loadConfig :: IO C.Config
 loadConfig = do
   etc <- getSysconfDir
   msg <- getDataFileName "messages.conf"
-  C.loadGroups [("message", C.Optional msg), ("", C.Required (etc </> "databrary.conf"))]
+  C.loadGroups [("message", C.Optional msg), ("", C.Required (etc </> "databrary.conf")), ("", C.Optional (etc </> "local.conf"))]
 
 initService :: C.Config -> IO Service
 initService conf = Service

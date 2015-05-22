@@ -144,7 +144,7 @@ dbTransaction f = liftDB $ \c -> do
 -- For connections outside runtime:
 
 loadPGDatabase :: IO PGDatabase
-loadPGDatabase = getPGDatabase . C.subconfig "db" =<< C.load [C.Required "databrary.conf"]
+loadPGDatabase = getPGDatabase . C.subconfig "db" =<< C.load [C.Required "databrary.conf", C.Optional "local.conf"]
 
 newtype PGConnectionM a = PGConnectionM { runPGConnection :: ReaderT PGConnection IO a }
   deriving (Functor, Applicative, Monad, MonadIO)
