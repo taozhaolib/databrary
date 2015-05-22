@@ -5,6 +5,7 @@ import play.api.Play
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import macros._
+import macros.async._
 import dbrary._
 import models._
 import scala._
@@ -70,7 +71,7 @@ trait Site {
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options
-    , "volumes" -> (opt => Volume.getAccess()(this).map(JsonArray.map(_.json)))
+    , "volumes" -> (opt => Volume.getAccess()(this).flatMap(_.mapAsync[JsonRecord, Seq[JsonRecord]](_.json(Map("access" -> Nil))).map(JsonArray(_))))
     )
 }
 
