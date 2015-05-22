@@ -2,6 +2,7 @@ module Databrary.Store
   ( RawFilePath
   , rawFilePath
   , unRawFilePath
+  , makeRelative
   , fileInfo
   , removeFile
   , sameFile
@@ -18,6 +19,7 @@ import Data.Maybe (isJust)
 import Data.Time.Clock.POSIX (posixSecondsToUTCTime)
 import qualified GHC.Foreign as GHC
 import GHC.IO.Encoding (getFileSystemEncoding)
+import qualified System.FilePath as FP
 import System.IO (withFile, IOMode(ReadMode))
 import System.Posix.FilePath (RawFilePath)
 import System.Posix.Files.ByteString (getFileStatus, isRegularFile, fileSize, modificationTimeHiRes, deviceID, fileID, removeLink)
@@ -37,6 +39,9 @@ unRawFilePath :: RawFilePath -> FilePath
 unRawFilePath b = unsafeDupablePerformIO $ do
   enc <- getFileSystemEncoding
   BS.useAsCStringLen b $ GHC.peekCStringLen enc
+
+makeRelative :: RawFilePath -> RawFilePath -> RawFilePath
+makeRelative a b = rawFilePath $ FP.makeRelative (unRawFilePath a) (unRawFilePath b)
 
 catchDoesNotExist :: IO a -> IO (Maybe a)
 catchDoesNotExist f = handleJust (guard . isDoesNotExistError) (\_ -> return Nothing) $ Just <$> f

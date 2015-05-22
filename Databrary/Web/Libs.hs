@@ -4,13 +4,11 @@ module Databrary.Web.Libs
   ) where
 
 import Control.Monad (mzero)
-import System.Posix.FilePath (splitExtensions)
+import System.FilePath ((</>), splitFileName, splitExtensions)
 
-import Databrary.Store
-import Databrary.Web.Types
 import Databrary.Web.Files
 
-jsLibs :: [(RawFilePath, FilePath)]
+jsLibs :: [(FilePath, FilePath)]
 jsLibs =
   [ ("jquery",              "bower_components/jquery/dist")
   , ("angular",             "bower_components/angular")
@@ -21,6 +19,8 @@ jsLibs =
 
 generateLib :: WebGenerator
 generateLib f t
-  | (b, e) <- splitExtensions f, e `elem` [".js", ".min.js"]
-  , Just p <- lookup b jsLibs = webLinkFile p f t
+  | ("lib", l) <- splitFileName (webFileRel f)
+  , (b, e) <- splitExtensions l
+  , e `elem` [".js", ".min.js"]
+  , Just p <- lookup b jsLibs = webLinkFile (p </> l) f t
   | otherwise = mzero

@@ -1,22 +1,17 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, ViewPatterns #-}
 module Databrary.Web.Rules
   ( generateWebFile
   , generateWebFiles
   ) where
 
-import Control.Applicative ((<|>))
-import Control.Monad (when)
-import Control.Monad.Trans.Class (lift)
+import Control.Monad (when, mzero, msum)
 import Control.Monad.Trans.Maybe (MaybeT(..))
-import qualified Data.ByteString.Char8 as BSC
 import Data.Maybe (isNothing)
 import Data.Monoid ((<>))
-import System.IO (stderr)
-import System.Posix.FilePath ((</>), (<.>), splitExtension)
+import System.IO (hPutStrLn, stderr)
 
 import Databrary.Ops
 import Databrary.Store
-import Databrary.Web.Types
 import Databrary.Web.Files
 import Databrary.Web.Constants
 import Databrary.Web.Routes
@@ -27,31 +22,40 @@ import Databrary.Web.Uglify
 import Databrary.Web.Stylus
 import Databrary.Web.Libs
 
-generateWebFile :: WebGenerator
-generateWebFile f@"constants.json" t = lift $ maybe (generateConstantsJSON f) (const $ return False) t
-generateWebFile f@"constants.js" t = lift $ maybe (generateConstantsJS f) (const $ return False) t
-generateWebFile f@"routes.js" t = lift $ maybe (generateRoutesJS f) (const $ return False) t
-generateWebFile f@"messages.js" t = lift $ generateMessagesJS f t
-generateWebFile f@"templates.js" t = generateTemplatesJS f t
-generateWebFile f@"app.min.js" t = generateUglifyJS f t
-generateWebFile f t =
-  webLinkFile "web" f t
-  <|> generateCoffeeJS f t
-  <|> generateStylusCSS f t
-  <|> generateLib f t
+fixedGenerators :: [(FilePath, WebGenerator)]
+fixedGenerators =
+  [ ("constants.json", generateConstantsJSON)
+  , ("constants.js",   generateConstantsJS)
+  , ("routes.js",      generateRoutesJS)
+  , ("messages.js",    generateMessagesJS)
+  , ("templates.js",   generateTemplatesJS)
+  , ("app.min.js",     generateUglifyJS)
+  ]
 
-regenerateWebFile :: RawFilePath -> IO (Maybe RawFilePath)
+generateFixed :: WebGenerator
+generateFixed f t
+  | Just g <- lookup (webFileRel f) fixedGenerators = g f t
+  | otherwise = mzero
+
+generateWebFile :: WebGenerator
+generateWebFile f t = msum $ map (\g -> g f t)
+  [ generateFixed
+  , generateCoffeeJS
+  , generateStylusCSS
+  , generateLib
+  ]
+
+regenerateWebFile :: WebFilePath -> IO (Maybe WebFilePath)
 regenerateWebFile f = do
-  _ <- removeFile (webDir </> f)
+  _ <- removeFile (webFileAbsRaw f)
   r <- runMaybeT $ generateWebFile f Nothing
   when (isNothing r) $
-    BSC.hPutStrLn stderr ("regenerateWebFile: " <> f)
+    hPutStrLn stderr ("regenerateWebFile: " <> webFileRel f)
   return $ f <$ r
 
-generateWebFiles :: IO [RawFilePath]
+generateWebFiles :: IO [WebFilePath]
 generateWebFiles = do
-  wd <- webDataFiles
+  wd <- allWebFiles
   mapMaybeM regenerateWebFile $
-    wd ++ 
-    [ b <.> ".js" | (b, ".coffee") <- map splitExtension wd ] ++
+    [ b <.> ".js" | (b, ".coffee") <- map splitWebFileExtensions wd ] ++
     [ "constants.json", "constants.js", "routes.js", "messages.js", "templates.js", "app.min.js", "app.min.css" ]

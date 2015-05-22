@@ -14,7 +14,6 @@ import System.IO (withFile, IOMode(WriteMode))
 
 import Paths_databrary (version)
 import qualified Databrary.JSON as JSON
-import Databrary.Store
 import Databrary.Model.Enum
 import Databrary.Model.Permission.Types
 import Databrary.Model.Release.Types
@@ -51,14 +50,13 @@ constantsJSONB = JSON.encodeToByteStringBuilder constantsJSON
 constantsJS :: BSB.Builder
 constantsJS = BSB.string7 "app.constant('constantData'," <> constantsJSONB <> BSB.string7 ");"
 
-regenerateConstants :: BSB.Builder -> RawFilePath -> IO Bool
-regenerateConstants b f =
-  webRegenerate undefined f Nothing $ \wf ->
-    withFile (unRawFilePath wf) WriteMode $ \h ->
-      BSB.hPutBuilder h b
+regenerateConstants :: BSB.Builder -> WebGenerator
+regenerateConstants b = staticWebGenerate $ \f ->
+  withFile (webFileAbs f) WriteMode $ \h ->
+    BSB.hPutBuilder h b
 
-generateConstantsJSON :: RawFilePath -> IO Bool
+generateConstantsJSON :: WebGenerator
 generateConstantsJSON = regenerateConstants constantsJSONB
 
-generateConstantsJS :: RawFilePath -> IO Bool
+generateConstantsJS :: WebGenerator
 generateConstantsJS = regenerateConstants constantsJS

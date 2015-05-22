@@ -58,7 +58,7 @@ htmlAngular auth = H.docTypeHtml H.! ngAttribute "ng-app" "databraryModule" $ do
       H.preEscapedString "window.$play={user:"
       H.unsafeLazyByteString $ JSON.encode $ identityJSON (view auth)
       H.preEscapedString "};"
-    forM_ [["constants.js"], ["templates.js"]] $ \js ->
+    forM_ [["app.min.js"]] $ \js ->
       H.script
         H.! HA.src (webURL js)
         $ return ()

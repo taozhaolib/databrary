@@ -1,6 +1,6 @@
 {-# LANGUAGE CPP #-}
 module Databrary.Web.Cache
-  ( makeWebFile
+  ( makeWebFileInfo
   , lookupWebFile
   ) where
 
@@ -12,7 +12,6 @@ import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Maybe (MaybeT(..))
 import qualified Data.HashMap.Strict as HM
 import Data.Maybe (fromJust)
-import System.Posix.FilePath ((</>))
 
 import Databrary.Has (peeks)
 import Databrary.Store
@@ -20,27 +19,27 @@ import Databrary.Web.Types
 import Databrary.Web.Files
 import Databrary.Web.Rules
 
-makeWebFile :: RawFilePath -> IO WebFile
-makeWebFile f = WebFile
-  <$> hashFile wf
-  <*> (snd . fromJust <$> fileInfo wf)
-  where wf = webDir </> f
+makeWebFileInfo :: WebFilePath -> IO WebFileInfo
+makeWebFileInfo f = WebFileInfo f
+  <$> hashFile (webFileAbsRaw f)
+  <*> (fromJust <$> runMaybeT (webFileTime f))
 
-lookupWebFile :: MonadWeb c m => RawFilePath -> m (Maybe WebFile)
+lookupWebFile :: MonadWeb c m => RawFilePath -> m (Maybe WebFileInfo)
 lookupWebFile f = do
   wc <- peeks webCache
 #ifdef DEVEL
-  liftIO $ modifyMVar wc $ \wm ->
-    let wf = HM.lookup f wm in
+  liftIO $ modifyMVar wc $ \wm -> do
+    let wf = HM.lookup f wm
+        wfp = webFileRaw f
     maybe
       (return (HM.delete f wm, Nothing))
       (\r -> if r
         then do
-          wf' <- makeWebFile f
+          wf' <- makeWebFileInfo wfp
           return (HM.insert f wf' wm, Just wf')
         else
           return (wm, wf))
-      =<< runMaybeT (generateWebFile f (webFileTimestamp <$> wf))
+      =<< runMaybeT (generateWebFile wfp (webFileTimestamp <$> wf))
 #else
   return $ HM.lookup f wc
 #endif

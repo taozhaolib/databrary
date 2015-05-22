@@ -13,7 +13,7 @@ import Data.Maybe (fromMaybe)
 import Data.Monoid ((<>))
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
-import System.Posix.FilePath (joinPath, splitFileName, splitDirectories, splitExtension, (</>))
+import System.Posix.FilePath (joinPath, splitFileName, splitDirectories, splitExtension)
 
 import Databrary.Iso.Types (invMap)
 import Databrary.Ops
@@ -52,8 +52,8 @@ webFile :: AppRoute (Maybe StaticPath)
 webFile = action GET ("web" >/> pathStatic) $ \sp -> do
   StaticPath p <- maybeAction sp
   wf <- maybeAction =<< lookupWebFile p
-  let f = webDir </> p
-  serveFile f (fromMaybe unknownFormat $ getFormatByFilename p) Nothing (digestToHexByteString $ webFileTag wf)
+  let wfp = webFileAbsRaw $ webFilePath wf
+  serveFile wfp (fromMaybe unknownFormat $ getFormatByFilename wfp) Nothing (digestToHexByteString $ webFileTag wf)
 
 formatIcon :: AppRoute Format
 formatIcon = invMap pf fp webFile where
