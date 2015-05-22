@@ -1,0 +1,42 @@
+.input-completer-choices
+  background-color white
+  box-shadow b8 b8 b8 -b8 black
+  border 1px black solid
+  z-index 9
+  max-height 200px
+  overflow-y auto
+  position absolute
+  width inherit
+  min-width 200px
+  padding-right 0
+  padding-left 0
+
+.spreadsheet-edit
+  .ident-completer
+    .input-completer-choices
+      width -webkit-max-content
+      width -moz-max-content
+      width max-content
+
+.input-completer-choice
+  margin-bottom 0
+  transition none
+
+  &:last-child
+    a
+      border-bottom 0px
+
+  a
+    border-bottom 1px solid gray
+    display block
+    padding f4 f2
+
+    &:hover
+      background-color yellow51
+      color blue21
+
+  &.default
+    font-weight bold
+
+  &.selected
+    background-color yellow52

@@ -1,0 +1,123 @@
+@(parties : Seq[Authorization], pending : Seq[PartyController.AuthorizeAdminForm], active : Seq[Authorize], expired : Seq[Authorize])(implicit request : SiteRequest[_])
+
+@implicitField = @{
+    helper.FieldConstructor(widget.tag.tableFieldConstructor.f)
+}
+
+@authorizeList(authorize : Seq[Authorize]) = {
+    <table>
+    <thead>
+        <tr>
+            <th>Parent</th>
+            <th>Child</th>
+            <th>Site</th>
+            <th>Member</th>
+            <th>Expires</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @authorize.map { authorize =>
+        <tr>
+            <td>@display(authorize.parent)</td>
+            <td>@display(authorize.child)
+                @authorize.child.email.map { e =>
+                    <br/>&lt;@e&gt;
+                }
+            </td>
+            <td>@authorize.site</td>
+            <td>@authorize.member</td>
+            <td>@authorize.expires</td>
+        </tr>
+        }
+    </tbody>
+    </table>
+}
+
+@html("Admin Authorizations", None) {
+  <article class="view">
+    <h3>Parties</h3>
+    <table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Auth</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Affiliation</th>
+            <th>Pass</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    @parties.map { auth =>
+    @defining(auth.child) { party =>
+        <tr>
+          <td>@party.id</td>
+          <td>@auth.site@Maybe(auth.member).fold("")("/" + _)</td>
+          <td>@display(party)</td>
+          <td>@party.email.map { e =>
+            <a href="mailto:@e">@e</a>
+            }
+          </td>
+          <td>@party.affiliation</td>
+          <td>
+            @party.account.map { a =>
+            @helper.form(routes.PartyHtml.investigator(party.id)) {
+              <button type="submit">agreement</button>
+            }
+            @if(a.password.isEmpty) {
+            @helper.form(routes.PartyHtml.reissue(a.id)) {
+              <button type="submit">reissue</button>
+            }
+            }
+            }
+            <a href="@routes.PartyHtml.preRemove(party.id)">delete</a>
+          </td>
+        </tr>
+    }
+    }
+    </tbody>
+    </table>
+
+    <h3>Pending</h3>
+
+    <table>
+    <thead>
+        <tr>
+            <th>Parent</th>
+            <th>Child</th>
+            <th>Site</th>
+            <th>Member</th>
+            <th>Expires</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @pending.map { form =>
+        @widget.tag.form(form) {
+        <tr>
+            <td>@display(form.authorize.parent)</td>
+            <td>@display(form.authorize.child)</td>
+            @widget.enumSelect(form.site(), Permission)
+            @widget.enumSelect(form.member(), Permission)
+            @widget.tag.inputDate(form.expires())
+            <td>
+                @widget.formErrors(form)
+                <button type='submit' class="button second">@{if(form.pending) "Authorize" else "Update"}</button>
+                <button class="button first" name='delete' value='true'>@{if(form.pending) "Deny" else "Revoke"}</button>
+            </td>
+        </tr>
+        }
+        }
+    </tbody>
+    </table>
+
+    <h3>Active</h3>
+    @authorizeList(active)
+
+    <h3>Expried</h3>
+    @authorizeList(expired)
+  </article>
+}

@@ -1,0 +1,88 @@
+@()(implicit request : Request[_])
+
+@html("Permissions", None) {
+@defining(Release.values.toSeq) { cs =>
+@defining(Release.values.toSeq) { rs =>
+<article class="wrap">
+  <div class="row">
+    <h1 class="view-title">Who can access which data?</h3>
+    <p></p>
+    <div class="col">
+      <table border="1">
+        <thead>
+          <tr>
+            <th colspan="3">
+            </th>
+            <th colspan="@cs.length">
+              Classification
+            </th>
+          </tr>
+          <tr>
+            <th colspan="3">
+            </th>
+            @cs.map { c =>
+            <th>
+              <img src="@routes.Assets.at("icons/release/" + c.toString.toLowerCase + ".svg")"></img> @c
+            </th>
+            }
+          </tr>
+          <tr>
+            <td colspan="3" align="right">
+              Data
+            </td>
+            @cs.map { c =>
+            <td>
+              @Messages("classification." + c)
+            </td>
+            }
+          </tr>
+          <tr>
+            <td colspan="3" align="right">
+              Excerpts
+            </td>
+            @cs.map { c =>
+            <td>
+              @Messages("classification.excerpt." + c)
+            </td>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th rowspan="@{rs.length+1}">Release</th>
+          </tr>
+          @rs.map { r =>
+          <tr>
+            <th>
+              @r @if(Maybe(r)) {
+                <img src="@routes.Assets.at("icons/release/" + r.toString.toLowerCase + ".svg")"></img>
+              }
+            </th>
+            <td>
+              @Messages("consent." + r)
+            </td>
+            @cs.map { c =>
+            <td>
+              @Permission.read(Maybe(c).orElse(r)) match {
+              case Permission.READ => {
+                Collaborators
+              }
+              case Permission.SHARED => {
+                Databrary
+              }
+              case Permission.PUBLIC => {
+                Anyone
+              }
+              }
+            </td>
+            }
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</article>
+}
+}
+}

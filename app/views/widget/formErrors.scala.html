@@ -1,0 +1,7 @@
+@(form : StructForm)
+
+@form.globalErrors.map { error =>
+<div class="inline error">
+        @error.key @Messages(error.message, error.args : _*)
+</div>
+}

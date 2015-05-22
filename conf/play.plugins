@@ -1,0 +1,3 @@
+800:org.databrary.LogbackAccessPlugin
+5432:dbrary.PostgresAsyncPlugin
+25000:play.api.libs.mailer.CommonsMailerPlugin

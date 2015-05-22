@@ -1,0 +1,7 @@
+@(request : RequestHeader, throwable : Throwable)
+
+@error.template("Internal error") {
+  Sorry, something is broken.  More information is below, or <a href=''mailto:feedback@@databrary.org''>contact us</a> for assistance.
+  <div>Error code: @throwable.toString</div>
+  <div>@throwable.getMessage</div>
+}(request)

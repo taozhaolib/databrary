@@ -1,0 +1,13 @@
+@(target: Option[SitePage], context: String, js : Option[Call])(body: Html)(implicit request : SiteRequest[_])
+
+@defining(target.map(_.pageName)) { title =>
+@html(context + title.fold("")(": " + _), js) {
+    <article class="wrap">
+        @widget.panel.form(title.getOrElse(""), context) {
+                <div class="col">
+                        @body
+                </div>
+        }
+    </article>
+}
+}

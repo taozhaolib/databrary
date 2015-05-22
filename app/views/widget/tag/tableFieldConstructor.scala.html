@@ -1,0 +1,8 @@
+@(elements : helper.FieldElements)
+
+<td class="@elements.args.get('_class) @if(elements.hasErrors) {error}" id="@elements.args.getOrElse('_id, elements.id + "_field")" @if(elements.args.get('_colspan)){colspan="@elements.args.get('_colspan)"}>
+        @elements.input
+        @elements.errors(elements.lang).map { error =>
+                <p class="error">@error</p>
+        }
+</td>

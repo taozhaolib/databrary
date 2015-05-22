@@ -1,0 +1,11 @@
+@(parties: Seq[Party] = Seq(), id: String = "parties", title : String = "Parties")(implicit request : SiteRequest[_])
+
+@if(parties.nonEmpty) {
+    @widget.frame.raw(id, "", title) {
+        @parties.map { party =>
+          <div class="col-desktop-3 col-tablet-3 col-mobile-3">
+            @widget.portrait(party, "portrait_vertical portrait_small", institutions = false)
+          </div>
+        }
+    }
+}

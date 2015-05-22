@@ -1,0 +1,12 @@
+@(id: String, classes: String, title: String = "")(body: Html)
+
+<section id="panel-@id" class="panel panel-@id @classes">
+  <div class="wrap">
+    <div class="row">
+      @if(title.nonEmpty) {
+        <h2 class="panel-header">@title</h2>
+      }
+      @body
+    </div>
+  </div>
+</section>

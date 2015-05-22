@@ -1,0 +1,16 @@
+@(volume: Volume, access : Seq[Party])(implicit request : SiteRequest[_])
+
+@widget.frame.raw("volume", "volume-list-result cf", "") {
+  <h1>@display(volume)</h1>
+  <div class="volume-list-investigators">
+    <strong>@Messages("volume.contributors.title"):</strong>
+    <ul class="inline-block comma">
+    @access.map { a =>
+      <li>@display(a)</li>
+    }
+    </ul>
+  </div>
+  <div class="volume-list-body">
+    @volume.body.map(display.plainTextSummary(_, 2))
+  </div>
+}

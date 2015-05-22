@@ -1,0 +1,60 @@
+<ng-form name="volumeEditOverviewForm">
+  <scroll-float>
+    <fieldset class="clean">
+      <button ng-click="volumeEditOverviewForm.save()" message="save" class="green" ng-disabled="volumeEditOverviewForm.$pristine || volumeEditOverviewForm.$invalid"></button>
+      <button ng-if="::!!volume" ng-click="volumeEditOverviewForm.resetAll()" message="revert" ng-disabled="volumeEditOverviewForm.$pristine"></button>
+      <button ng-if="::!volume" ng-click="page.router.back()" message="volume.edit.cancel"></a>
+    </fieldset>
+  </scroll-float>
+  <fieldset ng-if="::!volume">
+    <validator name="owner" label="volume.owner">
+      <select name="owner" ng-model="volumeEditOverviewForm.data.owner" ng-options="p.id as p.name for p in ::owners"/>
+    </validator>
+  </fieldset>
+  <fieldset>
+    <div>Does this volume correspond to a published paper or resource?</div>
+    <label class="line-option">
+      <input type="radio" name="published" ng-model="volumeEditOverviewForm.data.published" ng-value="true" required>Yes
+    </label>
+    <label class="line-option">
+      <input type="radio" name="published" ng-model="volumeEditOverviewForm.data.published" ng-value="false" required>No
+    </label>
+  </fieldset>
+  <ng-form name="volumeEditOverviewForm.doi" ng-if="volumeEditOverviewForm.data.published===true"><fieldset>
+    <validator name="citation.url" label="volume.edit.autodoi">
+      <input type="text" name="citation.url" ng-model="volumeEditOverviewForm.data.citation.url" placeholder="{{::'volume.edit.autodoi.placeholder' | message}}" ng-pattern="/^((doi:)?10\.[\.0-9]+|ftp:/|http:/|https:/)//">
+    </validator>
+    <div message="volume.edit.autodoi.instructions"></div>
+    <button class="mini" ng-disabled="!page.constants.regex.doi.test(volumeEditOverviewForm.data.citation.url) || volumeEditOverviewForm.doi.$pristine" ng-click="volumeEditOverviewForm.autoDOI()" message="volume.edit.autodoi.lookup"></button>
+  </fieldset></ng-form>
+
+  <fieldset class="skinny" ng-if="volumeEditOverviewForm.data.published !== undefined">
+    <!-- title -->  
+    <validator name="name" label="volume.name" required>
+      <input type="text" name="name" ng-model="volumeEditOverviewForm.data.name" placeholder="{{::'volume.edit.name.placeholder' | message}}" required>
+    </validator>
+    <!-- citation -->
+    <div ng-if="volumeEditOverviewForm.data.published===true">
+      <validator name="citation.head" label="citation.head">
+        <input type="text" name="citation.head" ng-model="volumeEditOverviewForm.data.citation.head" placeholder="{{::'volume.edit.citation.head.placeholder' | message}}">
+      </validator>
+    <!-- year -->
+      <validator name="citation.year" label="citation.year">
+        <input type="number" name="citation.year" ng-model="volumeEditOverviewForm.data.citation.year" class="quarter" min="1900" max="2900">
+      </validator>
+    </div>
+    <!-- description and alias -->
+    <validator name="body" label="volume.body" noclientval>
+      <textarea name="body" ng-model="volumeEditOverviewForm.data.body" placeholder="{{::'volume.edit.body.placeholder' | message}}"></textarea>
+    </validator>
+
+    <validator name="alias" label="volume.alias">
+      <input type="text" name="alias" ng-model="volumeEditOverviewForm.data.alias" placeholder="{{::'volume.edit.alias.placeholder' | message}}">
+    </validator>
+  </fieldset>
+
+  <fieldset class="skinny" ng-if="::!!volume" id="overview-keywords">
+    <label>Keywords</label>
+    <tags target="volume" keyword edit="true"></tags>
+  </fieldset>
+</ng-form>

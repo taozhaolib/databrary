@@ -1,0 +1,6 @@
+@(field: play.api.data.Field, args: (Symbol,Any)*)(implicit lang: play.api.i18n.Lang)
+@defining(args.toMap) { map =>
+@input(field, map - 'type) { (id, name, value, htmlArgs) =>
+    <input type="@map.getOrElse('type, "hidden")" id="@id" name="@name" value="@value" @toHtmlArgs(htmlArgs)>
+}(rawFieldConstructor, lang)
+}

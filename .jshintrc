@@ -1,0 +1,14 @@
+{
+"predef": ["angular","app","$","DEBUG", "_"],
+"strict": true,
+"globalstrict": true,
+"smarttabs": true,
+"browser": true,
+"devel": true,
+
+"eqnull": true,
+"boss": true,
+"validthis": true,
+"newcap": false,
+"shadow": true
+}

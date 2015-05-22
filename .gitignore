@@ -10,3 +10,4 @@
 *.dyn_o
 /npm-debug.log
 /local.conf
+/unreset.dump

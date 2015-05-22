@@ -1,0 +1,63 @@
+@(transcodes : Iterable[AssetHtml.TranscodeForm])(implicit request : SiteRequest[_])
+
+@implicitFieldConstructor = @{
+  helper.FieldConstructor(widget.tag.rawFieldConstructor.f)
+}
+
+@html("Transcodes", None) {
+<article class="view">
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Owner</th>
+      <th>Source</th>
+      <th>Segment</th>
+      <th>Options</th>
+      <th>PID</th>
+      <th>Log</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    @transcodes.map { form =>
+    @defining(form.transcode) { t =>
+    @widget.tag.form(form) {
+    <tr>
+      <td><a href="@controllers.routes.AssetHtml.view(t.id)">@t.id</a></td>
+      <td>@display(t.owner)</td>
+      <td>@display(t.orig)</td>
+      <td>
+        @if(t.fake) {
+          @widget.tag.inputText(form.start(), args = 'size -> 9)
+          &ndash;
+          @widget.tag.inputText(form.end(), args = 'size -> 9)
+        } else {
+          @display(t.segment)
+        }
+      </td>
+      <td>@t.options.mkString(" ")</td>
+      <td>@t.process</td>
+      <td><pre>@t.log</pre></td>
+      <td>
+        @widget.formErrors(form)
+        @if(t.process) {
+          <button name='stop' value='true'>stop</button>
+        } else {
+          <button type='submit'>
+            @if(t.fake) {
+              start
+            } else {
+              restart
+            }
+          </button>
+        }
+      </td>
+    </tr>
+    }
+    }
+    }
+  </tbody>
+</table>
+</article>
+}

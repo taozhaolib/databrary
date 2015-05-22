@@ -1,0 +1,91 @@
+// styles
+
+button, .button
+  display inline-block
+  text-shadow 0 0 2px fade-out(white, 25%)
+  line-height 1
+  border-padding-height f4 1px
+  padding-width f2
+  border-radius b8
+  color black
+  margin-right f8
+  button-color neutral
+  box-shadow 0 b8 b8 -b8 black
+
+  &.red
+    button-color red
+
+  &.orange
+    button-color orange
+
+  &.yellow
+    button-color yellow
+
+  &.green
+    button-color green
+
+  &.blue
+    button-color blue
+
+  &.purple
+    button-color purple
+
+  &:disabled, &.disabled
+    disabled-background = mix(gray, white, 75%)
+    border 1px solid gray
+    background disabled-background
+    color mix(black, gray, 25%)
+    cursor default
+    box-shadow none
+
+    &:hover
+      background disabled-background
+
+    &:active
+      background disabled-background
+
+  &.mini
+    border-padding-height 1px 1px
+    padding-width f4
+    span.icon
+      height 13px
+
+  &.pull
+    position absolute
+    top b8
+    right 0
+
+  &.icon,
+  &.icon:hover,
+    background-size contain
+    background-position center
+    background-repeat no-repeat
+    size b1
+
+// link button
+
+a.button
+  &:link, &.link,
+  &:visited, &.visited,
+  &:hover, &.hover,
+  &:active, &.active
+    color black
+
+// button link
+
+button.link
+  border none
+  background inherit
+  display inline
+  padding 0
+  margin 0
+  transition transition
+  color red
+  font inherit
+  outline none
+  outline-offset 0
+  text-shadow none
+  border-radius 0
+
+  &:hover
+    color black

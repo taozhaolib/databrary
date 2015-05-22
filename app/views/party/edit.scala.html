@@ -1,0 +1,38 @@
+@(form : PartyController.PartyForm)(implicit request : SiteRequest[_])
+
+@implicitField = @{
+    helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
+}
+
+@defining(form match {
+    case editForm : PartyController.EditForm => Some(editForm.party)
+    case _ => None
+  }) { party =>
+@widget.form(party, form.formName, RequestObject.cast(request).flatMap(cast[SiteParty](_)).map(_.pageURL)) {
+            @widget.tag.form(form) {
+                @widget.tag.inputText(form.prename(), ('placeholder, "First name"))
+                @widget.tag.inputText(form.sortname(), ('placeholder, "Last name"))
+                @widget.tag.inputText(form.orcid(), ('placeholder, "ORCiD"))
+                @widget.tag.inputText(form.affiliation(), ('placeholder, "Affiliation"))
+                @widget.tag.inputText(form.url(), ('placeholder, "URL"))
+
+                @cast[PartyController.AccountEditForm](form).map { form =>
+                    @widget.tag.inputPassword(form.auth(), ('placeholder, "Current Password"))
+                    @widget.tag.inputText(form.email(), ('placeholder, "Email"))
+                    @widget.tag.inputPassword(form.password()("once"), ('placeholder, "New Password"))
+                    @widget.tag.inputPassword(form.password()("again"), ('placeholder, "New Password (repeat)"))
+                    @widget.tag.inputText(form.openid(), ('placeholder, "OpenID"))
+                }
+
+                @cast[PartyController.EditForm](form).map { form =>
+                    @widget.tag.inputFile(form.avatar())
+                }
+
+                @widget.formErrors(form)
+                <button type='submit' class="button">@form.actionName</button>
+            }
+            @party.map { party =>
+                <a href="@party.pageURL">@Messages("cancel")</a>
+            }
+}
+}

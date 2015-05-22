@@ -1,0 +1,60 @@
+@(parents : Seq[Authorize], children : Seq[Authorize], accesses : Seq[VolumeAccess], comments : Seq[Comment])(implicit request : controllers.PartyHtml.Request[_])
+
+@defining(request.obj.party) { party =>
+@defining(both[Seq[VolumeAccess], Seq[Volume]](accesses.span(a => a.individual >= Permission.ADMIN), _.map(_.volume))) { case (owned, edited) =>
+@html("Profile: " + request.obj.party.name, Some(request.obj.pageURL)) {
+<article class="wrap">
+@widget.panel.raw("overview", "panel_party", Messages("network.title")){
+    <div class="col panel_overview_actions">
+        <ul class="actions">
+                <li><a href="@controllers.routes.PartyHtml.view(party.id, Some(false))">view</a></li>
+            @if(request.obj.checkPermission(Permission.EDIT)) {
+                <li><a href="@controllers.routes.PartyHtml.edit(party.id, Some(false))">edit</a></li>
+            }
+            @if(request.obj.checkPermission(Permission.ADMIN)) {
+                <li><a href="@controllers.routes.PartyHtml.admin(party.id)">admin</a></li>
+            }
+        </ul>
+    </div>
+
+    @widget.figure("party_"+party.id, "figure_volume panel_overview_thumbnail"){
+        <div class="image" style="background-image: url('@display.avatar(party, 400)')"></div>
+    }
+
+    <h1 class="col panel_title">@display.formatTitle(party.pageName)</h1>
+
+    @widget.frame.raw("contact", "", Messages("party.contact.title")) {
+        <div class="col-desktop-8 col-tablet-6 col-mobile-6">
+            <div class="metadata">
+                <dl class="flat">
+                    @party.email.map { e =>
+                            <dt>Email</dt>
+                            <dd><a href="mailto:@e">@e</a></dd>
+                    }
+
+                    @party.orcid.map { o =>
+                        <dt>ORCiD</dt>
+                        <dd><a href="@o.uri">@o.toString</a></dd>
+                    }
+                </dl>
+            </div>
+        </div>
+    }
+
+    @defining(parents.map(p => p.parent)) { parties =>
+        @widget.frame.parties(parties, "memberships", Messages("auth.parents.title"))
+    }
+
+    @defining(children.map(c => c.child)) { parties =>
+        @widget.frame.parties(parties, "members", Messages("auth.children.title"))
+    }
+}
+
+    @widget.panel.volumes(owned, edited)
+
+    @widget.panel.comments(None, None, comments)
+
+}
+}
+</article>
+}

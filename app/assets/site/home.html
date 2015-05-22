@@ -1,0 +1,102 @@
+<article class="view home-view">
+  <div class="wrap">
+    <div class="row">
+      <div class="home-logo">
+        <a ng-href="{{::page.router.index()}}" title="Databrary: An Open Data Library"><img ng-if="::!page.constants.sandbox" src="public/images/logo/databrary-nav.svg"><img ng-if="::page.constants.sandbox" src="public/images/logo/databrary-demo.svg"></a>
+      </div>
+    </div>
+  </div>
+  <div class="home-bigbuttons">
+    <div class="bigbuttons-text">
+      <p>Databrary is an open data library for developmental science.
+        <br>Share video, audio, and related metadata. Discover more, faster.
+        <br><br>Get started with our <a href="//databrary.org/access/guide.html">User Guide</a>, and get the <a href="//databrary.org/news.html">latest news</a> here.
+      </p>
+    </div>
+    <div class="bigbuttons-container">
+      <div class="bigbutton" ng-if="::!page.models.Login.isLoggedIn()">
+        <img src="/public/images/icon/login.svg"/>
+        <span class="button-title">
+          <a ng-href="{{::page.router.login()}}">Login</a> or
+          <a ng-href="{{::page.router.register()}}">Register</a></span>
+      </div>
+      <div class="bigbutton" ng-if="::page.models.Login.isLoggedIn()">
+        <img src="/public/images/icon/home-profile.svg"/>
+        <span class="button-title"><a ng-href="{{::page.router.profile()}}">Your Profile</a></span>
+        <p class="hide-mobile">Manage your data and authorizations.</p>
+      </div>
+      <div class="bigbutton">
+        <img src="public/images/icon/home-searchstudy.svg"/>
+        <span class="button-title"><a ng-href="{{::page.router.volumeSearch()}}">Browse Data</a></span>
+      </div>
+      <div class="bigbutton">
+        <img src="public/images/icon/home-userstudy.svg"/>
+        <span class="button-title"><a ng-href="{{::page.router.partySearch()}}">Browse People</a></span>
+      </div> 
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="row">
+      <div class="col-desktop-10 col-tablet-6 col-mobile-6">
+        <article class="home-panel home-feature row">
+          <div class="home-feature-inner">
+            <img ng-src="{{::volume.thumbRoute()}}" class="home-feature-thumb" ng-click="page.$location.url(volume.route())">
+
+            <div class="home-section-text">
+              <div class="home-sections-title"><span class="icon volume"></span><span message="welcome.featured"></span></div>
+              <h1><a ng-href="{{::volume.route()}}" ng-bind="::volume.name"></a></h1>
+
+              <div class="home-feature-investigators">
+                <ul class="inline-block comma">
+                  <li ng-repeat="access in volume.access | filter:{individual: page.permission.ADMIN}">
+                    <a ng-href="{{::access.party.route()}}" ng-bind="::access.party.name"></a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="home-panel home-activity row">
+          <span class="home-section-text home-sections-title"><span class="icon activity"></span>Recent Activity</span>
+          <dl class="home-section-text">
+            <dt ng-repeat-start="act in ::activity">
+              <time datetime="{{::act.time | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>
+                {{::act.time | date}}
+              </time>
+            </dt>
+            <dd class="home-activity-volume" ng-if="::act.volume" ng-init="volume=act.volume">
+              <p>New shared data</p>
+              <img class="volume-thumb" ng-src="{{::volume.thumbRoute(72)}}">
+              <div>
+                <a ng-href="{{::volume.route()}}" ng-bind="::volume.name"></a>
+                <div class="volume-list-investigators" ng-if="::volume.access">
+                  <ul class="inline-block comma">
+                    <li ng-repeat="access in ::volume.access | filter:{individual: page.permission.ADMIN}">
+                      <a ng-href="{{::access.party.route()}}" ng-bind="::access.party.name"></a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </dd>
+            <dd ng-repeat-end ng-if="::act.party" ng-init="party=act.party">
+              <p>New authorized <span ng-if="::party.institution">institution</span><span ng-if="::!party.institution">investigator</span></p>
+              <portrait></portrait>
+            </dd>
+          </dl>
+        </article>        
+      </div>
+      <div class="col-desktop-5 col-tablet-3 col-mobile-6">
+        <div class="home-panel home-supportad">
+          <span><a href="//bluejeans.com/databrary/">Join our online support sessions</a> every Monday from 3&ndash;5pm and Thursday from 11am&ndash;12pm Eastern time!</span>
+        </div>
+        <div class="home-tags">
+          <span class="home-sections-title"><span class="icon tag"></span>Top Tags</span>
+          <ol>
+            <ul ng-repeat="tag in ::tags" class="home-tags-item">
+              <div class="home-tag-name"><a ng-href="{{::page.router.volumeSearch()}}?query={{::tag.id}}" ng-bind="::tag.id"></a></div>
+            </ul>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>

@@ -1,0 +1,34 @@
+<article class="view party-edit-view">
+  <div class="wrap">
+    <div class="row">
+      <hgroup class="col">
+        <h1 class="view-context smaller" message="edit"></h1>
+
+        <h2 class="view-title smaller">
+          <span ng-bind="::party.name"></span>
+          <a ng-href="{{::party.route()}}"><span class="button green icon view-icon"></span></a>
+        </h2>
+      </hgroup>
+
+      <div class="col">
+        <wizard name="party-edit">
+          <wizard-step name="profile">
+            <party-edit-profile-form></party-edit-profile-form>
+          </wizard-step>
+
+          <wizard-step name="account" enabled="!party.institution && party.checkPermission(page.permission.SUPER)">
+            <party-edit-account-form></party-edit-account-form>
+          </wizard-step>
+
+          <wizard-step name="apply" enabled="party.checkPermission(page.permission.ADMIN)">
+            <party-edit-apply-form></party-edit-apply-form>
+          </wizard-step>
+
+          <wizard-step name="grant" enabled="party.checkPermission(page.permission.ADMIN)">
+            <party-edit-grant-form></party-edit-grant-form>
+          </wizard-step>
+        </wizard>
+      </div>
+    </div>
+  </div>
+</article>

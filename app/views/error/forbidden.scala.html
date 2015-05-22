@@ -1,0 +1,7 @@
+@(implicit request: SiteRequest[_])
+
+@error.template("Access denied") {
+  @if(request.user.isEmpty) {
+    You might try <a href="@routes.LoginHtml.view(None)">logging in</a>.
+  }
+}

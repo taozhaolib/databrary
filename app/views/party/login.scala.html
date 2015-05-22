@@ -1,0 +1,23 @@
+@(form : LoginController.LoginForm)(implicit request: SiteRequest[_])
+
+@implicitField = @{
+    helper.FieldConstructor(widget.tag.minimalFieldConstructor.f)
+}
+
+@html(Messages("login.title"), Some(routes.LoginHtml.view(None))) {
+  <article class="view">
+    @widget.panel.form(Messages("login.title.sub"), Messages("login.title")) {
+        <div>
+            @widget.tag.form(form) {
+
+                @widget.tag.inputText(form.email(), 'placeholder -> Messages("email"))
+                @widget.tag.inputPassword(form.password(), 'placeholder -> Messages("password"))
+                @widget.tag.inputText(form.openid(), 'placeholder -> Messages("openid"))
+
+                @widget.formErrors(form)
+                <button type="submit" class="button">@Messages("login.login")</button>
+            }
+        </div>
+    }
+  </article>
+}

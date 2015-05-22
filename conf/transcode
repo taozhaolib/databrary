@@ -1,0 +1,85 @@
+#!/bin/bash
+# Transcode job management.
+# This is run on transcode.host, called from conf/transctl.sh
+# It is also the PBS script so is in fact run twice, once with arguments (up to the qsub), once with varibles.
+
+#PBS -l nodes=1:ppn=1,mem=1024mb
+
+PBS=$0
+if [[ $PBS != /* ]] ; then
+	PBS=$PWD/$PBS
+fi
+
+while getopts 'i:h:d:v:k:f:r:' opt ; do case "$opt" in
+	i) id=$OPTARG ;;
+	h) hpc=$OPTARG ;;
+	d) dir=$OPTARG ;;
+	v) version=$OPTARG ;;
+
+	k) kill=$OPTARG ;;
+	f) ;;
+	r) url=$OPTARG ;;
+
+	?) exit 1 ;;
+esac ; done
+shift $[OPTIND-1]
+args=("$@")
+
+if [[ -z $id || -z $dir || -z $kill && -z $url ]] ; then
+	echo "$0: usage error: $*" >&2
+	exit 1
+fi
+
+cd $dir || exit 1
+
+IN=$id
+OUT=$id.mp4
+LOG=$id.log
+
+if [[ -n $kill ]] ; then
+	if [[ -n $hpc ]] ; then
+		qdel $kill
+	else
+		kill $kill
+	fi
+	rm -f "$IN" "$OUT"
+	exit 0
+fi
+
+if [[ ! -f $IN ]] ; then
+	echo "$IN: file not found" >&2
+	exit 1
+fi
+
+IFS='
+'
+if [[ -n $hpc ]] ; then
+	rate=100000
+	sec=$[60+`stat -c %s "$IN"`/$rate]
+	if [[ $sec -gt 604800 ]] ; then
+		sec=604800
+	fi
+	echo "${args[*]}" > $id.args
+	exec qsub -N "$id" -v "dir=$PWD,id=$id,url=$url" -l walltime=$sec "$PBS"
+elif [[ -n $PBS_JOBNAME ]] ; then
+	PID=${PBS_JOBID%%.*}
+	read -d '' -r -a args < $id.args
+else
+	PID=$$
+fi
+exec >$LOG 2>&1
+
+sleep 5 # hope server knows job has started by now
+
+ls -s "$IN"
+ffmpeg -loglevel warning -benchmark -threads ${PBS_NP:-1} -i "$IN" "${args[@]}" -threads ${PBS_NP:-1} -f mp4 -g 60 -c:v libx264 -pix_fmt yuvj420p -c:a libfdk_aac -y "$OUT"
+r=$?
+[[ -f "$OUT" ]] && ls -s "$OUT"
+if [[ $r -ne 0 ]] ; then
+	rm -f "$OUT"
+else
+	sha1=`sha1sum "$OUT"`
+fi
+
+# sha1 arg is split to work around weird HPC error:
+curl -sSk --data-urlencode "pid=$PID" --data-urlencode "res=$r" ${sha1:+--data-urlencode} ${sha1:+"sha1=${sha1%% *}"} --data-urlencode "log@$LOG" "$url"

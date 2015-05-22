@@ -1,0 +1,102 @@
+<article class="view register-view">
+  <div class="wrap">
+    <div class="row">
+      <hgroup class="col">
+        <h1 class="view-context" message="register.title"></h1>
+        <h2 class="view-title" message="register.title.sub"></h2>
+      </hgroup>
+
+      <div class="col">
+        <wizard name="register">
+          <wizard-step name="create">
+            <ng-form name="registerForm">
+              <validator name="prename" label="prename" class="grid-clear-left col-desktop-7 col-tablet-4 col-mobile-6">
+                <input id="field-prename" name="prename" type="text" ng-model="registerForm.data.prename" placeholder="First">
+              </validator>
+
+              <validator name="sortname" label="sortname" class="grid-clear-right col-desktop-8 col-tablet-5 col-mobile-6">
+                <input id="field-sortname" name="sortname" type="text" ng-model="registerForm.data.sortname" ng-minlength="2" placeholder="Last" required>
+              </validator>
+
+              <validator name="email" label="email">
+                <input id="field-email" name="email" type="email" ng-model="registerForm.data.email" required>
+              </validator>
+
+              <validator name="affiliation" label="affiliation">
+                <input id="field-affiliation" name="affiliation" type="text" ng-model="registerForm.data.affiliation" placeholder="University" key-enter="proceed()">
+              </validator>
+
+              <button class="green" type="submit" ng-disabled="registerForm.$pristine || registerForm.$invalid" ng-click="proceed()" message="register.continue"></button>
+            </ng-form>
+          </wizard-step>
+
+          <wizard-step name="agreement">
+            <div>
+              <p>As a member of the Databrary community, you promise to:</p>
+              <ol>
+                <li>Treat Databrary data with the same high standard of care that you treat data collected in your own laboratory.</li>
+                <li>Respect participants' wishes about sharing their data just as you do in your lab.</li>
+                <li>Take care in authorizing other people (affiliates and collaborators) and take responsibility for their conduct and use of Databrary data, just as you do in your own lab.</li>
+              </ol>
+            </div>
+
+            <p>
+              <input id="agreement-checkbox" name="agreementCheckbox" type="checkbox" ng-model="registerForm.data.agreement">
+              <label for="agreement-checkbox" class="option">
+                I have read and understand the <a href="http://databrary.org/access/policies/agreement.html" target="_blank">Databrary Access Agreement</a>
+              </label>
+            </p>
+
+            <button class="green" ng-click="proceed()" ng-disabled="registerForm.$pristine || registerForm.$invalid || !registerForm.data.agreement" message="register.register">Agree and register</button>
+          </wizard-step>
+
+          <wizard-step name="email">
+            <p ng-bind="'register.sent.instructions' | message:registerForm.data.email"></p>
+          </wizard-step>
+
+          <wizard-step name="password">
+            <ng-form name="passwordForm">
+              <p message="password.advice" message-html></p>
+
+              <validator name="password.once" label="password.once">
+                <input id="fieldPassword" name="password.once" type="password" ng-model="passwordForm.data.password.once">
+              </validator>
+
+              <validator name="password.again" label="password.again">
+                <input id="fieldPasswordAgain" name="password.again" type="password" ng-model="passwordForm.data.password.again" key-enter="passwordForm.save()">
+              </validator>
+
+              <button class="green" type="submit" ng-disabled="passwordForm.$pristine || passwordForm.$invalid || passwordForm.data.password.once !== passwordForm.data.password.again || passwordForm.$submitted" ng-click="passwordForm.save()" message="register.continue"></button>
+            </ng-form>
+          </wizard-step>
+
+          <wizard-step name="agent">
+            <div class="radio-set">
+              <div>
+                <input type="radio" ng-model="authSearchForm.principal" ng-value="'principal'">
+                <label class="option">
+                  <strong>Authorized Investigator</strong> (Researchers that are eligible to conduct independent research at their institution may become Authorized Investigators and may also authorize and manage Affiliates.)
+                </label>
+              </div>
+
+              <div>
+                <input type="radio" ng-model="authSearchForm.principal" ng-value="'affiliate'">
+                <label class="option">
+                  <strong>Affiliate</strong> (Individuals working with Authorized Investigators may be authorized as Affiliates.)
+                </label>
+              </div>
+            </div>
+
+            <auth-search-form ng-show="authSearchForm.principal"></auth-search-form>
+          </wizard-step>
+
+          <wizard-step name="request">
+            <auth-apply-form></auth-apply-form>
+          </wizard-step>
+
+          <wizard-step name="pending"></wizard-step>
+        </wizard>
+      </div>
+    </div>
+  </div>
+</article>

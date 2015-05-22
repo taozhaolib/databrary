@@ -1,0 +1,66 @@
+@(editForm : RecordController.EditForm, measureForms : Seq[RecordController.MeasureForm], metricForm : RecordHtml.MetricForm)(implicit request : RecordHtml.Request[_])
+
+@implicitField = @{
+    helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
+}
+
+@widget.form(Some(request.obj), "Edit Record", None) {
+    @widget.tag.form(editForm) {
+        @widget.tag.select(editForm.category(), RecordCategory.getAll.map(c => (c.id.toString, c.name)), '_default -> "None")
+        @widget.formErrors(editForm)
+        <button type='submit' class="button">Update</button>
+    }
+
+                <fieldset>
+                    <legend>Metrics</legend>
+
+                    <div>
+                    @measureForms.map { form =>
+                    @widget.tag.form(form) {
+                        <div>
+                            <div class="field cf">
+                                @form.metric.name (@form.metric.release)
+                            </div>
+
+                            <div class="field cf">
+                            @form.metric.dataType match {
+                            case _ if form.metric.options.nonEmpty => {
+                                @widget.tag.select(form.datum(), form.metric.options.map(v => (v,v)), '_default -> "")
+                            }
+                            case DataType.date => {
+                                @widget.tag.inputDate(form.datum())
+                            }
+                            case _ if form.metric.long => {
+                                @widget.tag.textarea(form.datum())
+                            }
+                            case _ => {
+                                @widget.tag.inputText(form.datum())
+                            }
+                            }
+                            </div>
+                        </div>
+
+                        <div>
+                            @widget.formErrors(form)
+                            <button type='submit' class="button">Update</button>
+                        </div>
+                    }
+                    }
+                    </div>
+
+                    <div>
+                    @widget.tag.form(metricForm) {
+                        <div>
+                            @widget.tag.select(metricForm.metric(), (Metric.getAll.toSeq diff measureForms.map(_.metric)).map(m => (m.id.toString, m.name)))
+                        </div>
+
+                        <div>
+                            @widget.formErrors(metricForm)
+                            <button type='submit' class="button">Add</button>
+                        </div>
+                    }
+                    </div>
+                </fieldset>
+            <a href="@request.obj.pageURL">@Messages("cancel")</a>
+
+}

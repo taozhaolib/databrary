@@ -1,0 +1,7 @@
+@(party : SiteParty)(implicit request : SiteRequest[_])
+
+@display(party)
+
+@helper.form(routes.PartyHtml.remove(party.id)) {
+  <button type="submit">delete</button>
+}

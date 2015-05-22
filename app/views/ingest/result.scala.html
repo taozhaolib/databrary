@@ -1,0 +1,10 @@
+@(vol : models.Volume, res : Iterable[SiteObject])(implicit request : SiteRequest[_])
+
+@ingest.template("Ingestion Result") {
+            <ul>
+            @res.map { r =>
+                <li>@display(r)</li>
+            }
+            </ul>
+}
+

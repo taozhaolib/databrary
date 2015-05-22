@@ -1,0 +1,55 @@
+@(jsDepends : Seq[String])(implicit request : SiteRequest[_])
+@defining(request.copy(queryString = request.queryString.updated("js", Seq("0")))) { nojs =>
+<!DOCTYPE html>
+<html ng-app="databraryModule">
+<head>
+  @head()
+  <noscript>
+    <meta http-equiv="Refresh" content="0;url=@display.url(nojs, true)">
+  </noscript>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  @defining(if (site.Site.sandbox) "Databrary Demo" else Messages("app.title")){ title =>
+    <title ng-bind="page.display.title + ' || @title'">@title</title>
+  }
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="@routes.Assets.at("icons/apple-touch-icon-114x114.png")">
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="@routes.Assets.at("icons/apple-touch-icon-72x72.png")">
+  <link rel="apple-touch-icon-precomposed" href="@routes.Assets.at("icons/apple-touch-icon.png")">
+  <link rel="stylesheet" href="@routes.Assets.at("app.min.css")">
+  <script>
+    window.$play = {
+      user: @format.raw(request.json.toString),
+    };
+  </script>
+  @jsDepends.map { js =>
+    <script src="@routes.Assets.at(js)"></script>
+  }
+  <script src="@routes.AngularController.constantsJs"></script>
+</head>
+<body flow-prevent-drop>
+  <noscript>
+    Our site works best with modern browsers (Firefox, Chrome, Safari &ge;6, IE &ge;10, and others) with Javascript enabled.
+    You can also switch to the <a href="@display.url(nojs)">simple version</a> of this page.
+  </noscript>
+  <toolbar></toolbar>
+  <main ng-view id="main" class="main" ng-class="::{'sandbox':page.constants.sandbox}" autoscroll ng-if="!page.display.error"></main>
+  <errors></errors>
+  @footer()
+  <messages></messages>
+  <tooltip ng-repeat="tooltip in page.tooltips.list track by tooltip.id" ng-if="tooltip.target"></tooltip>
+  <div id="loading" class="loading" style="display:none" ng-show="page.display.loading">
+    <div class="loading-animation">
+      <div class="loading-spinner">
+        <div class="loading-mask">
+          <div class="loading-circle"></div>
+        </div>
+      </div>
+      <div class="loading-text">[<span>loading</span>]</div>
+    </div>
+  </div>
+  <script>
+    document.getElementById('loading').style.display = 'block';
+  </script>
+</body>
+</html>
+}

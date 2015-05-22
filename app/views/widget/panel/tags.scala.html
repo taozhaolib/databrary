@@ -1,0 +1,38 @@
+@(tags : Seq[TagWeight], form : TagController.Form)(implicit request : SiteRequest[_])
+
+@implicitField = @{
+    helper.FieldConstructor(widget.tag.minimalFieldConstructor.f)
+}
+
+    @widget.panel.raw("tags", "", Messages("tags.title")){
+        <div class="panel_tags_list col-desktop-6 col-tablet-6 col-mobile-3">
+                <ol class="panel_tags_items row">
+                @if(tags.nonEmpty) {
+                    @tags.map { tw =>
+                        <li id="tag_@tw.tag.id" class="panel_tags_item col-desktop-3 col-tablet-3 col-mobile-6">
+                        @widget.tag.form(form) {
+
+                            @widget.tag.inputHidden(form.name.fill(Some(tw.tag))())
+                            <div class="controls">
+                                <button class="vote null" name="vote" value="" @if(!tw.vote){disabled}>-</button>
+                                <button class="vote up" name="vote" value="true" @if(tw.vote){disabled}>+</button>
+                            </div>
+
+                            <span class="name">@tw.tag.name</span>
+
+                            <span class="weight">@tw.weight</span>
+                        }
+                        </li>
+                    }
+                }
+            </ol>
+        </div>
+
+        <div id="tag_add" class="panel_tags_form col-desktop-6 col-tablet-3 col-mobile-6">
+            @widget.tag.form(form) {
+                @widget.tag.inputText(form.name.fill(None)(), 'placeholder -> "Add new tag")
+                @widget.formErrors(form)
+                <button name="vote" value="@true" class="hide">add</button>
+            }
+        </div>
+    }

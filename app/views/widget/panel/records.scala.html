@@ -1,0 +1,13 @@
+@(slot: Slot, records : Seq[(dbrary.Segment, Record)])(implicit request : SiteRequest[_])
+
+@if(records.nonEmpty) {
+    @widget.panel.raw("records", "", title = "Records"){
+        <div class="col">
+            <ul>
+            @records.map { case (seg, rec) =>
+                <li>@seg: @display(rec)</li>
+            }
+            </ul>
+        </div>
+    }
+}

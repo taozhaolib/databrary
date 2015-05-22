@@ -1,0 +1,224 @@
+#!/bin/bash -e
+set -o pipefail
+
+top=`git rev-parse --show-cdup || echo "Assuming $PWD is top." >&2`
+conf=${top}conf
+db=default
+evolutions=$conf/evolutions/$db
+
+if [[ ! -f $conf/application.conf ]] ; then
+	echo "$conf/application.conf is missing.  You are probably in the wrong directory."
+	exit 1
+fi
+
+if [[ ! -f ${top}local.conf ]] ; then
+	echo "${top}local.conf is missing.  See README."
+	if [[ -f $conf/local.conf ]] ; then
+		echo "Note: local.conf should be moved from $conf to $top."
+	fi
+	exit 1
+fi
+
+getconfig () {
+	# This isn't perfect but hopefully good enough
+	sed -n '/^'"$1"'=\("\([^"]*\)"\|\([^# ]*\)\).*$/{s//\2\3/;p;q}' ${top}local.conf $conf/application.conf
+}
+
+getdbconfig () {
+	getconfig "db\.$db\.$1"
+}
+
+getdb () {
+	sed -n '/^jdbc:postgresql:\(\/\/\([^\/:]\+\)\(:\([0-9]\+\)\)\?\/\)\?\([^?]*\).*$/{s//host="\2";port="\4";database="\5"/;p}'
+}
+
+eval $(getdbconfig url | getdb)
+user=`getdbconfig user`
+password=`getdbconfig password`
+: ${host:=localhost} ${port:=5432} ${database:=$user}
+
+if [[ ! -f ~/.pgpass ]] ; then
+	um=`umask -p`
+	umask 077
+	echo "$host:$port:$database:$user:$password" >> ~/.pgpass
+	$um
+fi
+
+args=(-h $host -p $port -U $user)
+while [[ $1 = -?* ]] ; do
+	args=("${args[@]}" $1)
+	shift
+done
+
+runsql () {
+	psql -q "${args[@]}" -vON_ERROR_STOP=on -f "${@:--}" "${database}"
+}
+
+dbreset () {
+	if [[ -z $1 ]] ; then
+		pg_dump -Fc -f unreset.dump "${args[@]}" "${database}"
+	fi
+	runsql $conf/reset.sql
+}
+
+# play does _.trim on each line, which has weird semantics:
+trim='s/^[\c@- ]*//;s/[\c@- ]*$//'
+
+schema () {
+	sed "$trim" $conf/schema.sql | runsql
+}
+
+declare -A evomark=([up]='/^#.*!Ups/' [down]='/^#.*!Downs/')
+declare -A evoexpr=([up]="0,${evomark[up]}d;${evomark[down]}q" [down]="1,${evomark[down]}d")
+evolution () {
+	sed -n "$trim;${evoexpr[$1]};/[^\\c@- ]/,\$p" $evolutions/$2.sql
+}
+
+evolution_hash () {
+	echo -n "$(evolution down $1)$(evolution up $1)" | sha1sum | cut -d' ' -f1
+}
+
+evolve () {
+	local dir=$1 ; shift
+	for id in "$@" ; do
+		if [[ -n $play ]] ; then
+			runsql <<EOF
+DELETE FROM play_evolutions WHERE id = $id;
+EOF
+		fi
+		if [[ -z $fake ]] ; then
+			evolution $dir $id | sed 's/;;/;/g' | runsql
+		fi
+		if [[ -n $play && $dir = up ]] ; then
+			runsql <<EOF
+INSERT INTO play_evolutions VALUES ($id, '`evolution_hash $id`', CURRENT_TIMESTAMP, \$evolution_up\$$(evolution up $id)\$evolution_up\$, \$evolution_down\$$(evolution down $id)\$evolution_down\$, 'applied');
+EOF
+		fi
+	done
+}
+
+check_dump() {
+	pg_dump -O -f $conf/check-$1.sql "${args[@]}" "${database}"
+}
+
+check_diff() {
+	check_dump $2
+	echo "Checking $1 vs. $2..."
+	diff -F'^[A-Z]' -u0 $conf/check-$1.sql $conf/check-$2.sql || (
+		echo -n "OK? "
+		read y
+		[[ -z $y || $y = y* ]]
+	)
+}
+
+evolve_all () {
+	n=0
+	if [[ -n $play ]] ; then
+		runsql <<EOF
+CREATE TABLE play_evolutions (id integer primary key, hash varchar(255) not null, applied_at timestamp not null, apply_script text, revert_script text, state varchar(255), last_problem text);
+EOF
+	fi
+	while [[ -f $evolutions/$[++n].sql ]] ; do
+		if [[ -n $1 ]] ; then
+			check_dump up-$n
+		fi
+		echo "Running evolution up $n..."
+		evolve up $n
+	done
+}
+
+opts () {
+	local opts=$1 ; shift
+	OPTIND=1
+	while getopts "$opts" opt ; do case "$opt" in
+		p) play=1 ;;
+		P) play=1 ; fake=1 ;;
+		?) exit 1 ;;
+	esac ; done
+}
+
+usage () {
+	cat <<EOF
+Usage:
+  runsql  		run psql interactively
+  runsql -|<file>	execute contents of file
+  runsql reset		reset the database (clear public schema)
+  runsql schema	[-p]	apply master schema
+  runsql up|down [-pP] [NUM]	run evolution NUM
+  runsql check		apply and compare master schema and evolutions
+  runsql dump ARGS.. 	run pg_dump
+  runsql restore ARGS.. run pg_restore
+Any non-argument options are passed to the run command.
+EOF
+}
+
+if [[ $# -eq 0 ]] ; then
+	echo "Use '$0 help' for help"
+	exec psql "${args[@]}" "${database}"
+elif [[ $1 = help && $# -eq 1 ]] ; then
+	usage
+elif [[ $# -eq 1 && ( $1 = - || -f $1 ) ]] ; then
+	runsql "$1"
+elif [[ $1 = reset && $# -eq 1 ]] ; then
+	dbreset
+elif [[ $1 = schema ]] ; then
+	shift
+	opts 'p' "$@"
+	if [[ $# -ge $OPTIND ]] ; then
+		usage
+		exit 1
+	fi
+	dbreset
+	schema
+	if [[ -n $play ]] ; then
+		fake=1
+		evolve_all
+	fi
+elif [[ $# -eq 2 && $1 = hash ]] ; then
+	shift
+	evolution_hash "$@"
+elif [[ $1 = up || $1 = down ]] ; then
+	cmd=$1 ; shift
+	opts 'pP' "$@"
+	shift $[OPTIND-1]
+	if [[ $# -eq 0 ]] ; then
+		if [[ -z $fake ]] ; then
+			dbreset
+		fi
+		evolve_all
+	elif [[ $# -eq 1 ]] ; then
+		evolve $cmd "$@"
+	else
+		usage
+		exit 1
+	fi
+elif [[ $1 = check ]] ; then
+	dbreset
+	if ! [[ $conf/check-schema.sql -nt $conf/schema.sql ]] ; then
+		echo "Running schema..."
+		schema
+		check_dump schema
+	fi
+	dbreset 1
+	evolve_all 1
+	check_diff schema evolve
+	while [[ $[--n] -ge 1 ]] ; do
+		echo "Running evolution down $n..."
+		evolve down $n
+		check_diff up-$n down-$n
+	done
+	rm -f $conf/check-*.sql
+elif [[ $1 = dump ]] ; then
+	shift
+	exec pg_dump "${args[@]}" "$@" "${database}"
+elif [[ $1 = restore ]] ; then
+	shift
+	if [[ $# -eq 0 ]] ; then
+		set -- unreset.dump
+	fi
+	dbreset 1
+	exec pg_restore "${args[@]}" -d "${database}" -O "$@"
+else
+	usage
+	exit 1
+fi

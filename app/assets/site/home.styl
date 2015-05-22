@@ -1,0 +1,248 @@
+.home-logo
+  margin 0
+  margin-top 1
+  float left
+  a
+    color black
+    img
+      width 260px
+  div
+    font-size 1.2em
+    line-height 100%
+    display block
+    vertical-align middle
+    margin-left 2
+    margin-right 2
+
+.home-panel
+  margin-bottom 1
+  box-shadow box-shadow-def
+  border-top solid b3 green52
+
+.home-feature-inner
+  position relative
+  background-color black
+
+.home-feature-thumb
+  width 100%
+  max-width 720px
+  display block
+  margin-right auto
+  margin-left auto
+  margin-bottom 0
+  cursor pointer
+
+
+.home-section-text
+  position relative
+  background white
+  padding f6 f3
+  width 100%
+  h1
+    font-line f34
+    a
+      link-color grey
+
+.home-sections-title
+  font-weight bold
+  text-transform uppercase
+  font-size b23
+  line-height b23*1.2
+  display inline-block
+  padding-bottom b3
+  .icon
+    background-size b23 b23
+    size b23
+    margin-right b4
+
+.home-feature-investigators
+  font-size f90
+
+  ul
+    margin-top 0
+    display inline-block
+
+    li
+      display inline-block
+      margin-right f6
+
+      &:after
+        content ', '
+
+      &:last-child
+        &:after
+          content none
+
+.home-supportad
+  margin-left b1*2
+  margin-right b1*2
+  padding b1
+  border solid b3 #ffd3b6
+  @media screen and (max-width: grid-tablet-width)
+    font-size 0.8em
+    line-height 1.2em
+    margin-right 0
+
+.home-tags
+  overflow hidden
+  padding-left b1*2
+  ol
+    list-style-type none
+    padding 0
+    font-size 0.8em
+    ul
+      padding 0
+      padding-left b3
+  span
+    font-weight 700
+
+.home-tags-item
+  font-line 1 1.25
+  height b1 + b4
+  display block
+  margin-right f2
+  border-radius b1
+  border 1px solid pale
+  padding-width f3
+  margin-bottom f2
+  max-width 250px
+  overflow hidden
+
+  &:before
+    display none
+
+  &.keyword
+    border 1px solid orange52
+
+  .home-tag-weight
+    position relative
+    font-weight bold
+    float left
+    background green51
+    border-radius b3
+    margin-right f4
+    margin-top f4
+    margin-bottom f4
+    min-width b1
+    font-line f34 f23
+    text-align center
+
+  .home-tag-name
+    position relative
+    float left
+    height b1
+    top -b12
+    word-break break-all
+    overflow hidden
+    text-overflow ellipsis
+    max-width 200px
+    width 80%
+
+.home-bigbuttons
+  background-color green53
+  position relative
+  width 100%
+  margin-left 0
+  margin-right 0
+  margin-bottom b1*2
+  padding 0
+  div.bigbuttons-text
+    position relative
+    margin-right auto
+    margin-left auto
+    width 100%
+    padding-top b1
+    font-size b1
+    line-height b1*1.5
+    @media screen and (max-width: grid-tablet-width+1)
+      font-size 20px
+      line-height 30px
+    p
+      text-align center
+      margin-bottom 0
+      padding-bottom 0
+      color white
+    a
+      color #FFD3B6
+      font-weight bold
+    a:hover
+      color #FFE9DA
+  div.bigbuttons-container
+    position relative
+    margin-right auto
+    margin-left auto
+    width 625px
+    @media screen and (max-width: grid-mobile-width+1)
+      width auto
+      padding-top b3
+      padding-bottom b3
+    div.bigbutton
+      text-align center
+      position relative
+      size 160px 160px
+      margin b1
+      padding b3
+      padding-top b1
+      border-radius b3
+      border 1px solid #bbb
+      background-color white
+      display inline-table
+      box-shadow 0px 3px 3px -3px black
+      transition border 0.2s
+      @media screen and (max-width: grid-mobile-width+1)
+        display block
+        width 100%
+        height auto
+        border-radius 0
+        padding b3
+        margin 0
+        box-shadow none
+        border-collapse collapse
+      .button-title
+        display block
+        font-weight 700
+        a
+          color blue53
+        a:hover
+          color blue52
+      p
+        font-size f34
+        line-height b23
+        padding 0
+        margin b4
+        text-align center
+      img
+        height b1*2
+    div.bigbutton:hover
+      border 1px solid blue53
+
+.home-activity
+  dl.home-section-text
+    width 100%
+    dt
+      float right
+      font-size b2
+      margin-top b3
+    dd
+      margin-left 0
+      margin-top b3
+      border-bottom 1px pale solid
+      p
+        margin-bottom 0
+        font-size b2
+        color grey
+    dd.home-activity-volume
+      padding-bottom b2
+      .volume-thumb
+        margin-right b4
+        margin-bottom b3
+        width 2.3
+        float left
+      .volume-list-investigators
+        ul
+          padding-left 0
+          a
+            color grey
+          a:hover
+            color pale
+

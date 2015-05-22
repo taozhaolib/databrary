@@ -1,0 +1,118 @@
+@(access : Seq[VolumeAccess], top : Container, sessions : Seq[Slot], records : Seq[Record], excerpts : Seq[FileAssetSlot], citation : Option[Citation], funding : Seq[Funding], comments : Seq[Comment], tags : Seq[TagWeight])(implicit request: VolumeHtml.Request[_])
+
+@defining(request.obj) { volume =>
+@html("Volume: " + volume.name, Some(request.obj.pageURL)) {
+<article class="wrap">
+@widget.panel.raw("overview-volume", "", Messages("volume.overview.title")){
+    <div class="col">
+        <ul class="breadcrumbs">
+        @Path(volume).toHtml
+        </ul>
+
+        <ul class="actions">
+                <li><a href="@volume.pageURL">view</a></li>
+            @if(volume.checkPermission(Permission.EDIT)) {
+                <li><a href="@controllers.routes.VolumeHtml.edit(volume.id, Some(false))">edit</a></li>
+                <li><a href="@controllers.routes.AssetHtml.create(volume.id)">add file</a></li>
+                <li><a href="@controllers.routes.SlotHtml.add(volume.id)">add session/folder</a></li>
+            }
+            @if(volume.checkPermission(Permission.ADMIN)) {
+                <li><a href="@controllers.routes.VolumeHtml.admin(volume.id)">access</a></li>
+            }
+        </ul>
+    </div>
+
+    @widget.figure("volume_"+volume.id, "figure_volume panel_overview_thumbnail"){
+      <div class="image" style="background-image: url('@routes.VolumeController.thumb(volume.id)')"></div>
+    }
+
+    <h1 class="col panel-title">@display.formatTitle(volume.name)</h1>
+    @volume.alias.map { a =>
+    <h2 class="col">@a</h2>
+    }
+
+    @widget.frame.raw("people", "", Messages("volume.contributors.title")) {
+        @access.takeWhile(_.individual >= Permission.ADMIN).map { a =>
+          <div class="col-desktop-3 col-tablet-3 col-mobile-3">
+            @widget.portrait(a.party, "portrait_vertical portrait_small", institutions = false)
+          </div>
+        }
+    }
+
+@if(funding.nonEmpty) {
+    @widget.frame.raw("funding", "", Messages("volume.funding.title")) {
+        @funding.map { f =>
+            @f.funder.name @f.awards.mkString(", ")
+        }
+    }
+}
+
+@widget.frame.raw("volume", "", Messages("volume.body")) {
+    <div class="col-desktop-9 col-tablet-6 col-mobile-6">
+        <div class="description">
+            @volume.body.map(display.plainText _)
+        </div>
+
+        <div class="metadata">
+            <dl class="flat">
+                <dt>@Messages("volume.creation.title")</dt>
+                <dd><time datetime="@volume.creation" pubdate>@display.dateFmtYM.print(volume.creation)</time></dd>
+            </dl>
+        </div>
+    </div>
+}
+
+    @widget.frame.raw("citation", "", Messages("volume.link.title")) {
+        <div class="col-desktop-8 col-tablet-6 col-mobile-6">
+            <p>
+            @access.takeWhile(_.individual >= Permission.ADMIN).map(a => display.citeName(a.party.name) + ", ")
+            @display.dateFmtY.print(volume.creation).
+            @volume.name.
+            <em>Databrary</em>.
+            Retrieved @display.dateFmtCite.print(new dbrary.Date) from <a href="@volume.pageURL" title="@volume.name on Databrary.org">@site.Site.url(volume.pageURL)</a>.
+            </p>
+        </div>
+    }
+}
+
+    @if(sessions.nonEmpty){
+        @widget.panel.raw("sessions", "", title = Messages("sessions.title")){
+            <div class="col">
+                <ul>
+                    @sessions.map { s =>
+                        <li>@display(s)</li>
+                    }
+                </ul>
+            </div>
+        }
+    }
+
+    @groupBy(records, (r : Record) => r.category).map { case (cat, rl)  =>
+        @widget.panel.raw(cat.fold("")(_.name.toLowerCase), "", title = Messages("sessions.title") + cat.fold("")(" by " + _.name)){
+            <div class="col">
+                <ul>
+                    @rl.map { r =>
+                        <li>@display(r)</li>
+                    }
+                </ul>
+            </div>
+        }
+    }
+
+        @widget.panel.materials(excerpts)
+
+    @citation.map { citation =>
+        @widget.panel.raw("citation", "", Messages("volume.citation.title")){
+            <div class=" col">
+                    <div class="citation">
+                        <a @citation.url.map{ u => href="dbrary.url.normalize(u)" } title="@citation.title" class="cit_link">@citation.head</a>
+                    </div>
+            </div>
+        }
+    }
+
+        @widget.panel.tags(tags, new TagController.TagForm(top))
+        @widget.panel.comments(Some(top), Some(new CommentController.CommentForm(top)), comments)
+}
+</article>
+}

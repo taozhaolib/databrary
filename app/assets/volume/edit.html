@@ -1,0 +1,52 @@
+<article class="view volume-edit-view">
+  <div class="wrap">
+    <div class="row">
+      <hgroup class="col" ng-if="::!volume">
+        <h1 class="view-context smaller" message="create"></h1>
+        <h2 class="view-title smaller" message="volume.edit.title.sub"></h2>
+      </hgroup>
+
+      <hgroup class="col" ng-if="::volume">
+        <h1 class="view-context smaller" message="edit"></h1>
+        <h2 class="view-title smaller">
+          <span ng-bind="volume.alias || volume.name"></span>
+          <a ng-href="{{::volume.route()}}"><span class="button green icon view-icon"></span></a>
+        </h2>
+      </hgroup>
+
+      <div class="col" ng-if="::!(volume || owners.length)">
+        You must be (or be granted management privledges by) an authorized investigator in order to create volumes.
+        If you would like to begin contributing data while your authorization is still pending, please <a href="mailto:help@databrary.org">contact us</a>.
+      </div>
+
+      <div class="col" ng-show="::volume || owners.length">
+        <wizard name="volume-edit">
+          <wizard-step name="overview">
+            <volume-edit-overview-form></volume-edit-overview-form>
+          </wizard-step>
+
+          <wizard-step name="access" ng-if="::!!volume" enabled="volume.checkPermission(page.permission.ADMIN)">
+            <volume-edit-access-form></volume-edit-access-form>
+          </wizard-step>
+
+          <wizard-step name="materials" ng-if="::!!volume">
+            <spreadsheet edit top assets></spreadsheet>
+          </wizard-step>
+
+          <wizard-step name="data" ng-if="::!!volume">
+            <spreadsheet edit></spreadsheet>
+          </wizard-step>
+
+          <wizard-step name="links" ng-if="::!!volume">
+            <volume-edit-links-form></volume-edit-links-form>
+          </wizard-step>
+
+          <wizard-step name="funding" ng-if="::!!volume">
+            <volume-edit-funding-form></volume-edit-funding-form>
+          </wizard-step>
+        </wizard>
+      </div>
+    </div>
+  </div>
+</article>
+

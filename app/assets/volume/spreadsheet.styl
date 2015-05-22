@@ -1,0 +1,226 @@
+.spreadsheet-legend
+  margin-bottom 30px
+  ul
+    hide
+    margin-bottom 0
+    li
+      text-indent -28px
+      span.consent
+      span.classification
+        width 28px
+        margin-right b8
+    li:before
+      content none
+
+.spreadsheet-options
+  margin-bottom b8
+
+.spreadsheet
+  margin-bottom 2
+
+.spreadsheet:not(.edit)
+  .spreadsheet-table
+    border-bottom 2px solid grey
+  .spreadsheet-tbody
+    border-right 2px solid grey
+
+.spreadsheet.edit
+  .spreadsheet-table
+    td.add
+      cursor pointer
+    td.add:hover
+      background-color #AFCCC7
+      color: #ffffff
+
+.spreadsheet-table
+  width auto
+  whitespace nowrap
+  margin-bottom 0
+
+  col.consent
+    width 32px
+
+  col.add
+    width 24px
+
+  th
+    line-height 1
+    position relative
+    text-align center
+    border-left 1px solid white
+    border-right 1px solid white
+    border-top 0
+    border-bottom 0
+    &.metric-col
+      min-width 150px
+    &.add
+      cursor pointer
+      padding-right 10px
+      background-position 50% 45%
+      &:hover
+        opacity 0.7
+
+    .addSessionInfo
+      background-position 100% 2px
+      float right
+      cursor pointer
+      &.add
+        height f1+f8
+
+  td.add
+    color pale
+    text-transform lowercase
+
+  td
+    border 1px solid dark
+    padding 3px
+    height 1+f3
+    display table-cell
+    max-width 15em
+    overflow hidden
+    text-overflow ellipsis
+    position relative
+
+    img.format
+      margin-right b8
+
+    a.session.icon
+      background-size contain
+      background-position-y 50%
+      margin-right b8
+      width b23
+
+  td.icon
+    background-position 50% 50%
+    height 18px
+
+  td.consent
+    min-width 32px
+    background-position 40px
+
+
+  td.null
+    background-color gray
+    font-size 0.8em
+    text-align center
+
+  td.editing
+    position relative
+
+  td.blank
+    color gray
+
+  td.more
+    text-align center
+    font-style italic
+    font-size 0.8em
+    position relative
+
+    &:before
+      content ''
+      border-top b2 solid green
+      border-right b2 solid transparent
+      position absolute
+      left 0
+      top 0
+
+  td.saving
+    position relative
+    &:before
+      content 'Saving...'
+      font-style italic
+      text-align center
+      background-color fade-out(blue, 0.1)
+      overflow hidden
+      position absolute
+      top 0
+      bottom 0
+      left 0
+      right 0
+
+  td.error
+    background-color red !important
+
+  tr.expand
+    whitespace normal
+
+    td
+      overflow visible
+      text-overflow clip
+      // word-break break-all
+      // word-break break-word
+
+.spreadsheet-head-groups
+  th
+    text-transform lowercase
+    &:before
+      content ''
+      border-radius b3 b3 0 0
+      border-top 1px solid pale
+      border-left 1px solid pale
+      border-right 1px solid pale
+      position absolute
+      top 0
+      bottom 0
+      left 0
+      right 0
+      margin-top b8
+
+    &.col-materials
+      min-width 240px
+
+    &.col-800
+      min-width 78px
+
+
+.spreadsheet-head-metrics
+  th
+    border-bottom 2px solid black
+    border-left-color pale
+    border-right-color pale
+    cursor pointer
+    padding 0 20px 0 20px
+
+    &.first
+      border-left-color white
+      cursor default
+
+      &:before
+        content ''
+        border-left 1px solid pale
+        position absolute
+        left 0
+        top 0
+        bottom 0
+
+    &.last
+      border-right-color white
+
+      &:after
+        content ''
+        border-right 1px solid pale
+        position absolute
+        right 0
+        top 0
+        bottom 0
+
+.spreadsheet-edit
+  position absolute
+  z-index 50
+  top 0
+  left 0
+  bottom 0
+  width 100%
+  select
+    word-break normal
+  select
+  input[type='text']
+  input[type='date']
+  textarea
+    height 100%
+    min-height b1+b4
+    vertical-align middle
+
+.top-level-materials
+  font-style oblique
+  color #999

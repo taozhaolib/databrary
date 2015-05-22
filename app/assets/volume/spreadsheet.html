@@ -1,0 +1,58 @@
+<div class="spreadsheet-legend" ng-if="::editing && !top">
+  <a href="" ng-click="showConsents=false" ng-show="showConsents">
+    Hide legend of session release levels
+  </a>
+  <a href="" ng-click="showConsents=true" ng-hide="showConsents">
+    Show legend of session release levels
+  </a>
+  <ul ng-show="showConsents">
+    <li ng-repeat="(i,c) in page.constants.release" ng-if="i>0">
+      <span class="icon release" ng-class="c"></span>
+      <span ng-bind="'release.'+c+'.title' | message"></span>: 
+      <span ng-bind="'release.'+c+'.description' | message"></span>
+    </li>
+  </ul>
+</div>
+
+<div class="spreadsheet-options">  
+  <a ng-if="::!editing && !top" href="" ng-href="{{::volume.csvRoute()}}" target="_self">export data</a>
+</div>
+
+<div class="spreadsheet" ng-class="::{'edit': editing, 'view': !editing}">
+  <table class="spreadsheet-table">
+    <colgroup ng-repeat="g in groups track by g.category.id">
+      <col ng-repeat="metric in g.metrics track by metric.id" ng-class="[g.category.name, metric.name]"/>
+    </colgroup>
+    <colgroup ng-if="categories.length">
+      <col class="add">
+    </colgroup>
+    <thead>
+      <tr class="spreadsheet-head-groups">
+        <th class="metric-col" ng-repeat="col in groups track by col.category.id" id="{{::id}}-category_{{::col.category.id}}" colspan="{{col.metrics.length}}" ng-class="::'col'+col.category.id" ng-dblclick="setKey(col.category.id)">
+          <span ng-bind="::col.category.name"></span>
+          <span ng-if="::editing && !col.category.fixed" ng-click="clickCategoryAdd($event, col)" class="icon add addSessionInfo" tooltip="'spreadsheet.add.metric' | message:col.category.name"></span>
+        </th>
+        <th ng-if="categories.length" id="{{::id}}-add" class="add" ng-click="clickAdd($event)" tooltip="'spreadsheet.add.category' | message"></th>
+      </tr>
+      <tr class="spreadsheet-head-metrics">
+        <th ng-repeat="col in cols" id="{{::id}}-metric_{{::$index}}" ng-click="clickMetric(col)" ng-class="colClasses(col)" ng-bind="col.metric.name"></th>
+        <th ng-if="categories.length" class="first last"></th>
+      </tr>
+    </thead>
+    <tbody class="spreadsheet-tbody" id="{{::id}}" ng-click="click($event)">
+    </tbody>
+    <tfoot>
+      <tr ng-if="more">
+        <td colspan="{{cols.length}}" class="null" ng-click="unlimit()" ng-bind="::'spreadsheet.unlimit' | message:more"></td>
+      </tr>
+      <tr ng-if="::editing">
+        <td id="{{::id}}-new" colspan="{{cols.length}}" class="add null" ng-click="clickNew($event)" ng-bind="'add ' + key.name"</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<a ng-if="::!editing && !top" ng-href="{{::volume.zipRoute()}}" target="_self">
+  <span class="icon download"></span>
+  <span class="download" message="download.zip"></span>
+</a>

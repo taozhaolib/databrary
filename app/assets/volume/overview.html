@@ -1,0 +1,116 @@
+<div class="row">
+  <div class="col">
+    <hgroup class="panel-overview-volume-header">
+      <div class="panel-overview-volume-header-fill grid-outside"></div>
+      <div ng-if="::!!volume.alias" class="panel-alias" ng-bind="::volume.alias"></div>
+      <h1 class="panel-title smaller">
+        <span ng-bind="::volume.name"></span>
+        <a ng-if="::volume.checkPermission(page.permission.EDIT)" ng-href="{{::volume.editRoute('overview')}}"><span class="button green icon edit"></span></a>
+      </h1>
+    </hgroup>
+  </div>
+
+  <div class="col-desktop-9 col-tablet-6 col-mobile-6">
+    <div>
+      <div ng-if="::!shared" class="overview-access">
+        <span>ACCESS: Private (shared only with selected collaborators).</span>
+        <a ng-if="::volume.checkPermission(page.permission.ADMIN)" ng-href="{{::volume.editRoute('access')}}"><button class="yellow icon edit"></button></a>
+      </div>
+
+      <div ng-if="::!!volume.citation" frame frame-title="volume.citation.title" fold>
+        <p class="panel-overview-volume-citation">
+          <span ng-bind="::volume.citation.head"></span>&nbsp;<a ng-if="::volume.citation.url" ng-href="{{::volume.citation.url | handle}}" ng-title="::volume.citation.title" target="_blank" message="link.link"></a>
+        </p>
+      </div>
+
+      <div frame frame-title="volume.body" fold>
+        <div class="description" ng-bind-html="::volume.body | format"></div>
+
+        <div class="metadata">
+          <dl class="flat">
+            <dt message="volume.creation.title"></dt>
+            <dd>
+              <time datetime="{{::volume.creation | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>
+                {{::volume.creation | date:'MMMM yyyy'}}
+              </time>
+            </dd>
+
+            <dt ng-if="::volume.summary.sessions" message="volume.sessions.title"></dt>
+            <dd ng-if="::volume.summary.sessions" ng-bind="::'volume.sessions' | message:volume.summary.sessions:volume.summary.shared"></dd>
+
+            <dt ng-if="::volume.summary.agemean" message="volume.ages.title"></dt>
+            <dd ng-if="::volume.summary.agemean">
+              <display-age value="::volume.summary.agemin"></display-age>
+              <span ng-if="::volume.summary.agemin < volume.summary.agemax">
+                &ndash;
+                <display-age value="::volume.summary.agemax"></display-age>
+                (<em>M</em> = <display-age value="::volume.summary.agemean"></display-age>)
+              </span>
+            </dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="panel-overview-volume-ref" ng-if="::volume.links.length" frame frame-title="volume.links" fold>
+        <ul>
+          <li ng-repeat="link in ::volume.links">
+            <span ng-bind="::link.head"></span>
+            <a ng-href="{{::link.url | handle}}" message="link.link"></a>
+          </li>
+        </ul>
+      </div>
+
+      <div frame frame-title="volume.link.title" fold>
+        <cite-volume class="panel-overview-volume-citation"></cite-volume>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-desktop-6 col-tablet-3 col-mobile-6">
+    <img class="panel-overview-volume-thumb" ng-src="{{::volume.thumbRoute()}}">
+    <show-investigators title="volume.contributors.title" minlevel="ADMIN"></show-investigators>
+
+    <show-investigators volume="volume" title="volume.private.title" maxlevel="ADMIN" minlevel="READ"></show-investigators>
+  
+    <show-investigators volume="volume" title="volume.shared.title" maxlevel="READ"></show-investigators>
+
+    <div frame frame-title="volume.funding.title" fold>
+      <dl class="panel-overview-volume-funds" ng-repeat="funding in ::volume.funding">
+        <dt ng-bind="::funding.funder.name"></dt>
+        <dd ng-repeat="award in ::funding.awards" ng-bind="::award"></dd>
+      </dl>
+    </div>
+
+    <div frame frame-title="volume.reuse.title" fold ng-if="::(volume.consumers.length || volume.providers.length) > 0">
+      <div class="row">
+        <div class="col-desktop-6 col-tablet-3 col-mobile-6">
+          <div ng-if="::volume.consumers.length">
+            <div message="volume.reuse.provides"></div>
+
+            <ul class="panel-overview-volume-reuses">
+              <li ng-repeat="ext in ::volume.consumers">
+                <a ng-href="{{::ext.route()}}">
+                  <span class="icon volume"></span>
+                  <span ng-bind="::ext.name"></span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div ng-if="::volume.providers.length">
+            <div message="volume.reuse.consumes"></div>
+
+            <ul class="panel-overview-volume-reuses">
+              <li ng-repeat="ext in ::volume.providers">
+                <a ng-href="{{::ext.route()}}">
+                  <span class="icon volume"></span>
+                  <span ng-bind="::ext.name"></span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

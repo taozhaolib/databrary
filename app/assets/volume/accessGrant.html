@@ -1,0 +1,36 @@
+<ng-form name="accessGrantForm">
+  <div class="col-desktop-1 col-tablet-1 col-mobile-1">
+    <figure class="figure-avatar" ng-class="::{inst: access.party.institution}">
+      <img ng-src="{{::access.party.avatarRoute()}}">
+    </figure>
+  </div>
+
+  <div class="col-desktop-14 col-tablet-8 col-mobile-5">
+    <div class="row">
+      <div class="permission-heading">
+        <a ng-href="{{::access.party.route()}}" class="permission-auth-username" ng-bind="::access.party.name"></a>
+        <span class="permission-auth-email" ng-if="::access.party.email" ng-bind="::access.party.email"></span>
+        <button class="mini icon trash access-grant-remove" ng-click="accessGrantForm.remove(this)" class="col-desktop-1 col-tablet-1 col-mobile-1"></button>
+      </div>
+
+      <div>
+        <fieldset class="clean radio-set access-grant-radioset">
+          <div ng-repeat="(val, name) in page.constants.permission" ng-if="::accessGrantForm.canGrantAccess(val)">
+            <input type="radio" ng-model="accessGrantForm.data.individual" name="access-{{access.party.id}}-individual" ng-value="val" required>
+            <label ng-bind="::'access.edit.'+name | message:access.party.name" class="option" hint="access-edit-{{::name}}"></label>
+          </div>
+        </fieldset>
+        <fieldset class="clean skinny radio-set">
+          <div ng-if="::!access.party.institution">
+            <input type="checkbox" ng-model="accessGrantForm.data.extend">
+            <label class="option inline">
+              <span ng-bind="::'access.grant.inherit' | possessive:access.party"></span>
+              <a ng-href="{{::access.party.route()}}#affiliates" target="_blank"> affiliates</a>             
+            </label>
+
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+</ng-form>
