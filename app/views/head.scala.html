@@ -1,6 +1,0 @@
-@()(implicit request : RequestHeader)
-<meta charset="utf-8">
-@if(request.method == "GET" && request.queryString.contains("js")) {
-  <link rel="canonical" href="@display.url(request.copy(queryString = request.queryString - "js"))"> 
-}
-<link rel="shortcut icon" href="@routes.Assets.at("icons/favicon.png")">

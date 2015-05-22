@@ -1,8 +1,0 @@
-@(implicit request: SiteRequest[_])
-
-@error.template("There's nothing here") {
-  The resource you requested may no longer be available.
-  @if(request.user.isEmpty) {
-    You might try <a href="@routes.LoginHtml.view(None)">logging in</a>.
-  }
-}

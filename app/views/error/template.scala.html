@@ -1,7 +1,0 @@
-@(title : String)(body : Html)(implicit request: RequestHeader)
-@html(title, None) {
-  @widget.panel.error(title) {
-    <div>@request.uri</div>
-    @body
-  }
-}

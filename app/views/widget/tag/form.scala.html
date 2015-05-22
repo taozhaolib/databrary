@@ -1,8 +1,0 @@
-@(form: StructForm, args: (Symbol,String)*)(body: Html)(implicit request : RequestHeader)
-
-<form action="@form._action.url" method="@form._action.method" enctype="@form._enctype" @toHtmlArgs(args.toMap)>
-  @if(!form.isInstanceOf[NoCsrfForm]) {
-    @inputHidden(form.csrfField)
-  }
-  @body
-</form>

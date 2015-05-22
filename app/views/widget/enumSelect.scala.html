@@ -1,3 +1,0 @@
-@(field : Field, enum : Enumeration)(implicit fieldConstructor : helper.FieldConstructor)
-
-@widget.tag.select(field, enum.values.toSeq.map(v => (v.id.toString, v.toString)), 'class -> "half")

@@ -1,9 +1,0 @@
-@(id: String, classes: String, link: String = "")(body: Html)
-
-<figure id="figure_@id" class="figure figure_@id @classes">
-  @if(link.nonEmpty){<a href="@link">}
-    <div class="media">
-        @body
-    </div>
-  @if(link.nonEmpty){</a>}
-</figure>

@@ -1,8 +1,0 @@
-@(id: String, classes: String, title: String = "")(body: Html)
-
-<article id="frame-@id" class="frame col frame-@id @classes">
-  @if(title.nonEmpty) {
-    <h2 class="col frame-header">@title</h2>
-  }
-  @body
-</article>

@@ -1,9 +1,0 @@
-@(field: play.api.data.Field, min: Int = 1)(f: play.api.data.Field => Html)
-
-@helper.repeat(field, min) { field =>
-    <div class="repeat">
-        <div class="repeated">
-            @f(field)
-        </div>
-    </div>
-}
