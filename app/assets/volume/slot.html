@@ -48,7 +48,7 @@
                       <span ng-if="current.asset.duration"> (<span ng-bind="current.asset.duration | timecode:true"></span>)</span>
                     </dd>
                     <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics() track by metric.id" ng-bind="::metric.name"></dt>
-                    <dd ng-if="!!current.record" ng-repeat-end ng-bind="::current.record.measures[metric.id]"></dd>
+                    <dd ng-if="!!current.record" ng-repeat-end ng-bind="current.record.measures[metric.id]"></dd>
                     <dt ng-if="!!current.age">age</dt>
                     <dd ng-if="!!current.age"><display-age value="current.age"></display-age></dd>
                   </dl>
