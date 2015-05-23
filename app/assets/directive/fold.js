@@ -1,8 +1,8 @@
 'use strict';
 
 app.directive('fold', [
-  'pageService', 'storageService',
-  function (page, storage) {
+  'storageService',
+  function (storage) {
     var link = function ($scope, $element, $attrs) {
       var id = $attrs.id;
       var folded = false;

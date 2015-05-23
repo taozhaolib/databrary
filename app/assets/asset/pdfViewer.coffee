@@ -6,7 +6,7 @@ app.directive 'pdfViewer', [
     transclude: true
     scope:
       asset:  '=asset'
-    link: ($scope, $elem, $attrs,_Controller, $transclude) ->
+    link: ($scope, $elem, $attrs, controller, $transclude) ->
       pdfElement = $elem[0]
       objectTag = document.createElement('object')
       objectTag.setAttribute('data', $scope.asset.downloadRoute(true))
