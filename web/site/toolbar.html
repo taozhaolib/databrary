@@ -66,7 +66,7 @@
 
         <span ng-if="page.models.Login.isLoggedIn()">
           <a href="" ng-class="{'toolbar-superuser': page.models.Login.user.superuser !== undefined, on: !!page.models.Login.user.superuser}" ng-click="hoverUserToggle($event)">
-            <img ng-src="{{::page.models.Login.user.avatarRoute()}}" class="toolbar-avatar"> 
+            <img ng-src="{{::page.models.Login.user.avatarRoute()}}" class="toolbar-avatar">
             <span class="username hide-mobile hide-tablet" ng-bind="::page.models.Login.user.name"></span>
           </a>
         </span>
@@ -125,8 +125,8 @@
               <input type="search" ng-model="search.data.query" focus placeholder="{{::'search.prompt' | message}}" key-enter="search()"/>
             </div>
           </ng-form>
-        </div>  
-      </section>    
+        </div>
+      </section>
 
     </div>
   </div>
