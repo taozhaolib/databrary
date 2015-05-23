@@ -10,7 +10,7 @@ import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Char8 as BSC
 import Data.Char (isSpace)
 import Data.Monoid ((<>))
-import System.IO (withFile, IOMode(ReadMode, WriteMode), hPutStr, hIsEOF)
+import System.IO (withFile, withBinaryFile, IOMode(ReadMode, WriteMode), hPutStr, hIsEOF, hFlush)
 
 import qualified Databrary.JSON as JSON
 import Databrary.Store
@@ -31,12 +31,14 @@ generateTemplatesJS f t = do
   guard (not $ null tl)
   tt <- mapM webFileTime tl
   lift $ webRegenerate (maximum tt) f t $ \wf -> do
-    withFile (webFileAbs wf) WriteMode $ \h -> do
+    withBinaryFile (webFileAbs wf) WriteMode $ \h -> do
       hPutStr h "app.run(['$templateCache',function(t){"
       forM_ tl $ \tf -> do
         BSB.hPutBuilder h $ BSB.string7 "t.put(" <> JSON.quoteByteString q (webFileRelRaw tf) <> BSB.char7 ',' <> BSB.char7 q
-        processTemplate (webFileAbsRaw tf) $
-          BSB.hPutBuilder h . JSON.escapeByteString q
+        processTemplate (webFileAbsRaw tf) $ \s -> do
+          let j = JSON.escapeByteString q s
+          BSB.hPutBuilder h j -- this is hanging
+          hFlush h            -- without this!!!
         hPutStr h $ q : ");"
       hPutStr h "}]);"
   where q = '\''

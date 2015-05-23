@@ -26,7 +26,7 @@ import Data.Time.Clock (UTCTime(..), getCurrentTime)
 import Data.Time.Clock.POSIX (posixSecondsToUTCTime)
 import Data.Time.LocalTime (TimeOfDay(..), timeToTimeOfDay)
 import Data.Word (Word32, Word64)
-import System.IO (withFile, IOMode(ReadMode, WriteMode))
+import System.IO (withBinaryFile, IOMode(ReadMode, WriteMode))
 import System.IO.Error (mkIOError, eofErrorType)
 import System.Posix.Directory.Foreign (dtDir, dtReg)
 import System.Posix.Directory.Traversals (getDirectoryContents)
@@ -199,7 +199,7 @@ streamZip entries comment write = do
                   else do
                     write $ B.byteString b
                     run (s - fromIntegral (BS.length b)) h
-          liftIO $ withFile (unRawFilePath f) ReadMode $ run size
+          liftIO $ withBinaryFile (unRawFilePath f) ReadMode $ run size
           modify' (size +)
           central (fromJust crc) size
         | otherwise -> do
@@ -210,7 +210,7 @@ streamZip entries comment write = do
                   else do
                     write $ B.byteString b
                     run (crc32Update c b, s + fromIntegral (BS.length b)) h
-          (c, s) <- liftIO $ withFile (unRawFilePath f) ReadMode $ run (0, 0)
+          (c, s) <- liftIO $ withBinaryFile (unRawFilePath f) ReadMode $ run (0, 0)
           modify' (s +)
           let z64 = s >= zip64Size
           send (if z64 then 24 else 16)
@@ -247,7 +247,8 @@ streamZip entries comment write = do
 
 writeZipFile :: FilePath -> [ZipEntry] -> BS.ByteString -> IO ()
 writeZipFile f e c =
-  withFile f WriteMode $ streamZip e c . B.hPutBuilder
+  withBinaryFile f WriteMode $
+    streamZip e c . B.hPutBuilder
 
 fileZipEntry :: RawFilePath -> IO ZipEntry
 fileZipEntry src = do

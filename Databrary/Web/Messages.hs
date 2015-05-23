@@ -7,7 +7,7 @@ import Control.Monad.Trans.Class (lift)
 import qualified Data.Aeson.Encode as JSON
 import qualified Data.ByteString.Builder as BSB
 import qualified Data.Configurator as C
-import System.IO (withFile, IOMode(WriteMode), hPutStr)
+import System.IO (withBinaryFile, IOMode(WriteMode), hPutStr)
 
 import Paths_databrary (getDataFileName)
 import qualified Databrary.JSON as JSON
@@ -21,7 +21,7 @@ generateMessagesJS f t = do
   mt <- fileTime (rawFilePath mf)
   lift $ webRegenerate mt f t $ \wf -> do
     ml <- C.getMap =<< C.load [C.Optional mf]
-    withFile (webFileAbs wf) WriteMode $ \h -> do
+    withBinaryFile (webFileAbs wf) WriteMode $ \h -> do
       hPutStr h "app.constant('messagesData',"
       BSB.hPutBuilder h $ JSON.encodeToByteStringBuilder $ JSON.toJSON ml
       hPutStr h ");"

@@ -7,7 +7,7 @@ module Databrary.Web.Routes
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Builder as B
 import Data.Monoid ((<>))
-import System.IO (hPutStr, withFile, IOMode(WriteMode))
+import System.IO (withBinaryFile, IOMode(WriteMode), hPutStr)
 
 import Databrary.JSON (quoteByteString)
 import Databrary.HTTP.Path.JS
@@ -23,7 +23,7 @@ jsRoute n r v = quoteByteString '"' n
 
 generateRoutesJS :: WebGenerator
 generateRoutesJS = staticWebGenerate $ \f ->
-  withFile (webFileAbs f) WriteMode $ \h -> do
+  withBinaryFile (webFileAbs f) WriteMode $ \h -> do
     hPutStr h "app.constant('routeData',{"
     B.hPutBuilder h jsRoutes
     hPutStr h "});"

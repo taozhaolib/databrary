@@ -10,7 +10,7 @@ import qualified Data.Aeson.Encode as JSON
 import qualified Data.ByteString.Builder as BSB
 import Data.Monoid ((<>))
 import Data.Version (showVersion)
-import System.IO (withFile, IOMode(WriteMode))
+import System.IO (withBinaryFile, IOMode(WriteMode))
 
 import Paths_databrary (version)
 import qualified Databrary.JSON as JSON
@@ -52,7 +52,7 @@ constantsJS = BSB.string7 "app.constant('constantData'," <> constantsJSONB <> BS
 
 regenerateConstants :: BSB.Builder -> WebGenerator
 regenerateConstants b = staticWebGenerate $ \f ->
-  withFile (webFileAbs f) WriteMode $ \h ->
+  withBinaryFile (webFileAbs f) WriteMode $ \h ->
     BSB.hPutBuilder h b
 
 generateConstantsJSON :: WebGenerator
