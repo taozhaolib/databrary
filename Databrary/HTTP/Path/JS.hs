@@ -20,6 +20,7 @@ elementArgs = second (\r -> bq <> r <> bq) . ea 0 where
   ea i (PathElementFixed t:l) = second ((bs <> escapeByteString jq (TE.encodeUtf8 t)) <>) $ ea i l
   ea i (e:l) = (a :) *** (mconcat [bs, bq, bp, a, bp, bq] <>) $ ea (succ i) l
     where a = B.string7 (av e) <> B.intDec i 
+  ea 0 [] = ([], B.char7 '/')
   ea _ [] = ([], mempty)
   av (PathElementDynamic a) = tl $ filter (liftM2 (&&) isAscii isAlphaNum) $ show $ typeOf a
   av _ = "path"

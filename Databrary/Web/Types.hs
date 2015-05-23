@@ -5,7 +5,9 @@ module Databrary.Web.Types
   , MonadWeb
   ) where
 
+#ifdef DEVEL
 import Control.Concurrent.MVar (MVar)
+#endif
 import Control.Monad.IO.Class (MonadIO)
 import Crypto.Hash (Digest, MD5)
 import qualified Data.ByteString as BS

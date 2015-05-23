@@ -7,8 +7,8 @@ module Databrary.Web.Cache
 import Control.Applicative ((<$>), (<*>))
 #ifdef DEVEL
 import Control.Concurrent.MVar (modifyMVar)
-#endif
 import Control.Monad.IO.Class (liftIO)
+#endif
 import Control.Monad.Trans.Maybe (MaybeT(..))
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
@@ -21,7 +21,9 @@ import Databrary.Store
 import Databrary.Model.Format
 import Databrary.Web.Types
 import Databrary.Web.Files
+#ifdef DEVEL
 import Databrary.Web.Rules
+#endif
 
 staticFormats :: [(String, BS.ByteString)]
 staticFormats = concatMap (\f -> map (\e -> ('.':BSC.unpack e, formatMimeType f)) $ formatExtension f) allFormats ++

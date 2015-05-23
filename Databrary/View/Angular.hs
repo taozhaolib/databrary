@@ -8,6 +8,7 @@ import qualified Data.Aeson.Encode as JSON
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Char8 as BSC
+import Data.Maybe (isJust)
 import Data.Monoid (mempty, (<>))
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as HA
@@ -17,13 +18,12 @@ import Databrary.Has (view)
 import Databrary.Model.Identity
 import Databrary.Action.Auth
 import Databrary.Action
-import Databrary.Web.Files (webFileRelRaw)
-import Databrary.Web.Libs (allLibs)
+import Databrary.Web.Files (WebFilePath, webFileRelRaw)
+import Databrary.Web.Libs (allWebLibs)
 import Databrary.View.Html
 import Databrary.View.Template
 
 import Databrary.Controller.Web
-import {-# SOURCE #-} Databrary.Controller.Angular
 
 ngAttribute :: String -> H.AttributeValue -> H.Attribute
 ngAttribute = H.customAttribute . H.stringTag . ("ng-" <>)
@@ -31,10 +31,10 @@ ngAttribute = H.customAttribute . H.stringTag . ("ng-" <>)
 webURL :: BS.ByteString -> H.AttributeValue
 webURL p = builderValue $ actionURL Nothing webFile (Just $ StaticPath p) []
 
-htmlAngular :: AuthRequest -> H.Html
-htmlAngular auth = H.docTypeHtml H.! ngAttribute "ng-app" "databraryModule" $ do
+htmlAngular :: Maybe [WebFilePath] -> BSB.Builder -> AuthRequest -> H.Html
+htmlAngular debug nojs auth = H.docTypeHtml H.! ngAttribute "ng-app" "databraryModule" $ do
   H.head $ do
-    htmlHeader req
+    htmlHeader (view auth)
     H.noscript $
       H.meta
         H.! HA.httpEquiv "Refresh"
@@ -55,14 +55,14 @@ htmlAngular auth = H.docTypeHtml H.! ngAttribute "ng-app" "databraryModule" $ do
         !? (HA.sizes . byteStringValue <$> size)
     H.link
       H.! HA.rel "stylesheet"
-      H.! HA.href (webURL "app.min.css")
+      H.! HA.href (webURL $ if isJust debug then "app.css" else "app.min.css")
     H.script $ do
       H.preEscapedString "window.$play={user:"
       H.unsafeLazyByteString $ JSON.encode $ identityJSON (view auth)
       H.preEscapedString "};"
-    forM_ (map webFileRelRaw allLibs ++ ["app.min.js"]) $ \js ->
+    forM_ (allWebLibs (isJust debug) ++ maybe ["app.min.js"] ("debug.js" :) debug) $ \js ->
       H.script
-        H.! HA.src (webURL js)
+        H.! HA.src (webURL $ webFileRelRaw js)
         $ return ()
   H.body
     H.! H.customAttribute "flow-prevent-drop" mempty
@@ -93,6 +93,3 @@ htmlAngular auth = H.docTypeHtml H.! ngAttribute "ng-app" "databraryModule" $ do
           "[" >> H.span "loading" >> "]"
     H.script
       $ H.preEscapedString "document.getElementById('loading').style.display='block';"
-  where
-  req = view auth
-  nojs = snd $ jsURL (Just False) req

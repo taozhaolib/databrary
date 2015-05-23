@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Web.Libs
   ( generateLib
-  , allLibs
+  , allWebLibs
   ) where
 
 import Control.Monad (mzero)
@@ -23,9 +23,9 @@ generateLib :: WebGenerator
 generateLib f t
   | ("lib/", l) <- splitFileName (webFileRel f)
   , (b, e) <- splitExtensions l
-  , e `elem` [".js", ".min.js"]
+  , e `elem` [".js", ".min.js", ".min.map", ".min.js.map"]
   , Just p <- lookup b jsLibs = webLinkFile (p </> l) f t
   | otherwise = mzero
 
-allLibs :: [WebFilePath]
-allLibs = map (fromString . ("lib" </>) . (<.> ".min.js") . fst) jsLibs
+allWebLibs :: Bool -> [WebFilePath]
+allWebLibs debug = map (fromString . ("lib" </>) . (<.> if debug then ".js" else ".min.js") . fst) jsLibs

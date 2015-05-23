@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Web.Uglify
-  ( generateUglifyJS
+  ( allWebJS
+  , generateUglifyJS
   ) where
 
 import Control.Applicative ((<$>))
@@ -13,9 +14,12 @@ import System.Process (callProcess)
 import Paths_databrary.Node
 import Databrary.Web.Files
 
+allWebJS :: IO [WebFilePath]
+allWebJS = ("app.js" :) . filter (not . (liftM2 (||) (isPrefixOf "lib/") (`elem` ["app.js", "debug.js"])) . webFileRel) <$> findWebFiles ".js"
+
 generateUglifyJS :: WebGenerator
 generateUglifyJS f t = do
-  jl <- lift $ ("app.js" :) . filter (not . (liftM2 (||) (isPrefixOf "lib/") (`elem` ["app.js", "debug.js"])) . webFileRel) <$> findWebFiles ".js"
+  jl <- lift allWebJS
   guard (not $ null jl)
   jt <- mapM webFileTime jl
   lift $ webRegenerate (maximum jt) f t $ \wf -> do
