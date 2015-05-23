@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings, CPP #-}
 module Databrary.Controller.Web
-  ( staticPath
+  ( StaticPath(..)
+  , staticPath
   , webFile
   , formatIcon
   ) where
@@ -9,7 +10,6 @@ import Crypto.Hash (digestToHexByteString)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import Data.Char (isAscii, isAlphaNum)
-import Data.Maybe (fromMaybe)
 import Data.Monoid ((<>))
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
@@ -53,7 +53,7 @@ webFile = action GET ("web" >/> pathStatic) $ \sp -> do
   StaticPath p <- maybeAction sp
   wf <- maybeAction =<< lookupWebFile p
   let wfp = webFileAbsRaw $ webFilePath wf
-  serveFile wfp (fromMaybe unknownFormat $ getFormatByFilename wfp) Nothing (digestToHexByteString $ webFileTag wf)
+  serveFile wfp (unknownFormat{ formatMimeType = webFileFormat wf }) Nothing (digestToHexByteString $ webFileTag wf)
 
 formatIcon :: AppRoute Format
 formatIcon = invMap pf fp webFile where

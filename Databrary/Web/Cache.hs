@@ -1,4 +1,4 @@
-{-# LANGUAGE CPP #-}
+{-# LANGUAGE CPP, OverloadedStrings, TupleSections #-}
 module Databrary.Web.Cache
   ( makeWebFileInfo
   , lookupWebFile
@@ -10,17 +10,30 @@ import Control.Concurrent.MVar (modifyMVar)
 #endif
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Maybe (MaybeT(..))
+import qualified Data.ByteString as BS
+import qualified Data.ByteString.Char8 as BSC
 import qualified Data.HashMap.Strict as HM
-import Data.Maybe (fromJust)
+import Data.Maybe (fromMaybe, fromJust)
+import System.FilePath (takeExtension)
 
 import Databrary.Has (peeks)
 import Databrary.Store
+import Databrary.Model.Format
 import Databrary.Web.Types
 import Databrary.Web.Files
 import Databrary.Web.Rules
 
+staticFormats :: [(String, BS.ByteString)]
+staticFormats = concatMap (\f -> map (\e -> ('.':BSC.unpack e, formatMimeType f)) $ formatExtension f) allFormats ++
+  [ (".html", "text/html")
+  , (".js", "application/javascript")
+  , (".css", "text/css")
+  , (".svg", "image/svg+xml")
+  ]
+
 makeWebFileInfo :: WebFilePath -> IO WebFileInfo
 makeWebFileInfo f = WebFileInfo f
+  (fromMaybe "application/octet-stream" $ lookup (takeExtension $ webFileRel f) staticFormats)
   <$> hashFile (webFileAbsRaw f)
   <*> (fromJust <$> runMaybeT (webFileTime f))
 

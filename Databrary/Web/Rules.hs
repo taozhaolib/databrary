@@ -5,10 +5,12 @@ module Databrary.Web.Rules
   ) where
 
 import Control.Monad (when, mzero, msum)
+import Control.Monad.Trans.Class (lift)
 import Control.Monad.Trans.Maybe (MaybeT(..))
 import Data.Maybe (isNothing)
 import Data.Monoid ((<>))
 import System.IO (hPutStrLn, stderr)
+import System.Posix.Files.ByteString (fileExist)
 
 import Databrary.Ops
 import Databrary.Store
@@ -37,12 +39,18 @@ generateFixed f t
   | Just g <- lookup (webFileRel f) fixedGenerators = g f t
   | otherwise = mzero
 
+generateStatic :: WebGenerator
+generateStatic f _ = do
+  e <- lift $ fileExist (webFileAbsRaw f)
+  e ?> False
+
 generateWebFile :: WebGenerator
 generateWebFile f t = msum $ map (\g -> g f t)
   [ generateFixed
   , generateCoffeeJS
   , generateStylusCSS
   , generateLib
+  , generateStatic
   ]
 
 regenerateWebFile :: WebFilePath -> IO (Maybe WebFilePath)
@@ -53,10 +61,10 @@ regenerateWebFile f = do
     hPutStrLn stderr ("regenerateWebFile: " <> webFileRel f)
   return $ f <$ r
 
-generateWebFiles :: IO [WebFilePath]
+generateWebFiles :: IO ()
 generateWebFiles = do
   wd <- allWebFiles
-  mapMaybeM regenerateWebFile $
+  mapM_ regenerateWebFile $
     [ b <.> ".js" | (b, ".coffee") <- map splitWebFileExtensions wd ] ++
     allLibs ++
     [ "constants.json", "constants.js", "routes.js", "messages.js", "templates.js", "app.min.js", "app.min.css" ]
