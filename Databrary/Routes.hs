@@ -8,6 +8,8 @@ import qualified Data.ByteString.Builder as B
 import Data.Monoid (mconcat)
 
 import Databrary.HTTP.Route
+import Databrary.Model.Id.Types
+import Databrary.Model.Slot.Types
 import Databrary.Action
 import Databrary.Controller.Paths
 import Databrary.Controller.Root
@@ -52,7 +54,7 @@ routeMap = fromRouteList
 
   , route viewParty
   , route postParty
-  , route viewEditParty
+  , route viewPartyEdit
   , route viewAuthorize
   , route postAuthorize
   , route deleteAuthorize
@@ -62,31 +64,33 @@ routeMap = fromRouteList
 
   , route viewVolume
   , route postVolume
-  , route viewVolumeForm
+  , route viewVolumeEdit
   , route viewVolumeAccess
   , route postVolumeAccess
   , route viewVolumeLinks
   , route postVolumeLinks
   , route postVolumeFunding
   , route deleteVolumeFunder
+  , route viewVolumeCreate
   , route createVolume
   , route queryVolumes
   , route zipVolume
 
   , route createContainer
   , route viewSlot
+  , route viewContainerEdit
   , route postContainer
   , route zipContainer
 
   , route viewAsset
   , route postAsset
-  , route viewEditAsset
+  , route viewAssetEdit
   , route deleteAsset
   , route downloadAsset
-  , route viewCreateAsset
+  , route viewAssetCreate
   , route createAsset
   , route createSlotAsset
-  , route viewCreateSlotAsset
+  , route viewSlotAssetCreate
 
   , route viewAssetSegment
   , route downloadAssetSegment
@@ -121,6 +125,29 @@ routeMap = fromRouteList
 
 jsRoutes :: B.Builder
 jsRoutes = mconcat
-  [ jsRoute "root" viewRoot HTML
-  , jsRoute "setVolumeAccess" postVolumeAccess (JSON, (undefined, VolumeAccessTarget undefined))
-  ]
+  [ jsRoute "viewRoot" viewRoot HTML
+  , jsRoute "viewLogin" viewLogin ()
+  , jsRoute "viewRegister" viewRegister ()
+  , jsRoute "viewPasswordReset" viewPasswordReset ()
+  , jsRoute "viewLoginToken" viewLoginToken (HTML, token)
+
+  , jsRoute "viewProfile" viewParty (HTML, TargetProfile)
+  , jsRoute "viewParty" viewParty (HTML, TargetParty party)
+  , jsRoute "viewPartyEdit" viewPartyEdit (TargetParty party)
+  , jsRoute "viewPartySearch" queryParties HTML
+
+  , jsRoute "viewVolume" viewVolume (HTML, volume)
+  , jsRoute "viewVolumeCreate" viewVolumeCreate ()
+  , jsRoute "viewVolumeEdit" viewVolumeEdit volume
+  , jsRoute "viewVolumeSearch" queryVolumes HTML
+
+  , jsRoute "viewSlot" viewSlot (HTML, slot)
+  , jsRoute "viewSlotEdit" viewContainerEdit slot
+
+  , jsRoute "viewAssetSegment" viewAssetSegment (HTML, slot, asset)
+  ] where
+  token = Id ""
+  party = Id 0
+  volume = Id 0
+  slot = containerSlotId (Id 0)
+  asset = Id 0

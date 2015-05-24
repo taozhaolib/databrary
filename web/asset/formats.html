@@ -27,7 +27,7 @@
 
             <tr ng-repeat="format in group track by format.id">
               <td ng-bind="::format.extension" class="th-right"></td>
-              <td><img class="icon" ng-src="/public/images/filetype/16px/{{::format.extension}}.svg"></img></td>
+              <td><img class="icon" ng-src="/web/images/filetype/16px/{{::format.extension}}.svg"></img></td>
               <td ng-bind="::format.description || format.name"></td>
             </tr>
           </tbody>

@@ -978,7 +978,7 @@ app.factory('modelService', [
 
     Object.defineProperty(AssetSlot.prototype, 'icon', {
       get: function () {
-        return '/public/images/filetype/16px/' + this.format.extension + '.svg';
+        return '/web/images/filetype/16px/' + this.format.extension + '.svg';
       }
     });
 

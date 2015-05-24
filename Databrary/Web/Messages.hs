@@ -22,6 +22,6 @@ generateMessagesJS f t = do
   lift $ webRegenerate mt f t $ \wf -> do
     ml <- C.getMap =<< C.load [C.Optional mf]
     withBinaryFile (webFileAbs wf) WriteMode $ \h -> do
-      hPutStr h "app.constant('messagesData',"
+      hPutStr h "app.constant('messageData',"
       BSB.hPutBuilder h $ JSON.encodeToByteStringBuilder $ JSON.toJSON ml
       hPutStr h ");"

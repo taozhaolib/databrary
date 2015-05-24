@@ -2,7 +2,7 @@
 module Databrary.Controller.Party
   ( getParty
   , viewParty
-  , viewEditParty
+  , viewPartyEdit
   , postParty
   , createParty
   , queryParties
@@ -117,8 +117,8 @@ processParty api p = do
   return (p', a')
   where maxAvatarSize = 10*1024*1024
 
-viewEditParty :: AppRoute PartyTarget
-viewEditParty = action GET (pathHTML >/> pathPartyTarget </< "edit") $ \i -> withAuth $ do
+viewPartyEdit :: AppRoute PartyTarget
+viewPartyEdit = action GET (pathHTML >/> pathPartyTarget </< "edit") $ \i -> withAuth $ do
   angular
   p <- getParty (Just PermissionADMIN) i
   blankForm $ htmlPartyForm $ Just p

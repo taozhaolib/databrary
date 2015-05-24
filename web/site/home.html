@@ -15,13 +15,13 @@
     </div>
     <div class="bigbuttons-container">
       <div class="bigbutton" ng-if="::!page.models.Login.isLoggedIn()">
-        <img src="/public/images/icon/login.svg"/>
+        <img src="/web/images/icon/login.svg"/>
         <span class="button-title">
           <a ng-href="{{::page.router.login()}}">Login</a> or
           <a ng-href="{{::page.router.register()}}">Register</a></span>
       </div>
       <div class="bigbutton" ng-if="::page.models.Login.isLoggedIn()">
-        <img src="/public/images/icon/home-profile.svg"/>
+        <img src="/web/images/icon/home-profile.svg"/>
         <span class="button-title"><a ng-href="{{::page.router.profile()}}">Your Profile</a></span>
         <p class="hide-mobile">Manage your data and authorizations.</p>
       </div>

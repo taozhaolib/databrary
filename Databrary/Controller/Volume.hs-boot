@@ -5,7 +5,7 @@ import Databrary.Model.Volume.Types
 import Databrary.Action
 
 viewVolume :: AppRoute (API, Id Volume)
-viewVolumeForm :: AppRoute (Id Volume)
+viewVolumeEdit :: AppRoute (Id Volume)
 postVolume :: AppRoute (API, Id Volume)
 createVolume :: AppRoute API
 viewVolumeLinks :: AppRoute (Id Volume)

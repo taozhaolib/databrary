@@ -78,7 +78,7 @@ postAuthorize = action POST (pathAPI </>> pathPartyTarget </> pathAuthorizeTarge
           ("Databrary authorization request from " <> partyName child)
           $ TL.fromStrict (partyName child) <> " <" <> maybe "" TL.fromStrict agent <> "> has requested to be authorized by " <> TL.fromStrict (partyName parent) <> ".\n\n\
             \To approve or reject this authorization request, go to:\n" <>
-            TLE.decodeLatin1 (BSB.toLazyByteString $ actionURL (Just req) viewEditParty (TargetParty $ partyId parent) [("page", Just "grant")]) <> "#auth-" <> TL.pack (show $ partyId child) <> "\n\n\
+            TLE.decodeLatin1 (BSB.toLazyByteString $ actionURL (Just req) viewPartyEdit (TargetParty $ partyId parent) [("page", Just "grant")]) <> "#auth-" <> TL.pack (show $ partyId child) <> "\n\n\
             \Find more information about authorizing and managing affiliates here:\n\n\
             \http://databrary.org/access/guide/investigators/authorization/affiliates.html\n"
       return $ Just $ fromMaybe c' c

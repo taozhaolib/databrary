@@ -48,24 +48,29 @@ app.provider('routerService', [
         argNames = [];
       var ph = arguments.length < 3;
       if (ph)
-        args = _.map( argNames, function (a) { return ':' + a; });
+        args = argNames.map(function (a) { return ':' + a; });
       else if (data == null)
         args = [];
       else if (Array.isArray(data))
         args = data;
       else if (typeof data === 'object') {
-        args = _.map(argNames, function (k) {
+        args = argNames.map(function (k) {
           return k in data ? data[k] : null;
         });
       } else
         args = [data];
-      var r = route.apply(null, args);
+      var r = {
+        method: route.method,
+        url: route.route.apply(null, args)
+      };
+      /*
       if (ph) {
         var q = r.url.indexOf('?');
         if (q !== -1)
           r.url = r.url.substr(0, q);
         r.url = r.url.replace(/%3A/gi, ':');
       }
+      */
       return r;
     }
 
@@ -88,7 +93,7 @@ app.provider('routerService', [
 
     var routes = {};
 
-    routes.index = makeRoute(controllers.SiteHtml.start, [], {
+    routes.index = makeRoute(controllers.viewRoot, [], {
       controller: 'site/home',
       templateUrl: 'site/home.html',
       resolve: {
@@ -118,7 +123,7 @@ app.provider('routerService', [
 
     //
 
-    routes.login = makeRoute(controllers.LoginHtml.view, [], {
+    routes.login = makeRoute(controllers.viewLogin, [], {
       controller: 'party/login',
       templateUrl: 'party/login.html',
       reloadOnSearch: false
@@ -126,7 +131,7 @@ app.provider('routerService', [
 
     //
 
-    routes.register = makeRoute(controllers.LoginHtml.registration, [], {
+    routes.register = makeRoute(controllers.viewRegister, [], {
       controller: 'party/register',
       templateUrl: 'party/register.html',
       resolve: {
@@ -146,7 +151,7 @@ app.provider('routerService', [
 
     //
 
-    routes.password = makeRoute(controllers.TokenHtml.getPassword, [], {
+    routes.password = makeRoute(controllers.viewPasswordReset, [], {
       controller: 'party/reset',
       templateUrl: 'party/reset.html',
       reloadOnSearch: false
@@ -154,15 +159,7 @@ app.provider('routerService', [
 
     //
 
-    routes.helpFormats = makeRoute(controllers.AssetHtml.formats, [], {
-      controller: 'asset/formats',
-      templateUrl: 'asset/formats.html',
-      reloadOnSearch: false,
-    });
-
-    //
-
-    makeRoute(controllers.TokenHtml.token, ['id'], {
+    makeRoute(controllers.viewLoginToken, ['id'], {
       controller: 'party/register',
       templateUrl: 'party/register.html',
       resolve: {
@@ -183,7 +180,7 @@ app.provider('routerService', [
 
     //
 
-    routes.volumeSearch = makeRoute(controllers.VolumeHtml.search, [], {
+    routes.volumeSearch = makeRoute(controllers.viewVolumeSearch, [], {
       controller: 'volume/search',
       templateUrl: 'volume/search.html',
       resolve: {
@@ -214,12 +211,12 @@ app.provider('routerService', [
       reloadOnSearch: false,
     };
 
-    routes.profile = makeRoute(controllers.PartyHtml.profile, [], partyView);
-    routes.party = makeRoute(controllers.PartyHtml.view, ['id'], partyView);
+    routes.profile = makeRoute(controllers.viewProfile, [], partyView);
+    routes.party = makeRoute(controllers.viewParty, ['id'], partyView);
 
     //
 
-    routes.partyEdit = makeRoute(controllers.PartyHtml.edit, ['id'], {
+    routes.partyEdit = makeRoute(controllers.viewPartyEdit, ['id'], {
       controller: 'party/edit',
       templateUrl: 'party/edit.html',
       resolve: {
@@ -234,7 +231,7 @@ app.provider('routerService', [
       reloadOnSearch: false,
     });
 
-    routes.partySearch = makeRoute(controllers.PartyHtml.search, [], {
+    routes.partySearch = makeRoute(controllers.viewPartySearch, [], {
       controller: 'party/search',
       templateUrl: 'party/search.html',
       resolve: {
@@ -275,12 +272,12 @@ app.provider('routerService', [
       reloadOnSearch: false,
     };
 
-    routes.volumeCreate = makeRoute(controllers.VolumeHtml.add, ['owner'], volumeEdit);
-    routes.volumeEdit = makeRoute(controllers.VolumeHtml.edit, ['id'], volumeEdit);
+    routes.volumeCreate = makeRoute(controllers.viewVolumeCreate, ['owner'], volumeEdit);
+    routes.volumeEdit = makeRoute(controllers.viewVolumeEdit, ['id'], volumeEdit);
 
     //
 
-    routes.volume = makeRoute(controllers.VolumeHtml.view, ['id'], {
+    routes.volume = makeRoute(controllers.viewVolume, ['id'], {
       controller: 'volume/view',
       templateUrl: 'volume/view.html',
       resolve: {
@@ -316,12 +313,12 @@ app.provider('routerService', [
       },
       reloadOnSearch: false,
     }; }
-    routes.slot = makeRoute(controllers.SlotHtml.view, ['vid', 'id', 'segment'], slotRoute(false));
-    routes.slotEdit = makeRoute(controllers.SlotHtml.edit, ['vid', 'id', 'segment'], slotRoute(true));
+    routes.slot = makeRoute(controllers.viewSlot, ['vid', 'id', 'segment'], slotRoute(false));
+    routes.slotEdit = makeRoute(controllers.viewSlotEdit, ['vid', 'id', 'segment'], slotRoute(true));
 
     //
 
-    routes.slotAsset = makeRoute(controllers.AssetSlotHtml.view, ['vid', 'cid', 'segment', 'id'], {
+    routes.slotAsset = makeRoute(controllers.viewAssetSegment, ['vid', 'cid', 'segment', 'id'], {
       controller: 'asset/view',
       templateUrl: 'asset/view.html',
       resolve: {
@@ -334,6 +331,12 @@ app.provider('routerService', [
           },
         ]
       },
+      reloadOnSearch: false,
+    });
+
+    routes.helpFormats = makeRoute(controllers.AssetHtml.formats, [], {
+      controller: 'asset/formats',
+      templateUrl: 'asset/formats.html',
       reloadOnSearch: false,
     });
 

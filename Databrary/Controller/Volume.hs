@@ -2,7 +2,8 @@
 module Databrary.Controller.Volume
   ( getVolume
   , viewVolume
-  , viewVolumeForm
+  , viewVolumeEdit
+  , viewVolumeCreate
   , postVolume
   , createVolume
   , viewVolumeLinks
@@ -126,11 +127,16 @@ volumeCitationForm v = do
     "citation" .:> "name" .:> deformRequired (citationHead fill)
   return (vol{ volumeName = name }, empty ?!> fill)
 
-viewVolumeForm :: AppRoute (Id Volume)
-viewVolumeForm = action GET (pathHTML >/> pathId </< "edit") $ \vi -> withAuth $ do
+viewVolumeEdit :: AppRoute (Id Volume)
+viewVolumeEdit = action GET (pathHTML >/> pathId </< "edit") $ \vi -> withAuth $ do
   angular
   v <- getVolume PermissionEDIT vi
   blankForm . htmlVolumeForm (Just v) =<< lookupVolumeCitation v
+
+viewVolumeCreate :: AppRoute ()
+viewVolumeCreate = action GET (pathHTML </< "volume" </< "create") $ \() -> withAuth $ do
+  angular
+  blankForm $ htmlVolumeForm Nothing Nothing
 
 postVolume :: AppRoute (API, Id Volume)
 postVolume = action POST (pathAPI </> pathId) $ \arg@(api, vi) -> withAuth $ do

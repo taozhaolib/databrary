@@ -1,7 +1,10 @@
 'use strict';
 
 app.factory('constantService', [
-  '$log', '$sce', 'constantData', function ($log, $sce, constants) {
+  '$log', '$sce', 'constantData', 'messageData',
+  function ($log, $sce, constants, messages) {
+
+    constants.messages = messages;
 
     constants.regex = {
       doi: /^(?:[dD][oO][iI]:|(?:http:\/\/)?dx\.doi\.org\/)?(10\.[0-9\.]+\/\S+)\s*$/,
@@ -42,7 +45,7 @@ app.factory('constantService', [
 
     _.each(constants.category, function (cat) {
       var m = 'not.' + cat.name;
-      cat.not = m in constants.messages ? constants.messages[m] : 'No ' + cat.name;
+      cat.not = m in messages ? messages[m] : 'No ' + cat.name;
     });
 
     _.each(constants.format, function (fmt) {
@@ -60,7 +63,7 @@ app.factory('constantService', [
     ];
 
     constants.message = function (key /*, args...*/) {
-      var msg = constants.messages[key];
+      var msg = messages[key];
 
       if (msg === undefined) {
         $log.info('Message key [' + key + '] is undefined.');

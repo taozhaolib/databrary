@@ -4,11 +4,11 @@ module Databrary.Controller.Asset
   , viewAsset
   , AssetTarget(..)
   , postAsset
-  , viewEditAsset
+  , viewAssetEdit
   , createAsset
-  , viewCreateAsset
+  , viewAssetCreate
   , createSlotAsset
-  , viewCreateSlotAsset
+  , viewSlotAssetCreate
   , deleteAsset
   , downloadAsset
   , assetDownloadName
@@ -212,8 +212,8 @@ postAsset = multipartAction $ action POST (pathAPI </> pathId) $ \(api, ai) -> w
     returnResponse conflict409 [] ("This file has already been replaced." :: T.Text)
   processAsset api $ AssetTargetAsset asset
 
-viewEditAsset :: AppRoute (Id Asset)
-viewEditAsset = action GET (pathHTML >/> pathId </< "edit") $ \ai -> withAuth $ do
+viewAssetEdit :: AppRoute (Id Asset)
+viewAssetEdit = action GET (pathHTML >/> pathId </< "edit") $ \ai -> withAuth $ do
   angular
   asset <- getAsset PermissionEDIT ai
   blankForm $ htmlAssetForm $ AssetTargetAsset asset
@@ -223,8 +223,8 @@ createAsset = multipartAction $ action POST (pathAPI </> pathId </< "asset") $ \
   v <- getVolume PermissionEDIT vi
   processAsset api $ AssetTargetVolume v
 
-viewCreateAsset :: AppRoute (Id Volume)
-viewCreateAsset = action GET (pathHTML >/> pathId </< "asset") $ \vi -> withAuth $ do
+viewAssetCreate :: AppRoute (Id Volume)
+viewAssetCreate = action GET (pathHTML >/> pathId </< "asset") $ \vi -> withAuth $ do
   angular
   v <- getVolume PermissionEDIT vi
   blankForm $ htmlAssetForm $ AssetTargetVolume v
@@ -234,8 +234,8 @@ createSlotAsset = multipartAction $ action POST (pathAPI </> pathSlotId </< "ass
   v <- getSlot PermissionEDIT si
   processAsset api $ AssetTargetSlot v
 
-viewCreateSlotAsset :: AppRoute (Id Slot)
-viewCreateSlotAsset = action GET (pathHTML >/> pathSlotId </< "asset") $ \si -> withAuth $ do
+viewSlotAssetCreate :: AppRoute (Id Slot)
+viewSlotAssetCreate = action GET (pathHTML >/> pathSlotId </< "asset") $ \si -> withAuth $ do
   angular
   s <- getSlot PermissionEDIT si
   blankForm $ htmlAssetForm $ AssetTargetSlot s

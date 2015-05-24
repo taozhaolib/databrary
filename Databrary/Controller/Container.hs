@@ -2,6 +2,7 @@
 module Databrary.Controller.Container
   ( getContainer
   , viewContainer
+  , viewContainerEdit
   , createContainer
   , postContainer
   , containerDownloadName
@@ -24,6 +25,7 @@ import Databrary.HTTP.Path.Parser
 import Databrary.Controller.Paths
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
+import Databrary.Controller.Angular
 import Databrary.Controller.Volume
 import {-# SOURCE #-} Databrary.Controller.Slot
 import Databrary.View.Container
@@ -49,6 +51,12 @@ containerForm c = do
     , containerDate = date
     , containerRelease = release
     }
+
+viewContainerEdit :: AppRoute (Id Slot)
+viewContainerEdit = action GET (pathHTML >/> pathSlotId </< "edit") $ \ci -> withAuth $ do
+  angular
+  c <- getContainer PermissionEDIT ci
+  blankForm $ htmlContainerForm (Right c)
 
 createContainer :: AppRoute (API, Id Volume)
 createContainer = action POST (pathAPI </> pathId </< "slot") $ \(api, vi) -> withAuth $ do
