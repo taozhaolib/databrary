@@ -63,13 +63,13 @@ instance Kinded Tag where
   kindOf _ = "tag"
 
 data TagUse = TagUse
-  { tag :: Tag
+  { useTag :: Tag
   , tagKeyword :: Bool
   , tagWho :: Account
   , tagSlot :: Slot
   }
 
-makeHasRec ''TagUse ['tag, 'tagWho, 'tagSlot]
+makeHasRec ''TagUse ['useTag, 'tagWho, 'tagSlot]
 
 data TagCoverage = TagCoverage
   { tagCoverageTag :: Tag

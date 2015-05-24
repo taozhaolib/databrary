@@ -10,6 +10,7 @@ import Data.Monoid (mconcat)
 import Databrary.HTTP.Route
 import Databrary.Model.Id.Types
 import Databrary.Model.Slot.Types
+import Databrary.Model.Tag.Types
 import Databrary.Action
 import Databrary.Controller.Paths
 import Databrary.Controller.Root
@@ -158,6 +159,54 @@ jsRoutes = mconcat
 
   , jsRoute "zipSlot" zipContainer slot
   , jsRoute "zipVolume" zipVolume volume
+
+  , jsRoute "getUser" viewUser ()
+  , jsRoute "postLogin" postLogin JSON
+  , jsRoute "postLogout" postLogout JSON
+  , jsRoute "postRegister" postRegister JSON
+  , jsRoute "postPasswordReset" postPasswordReset JSON
+  , jsRoute "getLoginToken" viewLoginToken (JSON, token)
+  , jsRoute "postPasswordToken" postPasswordToken (JSON, token)
+
+  , jsRoute "getParty" viewParty (JSON, TargetParty party)
+  , jsRoute "getProfile" viewParty (JSON, TargetProfile)
+  , jsRoute "postParty" postParty (JSON, TargetParty party)
+  , jsRoute "getParties" queryParties JSON
+
+  , jsRoute "postAuthorizeApply" postAuthorize (JSON, TargetParty party, AuthorizeTarget True party)
+  , jsRoute "postAuthorize" postAuthorize (JSON, TargetParty party, AuthorizeTarget False party)
+  , jsRoute "deleteAuthorize" deleteAuthorize (JSON, TargetParty party, AuthorizeTarget False party)
+
+  , jsRoute "getVolume" viewVolume (JSON, volume)
+  , jsRoute "postVolume" postVolume (JSON, volume)
+  , jsRoute "createVolume" createVolume JSON
+  , jsRoute "getVolumes" queryVolumes JSON
+  , jsRoute "postVolumeAccess" postVolumeAccess (JSON, (volume, VolumeAccessTarget party))
+  , jsRoute "postVolumeFunding" postVolumeFunding (volume, funder)
+  , jsRoute "deleteVolumeFunder" deleteVolumeFunder (volume, funder)
+
+  , jsRoute "getFunders" queryFunder ()
+  , jsRoute "getCitation" getCitation ()
+
+  , jsRoute "getSlot" viewSlot (JSON, slot)
+  , jsRoute "postSlot" postContainer (JSON, slot)
+  , jsRoute "createContainer" createContainer (JSON, volume)
+
+  , jsRoute "getRecord" viewRecord (JSON, record)
+  , jsRoute "createRecord" createRecord (JSON, volume)
+  , jsRoute "postRecordMeasure" postRecordMeasure (JSON, record, metric)
+
+  , jsRoute "getAsset" viewAsset (JSON, asset)
+  , jsRoute "getAssetSegment" viewAssetSegment (JSON, slot, asset)
+  , jsRoute "postAsset" postAsset (JSON, asset)
+  , jsRoute "createAsset" createAsset (JSON, volume)
+  , jsRoute "deleteAsset" deleteAsset (JSON, asset)
+  , jsRoute "postExcerpt" postExcerpt (slot, asset)
+  , jsRoute "deleteExcerpt" deleteExcerpt (slot, asset)
+
+  , jsRoute "postComment" postComment (JSON, slot)
+  , jsRoute "postTag" postTag (JSON, slot, TagId False tag)
+  , jsRoute "postKeyword" postTag (JSON, slot, TagId True tag)
   ] where
   token = Id ""
   party = Id 0
@@ -165,3 +214,6 @@ jsRoutes = mconcat
   slot = containerSlotId (Id 0)
   asset = Id 0
   record = Id 0
+  metric = Id 0
+  funder = Id 0
+  tag = TagName ""

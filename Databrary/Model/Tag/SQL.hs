@@ -34,14 +34,14 @@ insertTagUse :: Bool -- ^ keyword
   -> TH.Name -- ^ @'TagUse'@
   -> TH.ExpQ
 insertTagUse keyword o = makePGQuery simpleQueryFlags $
-  "INSERT INTO " ++ tagUseTable keyword ++ " (tag, container, segment, who) VALUES (${tagId $ tag " ++ os ++ "}, ${containerId $ slotContainer $ tagSlot  " ++ os ++ "}, ${slotSegment $ tagSlot  " ++ os ++ "}, ${partyId $ accountParty $ tagWho  " ++ os ++ "})"
+  "INSERT INTO " ++ tagUseTable keyword ++ " (tag, container, segment, who) VALUES (${tagId $ useTag " ++ os ++ "}, ${containerId $ slotContainer $ tagSlot  " ++ os ++ "}, ${slotSegment $ tagSlot  " ++ os ++ "}, ${partyId $ accountParty $ tagWho  " ++ os ++ "})"
   where os = nameRef o
 
 deleteTagUse :: Bool -- ^ keyword
   -> TH.Name -- ^ @'TagUse'@
   -> TH.ExpQ
 deleteTagUse keyword o = makePGQuery simpleQueryFlags $
-  "DELETE FROM " ++ tagUseTable keyword ++ " WHERE tag = ${tagId $ tag " ++ os ++ "} AND container = ${containerId $ slotContainer $ tagSlot " ++ os ++ "} AND segment <@ ${slotSegment $ tagSlot " ++ os ++ "}"
+  "DELETE FROM " ++ tagUseTable keyword ++ " WHERE tag = ${tagId $ useTag " ++ os ++ "} AND container = ${containerId $ slotContainer $ tagSlot " ++ os ++ "} AND segment <@ ${slotSegment $ tagSlot " ++ os ++ "}"
   ++ (if keyword then "" else " AND who = ${partyId $ accountParty $ tagWho " ++ os ++ "}")
   where os = nameRef o
 

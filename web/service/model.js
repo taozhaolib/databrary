@@ -181,8 +181,8 @@ app.factory('modelService', [
     function partyGet(id, p, options) {
       if ((options = checkOptions(p, options)))
         return router.http(id == Login.user.id ? // may both be undefined (id may be string)
-            router.controllers.PartyApi.profile :
-            router.controllers.PartyApi.get,
+            router.controllers.getProfile :
+            router.controllers.getParty,
           id, options)
           .then(function (res) {
             return p ? p.update(res.data) : Party.poke(new Party(res.data));
@@ -201,14 +201,14 @@ app.factory('modelService', [
 
     Party.prototype.save = function (data) {
       var p = this;
-      return router.http(router.controllers.PartyApi.update, this.id, data)
+      return router.http(router.controllers.postParty, this.id, data)
         .then(function (res) {
           return p.update(res.data);
         });
     };
 
     Party.search = function (data) {
-      return router.http(router.controllers.PartyApi.search, data)
+      return router.http(router.controllers.getParties, data)
         .then(function (res) {
           return _.map(res.data, partyMake);
         });
@@ -253,7 +253,7 @@ app.factory('modelService', [
 
     Party.prototype.authorizeApply = function (target, data) {
       var p = this;
-      return router.http(router.controllers.PartyApi.authorizeApply, this.id, target, data)
+      return router.http(router.controllers.postAuthorizeApply, this.id, target, data)
         .then(function (res) {
           p.clear('parents');
           return p.update(res.data);
@@ -262,7 +262,7 @@ app.factory('modelService', [
 
     Party.prototype.authorizeSave = function (target, data) {
       var p = this;
-      return router.http(router.controllers.PartyApi.authorizeChange, this.id, target, data)
+      return router.http(router.controllers.postAuthorize, this.id, target, data)
         .then(function (res) {
           p.clear('children');
           return p.update(res.data);
@@ -271,7 +271,7 @@ app.factory('modelService', [
 
     Party.prototype.authorizeRemove = function (target) {
       var p = this;
-      return router.http(router.controllers.PartyApi.authorizeRemove, this.id, target)
+      return router.http(router.controllers.deleteAuthorize, this.id, target)
         .then(function (res) {
           p.clear('children');
           return p.update(res.data);
@@ -331,35 +331,33 @@ app.factory('modelService', [
       return router.profile();
     };
 
-
-
     _.each({
-      get: 'get',
-      login: 'post',
-      logout: 'logout',
-      superuserOn: 'superuserOn',
-      superuserOff: 'superuserOff'
+      get: 'getUser',
+      login: 'postLogin',
+      logout: 'postLogout',
+      // superuserOn: 'superuserOn',
+      // superuserOff: 'superuserOff'
     }, function(api, f){
       Login[f] = function (data) {
-        return router.http(router.controllers.LoginApi[api], data).then(loginRes);
+        return router.http(router.controllers[api], data).then(loginRes);
       };
     });
 
     Login.register = function (data) {
-      return router.http(router.controllers.LoginApi.register, data);
+      return router.http(router.controllers.postRegister, data);
     };
 
     Login.issuePassword = function (data) {
-      return router.http(router.controllers.TokenHtml.issuePassword, data);
+      return router.http(router.controllers.postPasswordReset, data);
     };
 
     Login.getToken = function (token, auth) {
-      return router.http(router.controllers.TokenApi.token, token, auth)
+      return router.http(router.controllers.getLoginToken, token, auth)
         .then(resData);
     };
 
     Login.passwordToken = function (party, data) {
-      return router.http(router.controllers.TokenApi.password, party, data)
+      return router.http(router.controllers.postPasswordToken, party, data)
         .then(loginRes);
     };
 
@@ -440,7 +438,7 @@ app.factory('modelService', [
 
     function volumeGet(id, v, options) {
       if ((options = checkOptions(v, options)))
-        return router.http(router.controllers.VolumeApi.get,
+        return router.http(router.controllers.getVolume,
           id, options).then(function (res) {
             return v ? v.update(res.data) : Volume.poke(new Volume(res.data));
           });
@@ -458,7 +456,7 @@ app.factory('modelService', [
 
     Volume.prototype.save = function (data) {
       var v = this;
-      return router.http(router.controllers.VolumeApi.update, this.id, data)
+      return router.http(router.controllers.postVolume, this.id, data)
         .then(function (res) {
           if ('citation' in data)
             v.clear('citation');
@@ -469,7 +467,7 @@ app.factory('modelService', [
     };
 
     Volume.create = function (data, owner) {
-      return router.http(router.controllers.VolumeApi.create, owner, data)
+      return router.http(router.controllers.createVolume, owner, data)
         .then(function (res) {
           if ((owner = (owner === undefined ? Login.user : partyPeek(owner))))
             owner.clear('volumes');
@@ -478,7 +476,7 @@ app.factory('modelService', [
     };
 
     Volume.search = function (data) {
-      return router.http(router.controllers.VolumeApi.search, data)
+      return router.http(router.controllers.getVolumes, data)
         .then(function (res) {
           return res.data.map(volumeMake);
         });
@@ -524,7 +522,7 @@ app.factory('modelService', [
 
     Volume.prototype.accessSave = function (target, data) {
       var v = this;
-      return router.http(router.controllers.VolumeApi.accessChange, this.id, target, data)
+      return router.http(router.controllers.postVolumeAccess, this.id, target, data)
         .then(function (res) {
           v.clear('access');
           return v.update(res.data);
@@ -532,17 +530,12 @@ app.factory('modelService', [
     };
 
     Volume.prototype.accessRemove = function (target) {
-      var v = this;
-      return router.http(router.controllers.VolumeApi.accessRemove, this.id, target)
-        .then(function (res) {
-          v.clear('access');
-          return v.update(res.data);
-        });
+      return this.accessSave(target, {"delete":true});
     };
 
     Volume.prototype.fundingSave = function (funder, data) {
       var v = this;
-      return router.http(router.controllers.VolumeApi.fundingChange, this.id, funder, data)
+      return router.http(router.controllers.postVolumeFunding, this.id, funder, data)
         .then(function (res) {
           v.clear('funding');
           return v.update(res.data);
@@ -551,7 +544,7 @@ app.factory('modelService', [
 
     Volume.prototype.fundingRemove = function (funder) {
       var v = this;
-      return router.http(router.controllers.VolumeApi.fundingRemove, this.id, funder)
+      return router.http(router.controllers.deleteVolumeFunder, this.id, funder)
         .then(function (res) {
           v.clear('funding');
           return v.update(res.data);
@@ -702,13 +695,13 @@ app.factory('modelService', [
       var c = this;
       if (Segment.isFull(segment))
         if ((options = checkOptions(this, options)) || this._PLACEHOLDER)
-          return router.http(router.controllers.SlotApi.get,
+          return router.http(router.controllers.getSlot,
             this.volume.id, this.id, Segment.format(segment), options)
             .then(function (res) {
               return c.update(res.data);
             });
         else return $q.successful(this);
-      else return router.http(router.controllers.SlotApi.get,
+      else return router.http(router.controllers.getSlot,
         this.volume.id, this.id, Segment.format(segment), checkOptions(null, options))
         .then(function (res) {
           return new Slot(c, res.data);
@@ -717,7 +710,7 @@ app.factory('modelService', [
 
     Slot.prototype.save = function (data) {
       var s = this;
-      return router.http(router.controllers.SlotApi.update, this.container.id, this.segment.format(), data)
+      return router.http(router.controllers.postSlot, this.container.id, this.segment.format(), data)
         .then(function (res) {
           if ('release' in data) {
             s.clear('releases');
@@ -729,7 +722,7 @@ app.factory('modelService', [
 
     Volume.prototype.createContainer = function (data) {
       var v = this;
-      return router.http(router.controllers.SlotApi.create, this.id, data)
+      return router.http(router.controllers.createContainer, this.id, data)
         .then(function (res) {
           return new Container(v, res.data);
         });
@@ -851,7 +844,7 @@ app.factory('modelService', [
       if (record in this.records)
         return $q.successful(this.records[record]);
       var v = this;
-      return router.http(router.controllers.RecordApi.get, record)
+      return router.http(router.controllers.getRecord, record)
         .then(function (res) {
           return new Record(v, res.data);
         });
@@ -859,7 +852,7 @@ app.factory('modelService', [
 
     Volume.prototype.createRecord = function (c) {
       var v = this;
-      return router.http(router.controllers.RecordApi.create, this.id, c)
+      return router.http(router.controllers.createRecord, this.id, c)
         .then(function (res) {
           return new Record(v, res.data);
         });
@@ -890,7 +883,7 @@ app.factory('modelService', [
 
     Record.prototype.measureSet = function (metric, value) {
       var r = this;
-      return router.http(router.controllers.RecordApi.measureUpdate, this.id, metric, {datum:value})
+      return router.http(router.controllers.postRecordMeasure, this.id, metric, {datum:value})
         .then(function (res) {
           return r.update(res.data);
         });
@@ -987,7 +980,7 @@ app.factory('modelService', [
 
     AssetSlot.prototype.setExcerpt = function (release) {
       var a = this;
-      return router.http(release != null ? router.controllers.AssetSlotApi.setExcerpt : router.controllers.AssetSlotApi.removeExcerpt, this.container.id, this.segment.format(), this.id, {release:release})
+      return router.http(release != null ? router.controllers.postExcerpt : router.controllers.deleteExcerpt, this.container.id, this.segment.format(), this.id, {release:release})
         .then(function (res) {
           a.clear('excerpts');
           a.volume.clear('excerpts');
@@ -1060,8 +1053,8 @@ app.factory('modelService', [
     Volume.prototype.getAsset = function (asset, container, segment) {
       var v = this;
       return (container === undefined ?
-          router.http(router.controllers.AssetApi.get, v.id, asset) :
-          router.http(router.controllers.AssetSlotApi.get, container, Segment.format(segment), asset))
+          router.http(router.controllers.getAsset, v.id, asset) :
+          router.http(router.controllers.getAssetSegment, container, Segment.format(segment), asset))
         .then(function (res) {
           return assetMake(v, res.data);
         });
@@ -1070,7 +1063,7 @@ app.factory('modelService', [
     Asset.prototype.get = function (options) {
       var a = this;
       if ((options = checkOptions(a, options)))
-        return router.http(router.controllers.AssetApi.get, a.id, options)
+        return router.http(router.controllers.getAsset, a.id, options)
           .then(function (res) {
             return a.update(res.data);
           });
@@ -1080,7 +1073,7 @@ app.factory('modelService', [
 
     Asset.prototype.save = function (data) {
       var a = this;
-      return router.http(router.controllers.AssetApi.update, this.id, data)
+      return router.http(router.controllers.postAsset, this.id, data)
         .then(function (res) {
           if ('excerpt' in data) {
             a.clear('excerpts');
@@ -1105,7 +1098,7 @@ app.factory('modelService', [
       data.container = this.container.id;
       if (!('position' in data) && isFinite(this.segment.l))
         data.position = this.segment.l;
-      return router.http(router.controllers.AssetApi.upload, this.volume.id, data)
+      return router.http(router.controllers.createAsset, this.volume.id, data)
         .then(function (res) {
           s.clear('assets');
           return assetMake(s.volume, res.data);
@@ -1124,7 +1117,7 @@ app.factory('modelService', [
 
     Asset.prototype.remove = function () {
       var a = this;
-      return router.http(router.controllers.AssetApi.remove, this.id)
+      return router.http(router.controllers.deleteAsset, this.id)
         .then(function (res) {
           if (a.container)
             a.container.clear('assets');
@@ -1171,7 +1164,7 @@ app.factory('modelService', [
       if (arguments.length < 3 && this instanceof Comment)
         reply = this.id;
       var s = this;
-      return router.http(router.controllers.CommentApi.post, this.container.id, segment.format(), reply, data)
+      return router.http(router.controllers.postComment, this.container.id, segment.format(), reply, data)
         .then(function (res) {
           s.volume.clear('comments');
           s.clear('comments');
@@ -1203,7 +1196,7 @@ app.factory('modelService', [
       if (segment === undefined)
         segment = this.segment;
       var s = this;
-      return router.http(router.controllers.TagApi.update, tag, this.container.id, segment.format(), {vote:vote,keyword:!!keyword})
+      return router.http(keyword ? router.controllers.postKeyword : router.controllers.postTag, tag, this.container.id, segment.format(), {vote:vote})
         .then(function (res) {
           var tag = res.data;
           s.volume.clear('tags');
@@ -1228,11 +1221,11 @@ app.factory('modelService', [
       Tag: Tag,
 
       funder: function (query, all) {
-        return router.http(router.controllers.VolumeApi.funderSearch, query, all)
+        return router.http(router.controllers.getFunders, query, all)
           .then(resData);
       },
       cite: function (url) {
-        return router.http(router.controllers.AngularController.cite, {url:url})
+        return router.http(router.controllers.getCitation, {url:url})
           .then(resData);
       },
       analytic: function () {
