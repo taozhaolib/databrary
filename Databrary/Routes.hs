@@ -26,6 +26,7 @@ import Databrary.Controller.Slot
 import Databrary.Controller.Record
 import Databrary.Controller.Citation
 import Databrary.Controller.Upload
+import Databrary.Controller.Format
 import Databrary.Controller.Asset
 import Databrary.Controller.AssetSegment
 import Databrary.Controller.Excerpt
@@ -81,6 +82,8 @@ routeMap = fromRouteList
   , route viewContainerEdit
   , route postContainer
   , route zipContainer
+
+  , route viewFormats
 
   , route viewAsset
   , route postAsset
@@ -144,6 +147,7 @@ jsRoutes = mconcat
   , jsRoute "viewSlot" viewSlot (HTML, slot)
   , jsRoute "viewSlotEdit" viewContainerEdit slot
 
+  , jsRoute "viewFormats" viewFormats ()
   , jsRoute "viewAssetSegment" viewAssetSegment (HTML, slot, asset)
   ] where
   token = Id ""

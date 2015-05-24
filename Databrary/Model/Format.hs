@@ -1,6 +1,9 @@
 {-# LANGUAGE TemplateHaskell, OverloadedStrings, RecordWildCards, ViewPatterns #-}
 module Databrary.Model.Format
   ( module Databrary.Model.Format.Types
+  , mimeTypeTop
+  , mimeTypeSub
+  , mimeTypeTopCompare
   , unknownFormat
   , allFormats
   , getFormat
@@ -23,6 +26,7 @@ import Data.Char (toLower)
 import qualified Data.IntMap.Strict as IntMap
 import qualified Data.Map.Strict as Map
 import Data.Maybe (catMaybes)
+import Data.Monoid ((<>))
 import System.Posix.FilePath (RawFilePath, splitExtension, takeExtension, addExtension)
 
 import Databrary.Ops
@@ -30,6 +34,25 @@ import qualified Databrary.JSON as JSON
 import Databrary.Model.Id
 import Databrary.Model.Format.Types
 import Databrary.Model.Format.Boot
+
+mimeTypes :: BS.ByteString -> (BS.ByteString, BS.ByteString)
+mimeTypes s = maybe (s, "") (\i -> (BS.take i s, BS.drop (succ i) s)) $ BSC.elemIndex '/' s
+
+mimeTypeTop, mimeTypeSub :: BS.ByteString -> BS.ByteString
+mimeTypeTop = fst . mimeTypes
+mimeTypeSub = snd . mimeTypes
+
+mimeTypeTopCompare :: BS.ByteString -> BS.ByteString -> Ordering
+mimeTypeTopCompare a b = mttc (BSC.unpack a) (BSC.unpack b) where
+  mttc []      []      = EQ
+  mttc ('/':_) []      = EQ
+  mttc []      ('/':_) = EQ
+  mttc ('/':_) ('/':_) = EQ
+  mttc ('/':_) _       = LT
+  mttc []      _       = LT
+  mttc _       ('/':_) = GT
+  mttc _       []      = GT
+  mttc (ac:as) (bc:bs) = compare ac bc <> mttc as bs
 
 unknownFormat :: Format
 unknownFormat = Format

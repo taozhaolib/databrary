@@ -334,7 +334,7 @@ app.provider('routerService', [
       reloadOnSearch: false,
     });
 
-    routes.helpFormats = makeRoute(controllers.AssetHtml.formats, [], {
+    routes.helpFormats = makeRoute(controllers.viewFormats, [], {
       controller: 'asset/formats',
       templateUrl: 'asset/formats.html',
       reloadOnSearch: false,

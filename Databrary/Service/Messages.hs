@@ -11,16 +11,12 @@ import qualified Data.ByteString.Short as BSS
 import qualified Data.Configurator as C
 import qualified Data.Configurator.Types as C
 import qualified Data.HashMap.Strict as HM
-import Data.Maybe (fromMaybe, mapMaybe)
+import Data.Maybe (mapMaybe)
 import Data.Monoid ((<>))
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 
-import Databrary.Has (peeks, MonadHas)
-
 newtype Messages = Messages { messagesMap :: HM.HashMap BSS.ShortByteString T.Text }
-
-type MonadMessages c m = MonadHas Messages c m
 
 initMessages :: C.Config -> IO Messages
 initMessages c = Messages .
@@ -28,8 +24,8 @@ initMessages c = Messages .
   f (k, C.String v) | Just m <- T.stripPrefix "message." k = Just (BSS.toShort $ TE.encodeUtf8 m, v)
   f _ = Nothing
 
-getMessage :: MonadMessages c m => BSS.ShortByteString -> m T.Text
-getMessage m = peeks $ fromMaybe ("[" <> TE.decodeLatin1 (BSS.fromShort m) <> "]") . HM.lookup m . messagesMap
+getMessage :: BSS.ShortByteString -> Messages -> T.Text
+getMessage m = HM.lookupDefault ("[" <> TE.decodeLatin1 (BSS.fromShort m) <> "]") m . messagesMap
 
 listMessages :: Messages -> [(BSS.ShortByteString, T.Text)]
 listMessages = HM.toList . messagesMap
