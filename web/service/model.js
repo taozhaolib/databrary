@@ -917,10 +917,6 @@ app.factory('modelService', [
       return router.record([this.id]);
     };
 
-    Record.prototype.editRoute = function () {
-      return router.recordEdit([this.id]);
-    };
-
     ///////////////////////////////// AssetSlot
 
     // This usually maps to an AssetSegment

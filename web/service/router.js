@@ -340,16 +340,15 @@ app.provider('routerService', [
       reloadOnSearch: false,
     });
 
-    routes.record = makeRoute(controllers.RecordHtml.view, ['id']);
+    routes.partyAvatar = makeRoute(controllers.partyAvatar, ['id', 'size']);
     routes.volumeThumb = makeRoute(controllers.VolumeController.thumb, ['id', 'size']);
-    routes.volumeZip = makeRoute(controllers.VolumeController.zip, ['id']);
     routes.volumeCSV = makeRoute(controllers.VolumeController.csv, ['id']);
-    routes.slotZip = makeRoute(controllers.SlotController.zip, ['vid', 'id', 'segment']);
-    routes.assetThumb = makeRoute(controllers.AssetSlotController.thumb, ['cid', 'segment', 'id', 'size']);
-    routes.assetDownload = makeRoute(controllers.AssetSlotController.download, ['cid', 'segment', 'id', 'inline']);
-    routes.partyAvatar = makeRoute(controllers.PartyHtml.avatar, ['id', 'size']);
-    routes.assetEdit = makeRoute(controllers.AssetHtml.edit, ['id']);
-    routes.recordEdit = makeRoute(controllers.RecordHtml.edit, ['id']);
+    routes.volumeZip = makeRoute(controllers.zipVolume, ['id']);
+    routes.slotZip = makeRoute(controllers.zipSlot, ['vid', 'id', 'segment']);
+    routes.assetThumb = makeRoute(controllers.thumbAssetSegment, ['cid', 'segment', 'id', 'size']);
+    routes.assetDownload = makeRoute(controllers.downloadAssetSegment, ['cid', 'segment', 'id', 'inline']);
+    routes.assetEdit = makeRoute(controllers.viewAssetEdit, ['id']);
+    routes.record = makeRoute(controllers.viewRecord, ['id']);
 
     //
 

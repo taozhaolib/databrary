@@ -138,6 +138,7 @@ jsRoutes = mconcat
   , jsRoute "viewParty" viewParty (HTML, TargetParty party)
   , jsRoute "viewPartyEdit" viewPartyEdit (TargetParty party)
   , jsRoute "viewPartySearch" queryParties HTML
+  , jsRoute "partyAvatar" viewAvatar party
 
   , jsRoute "viewVolume" viewVolume (HTML, volume)
   , jsRoute "viewVolumeCreate" viewVolumeCreate ()
@@ -147,11 +148,20 @@ jsRoutes = mconcat
   , jsRoute "viewSlot" viewSlot (HTML, slot)
   , jsRoute "viewSlotEdit" viewContainerEdit slot
 
+  , jsRoute "viewRecord" viewRecord (HTML, record)
+
   , jsRoute "viewFormats" viewFormats ()
   , jsRoute "viewAssetSegment" viewAssetSegment (HTML, slot, asset)
+  , jsRoute "viewAssetEdit" viewAssetEdit asset
+  , jsRoute "downloadAssetSegment" downloadAssetSegment (slot, asset)
+  , jsRoute "thumbAssetSegment" thumbAssetSegment (slot, asset)
+
+  , jsRoute "zipSlot" zipContainer slot
+  , jsRoute "zipVolume" zipVolume volume
   ] where
   token = Id ""
   party = Id 0
   volume = Id 0
   slot = containerSlotId (Id 0)
   asset = Id 0
+  record = Id 0
