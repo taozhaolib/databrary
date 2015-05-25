@@ -2,6 +2,7 @@
 module Databrary.Model.Tag
   ( module Databrary.Model.Tag.Types
   , lookupTag
+  , findTags
   , addTag
   , addTagUse
   , removeTagUse
@@ -10,6 +11,7 @@ module Databrary.Model.Tag
   ) where
 
 import Control.Monad (guard)
+import qualified Data.ByteString.Char8 as BSC
 import Data.Int (Int64)
 import Data.Maybe (catMaybes)
 import Database.PostgreSQL.Typed (pgSQL)
@@ -29,6 +31,10 @@ useTPG
 lookupTag :: MonadDB m => TagName -> m (Maybe Tag)
 lookupTag n =
   dbQuery1 $(selectQuery selectTag "$WHERE tag.name = ${n}::varchar")
+
+findTags :: MonadDB m => TagName -> m [Tag]
+findTags (TagName n) = -- TagName restrictions obviate pattern escaping
+  dbQuery $(selectQuery selectTag "$WHERE tag.name LIKE ${n `BSC.snoc` '%'}::varchar")
 
 addTag :: MonadDB m => TagName -> m Tag
 addTag n =

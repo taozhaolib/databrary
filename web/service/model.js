@@ -1178,9 +1178,8 @@ app.factory('modelService', [
     var Tag = {};
 
     Tag.search = function (query) {
-      return router.http(router.controllers.TagApi.search, query)
+      return router.http(router.controllers.getTags, query)
         .then(function(res) {
-          //do other stuff?
           return res.data;
         });
     };

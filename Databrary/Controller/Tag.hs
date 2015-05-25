@@ -1,12 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Tag
-  ( postTag
+  ( queryTags
+  , postTag
   , deleteTag
   ) where
 
 import qualified Data.Text as T
 import Network.HTTP.Types (StdMethod(DELETE), conflict409)
 
+import Databrary.JSON (toJSON)
 import Databrary.Model.Permission
 import Databrary.Model.Id
 import Databrary.Model.Slot
@@ -20,6 +22,10 @@ import Databrary.Controller.Slot
 
 _tagNameForm :: (Functor m, Monad m) => DeformT m TagName
 _tagNameForm = deformMaybe' "Invalid tag name." . validateTag =<< deform
+
+queryTags :: AppRoute TagName
+queryTags = action GET (pathJSON >/> "tags" >/> PathDynamic) $ \t ->
+  okResponse [] . toJSON . map tagId =<< findTags t
 
 postTag :: AppRoute (API, Id Slot, TagId)
 postTag = action POST (pathAPI </>> pathSlotId </> pathTagId) $ \(api, si, TagId kw tn) -> withAuth $ do

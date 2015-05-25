@@ -106,6 +106,7 @@ routeMap = fromRouteList
   , route viewRecord
   , route postRecordMeasure
 
+  , route queryTags
   , route postTag
   , route deleteTag
   , route postComment
@@ -129,7 +130,7 @@ routeMap = fromRouteList
 
 jsRoutes :: B.Builder
 jsRoutes = mconcat
-  [ jsRoute "viewRoot" viewRoot HTML
+  [ jsRoute "viewRoot" viewRoot (HTML)
   , jsRoute "viewLogin" viewLogin ()
   , jsRoute "viewRegister" viewRegister ()
   , jsRoute "viewPasswordReset" viewPasswordReset ()
@@ -138,40 +139,40 @@ jsRoutes = mconcat
   , jsRoute "viewProfile" viewParty (HTML, TargetProfile)
   , jsRoute "viewParty" viewParty (HTML, TargetParty party)
   , jsRoute "viewPartyEdit" viewPartyEdit (TargetParty party)
-  , jsRoute "viewPartySearch" queryParties HTML
-  , jsRoute "partyAvatar" viewAvatar party
+  , jsRoute "viewPartySearch" queryParties (HTML)
+  , jsRoute "partyAvatar" viewAvatar (party)
 
   , jsRoute "viewVolume" viewVolume (HTML, volume)
   , jsRoute "viewVolumeCreate" viewVolumeCreate ()
-  , jsRoute "viewVolumeEdit" viewVolumeEdit volume
-  , jsRoute "viewVolumeSearch" queryVolumes HTML
+  , jsRoute "viewVolumeEdit" viewVolumeEdit (volume)
+  , jsRoute "viewVolumeSearch" queryVolumes (HTML)
 
   , jsRoute "viewSlot" viewSlot (HTML, slot)
-  , jsRoute "viewSlotEdit" viewContainerEdit slot
+  , jsRoute "viewSlotEdit" viewContainerEdit (slot)
 
   , jsRoute "viewRecord" viewRecord (HTML, record)
 
   , jsRoute "viewFormats" viewFormats ()
   , jsRoute "viewAssetSegment" viewAssetSegment (HTML, slot, asset)
-  , jsRoute "viewAssetEdit" viewAssetEdit asset
+  , jsRoute "viewAssetEdit" viewAssetEdit (asset)
   , jsRoute "downloadAssetSegment" downloadAssetSegment (slot, asset)
   , jsRoute "thumbAssetSegment" thumbAssetSegment (slot, asset)
 
-  , jsRoute "zipSlot" zipContainer slot
-  , jsRoute "zipVolume" zipVolume volume
+  , jsRoute "zipSlot" zipContainer (slot)
+  , jsRoute "zipVolume" zipVolume (volume)
 
   , jsRoute "getUser" viewUser ()
-  , jsRoute "postLogin" postLogin JSON
-  , jsRoute "postLogout" postLogout JSON
-  , jsRoute "postRegister" postRegister JSON
-  , jsRoute "postPasswordReset" postPasswordReset JSON
+  , jsRoute "postLogin" postLogin (JSON)
+  , jsRoute "postLogout" postLogout (JSON)
+  , jsRoute "postRegister" postRegister (JSON)
+  , jsRoute "postPasswordReset" postPasswordReset (JSON)
   , jsRoute "getLoginToken" viewLoginToken (JSON, token)
   , jsRoute "postPasswordToken" postPasswordToken (JSON, token)
 
   , jsRoute "getParty" viewParty (JSON, TargetParty party)
   , jsRoute "getProfile" viewParty (JSON, TargetProfile)
   , jsRoute "postParty" postParty (JSON, TargetParty party)
-  , jsRoute "getParties" queryParties JSON
+  , jsRoute "getParties" queryParties (JSON)
 
   , jsRoute "postAuthorizeApply" postAuthorize (JSON, TargetParty party, AuthorizeTarget True party)
   , jsRoute "postAuthorize" postAuthorize (JSON, TargetParty party, AuthorizeTarget False party)
@@ -179,8 +180,8 @@ jsRoutes = mconcat
 
   , jsRoute "getVolume" viewVolume (JSON, volume)
   , jsRoute "postVolume" postVolume (JSON, volume)
-  , jsRoute "createVolume" createVolume JSON
-  , jsRoute "getVolumes" queryVolumes JSON
+  , jsRoute "createVolume" createVolume (JSON)
+  , jsRoute "getVolumes" queryVolumes (JSON)
   , jsRoute "postVolumeAccess" postVolumeAccess (JSON, (volume, VolumeAccessTarget party))
   , jsRoute "postVolumeFunding" postVolumeFunding (volume, funder)
   , jsRoute "deleteVolumeFunder" deleteVolumeFunder (volume, funder)
@@ -205,6 +206,7 @@ jsRoutes = mconcat
   , jsRoute "deleteExcerpt" deleteExcerpt (slot, asset)
 
   , jsRoute "postComment" postComment (JSON, slot)
+  , jsRoute "getTags" queryTags (tag)
   , jsRoute "postTag" postTag (JSON, slot, TagId False tag)
   , jsRoute "postKeyword" postTag (JSON, slot, TagId True tag)
   ] where
