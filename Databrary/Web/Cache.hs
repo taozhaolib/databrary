@@ -19,6 +19,7 @@ import System.FilePath (takeExtension)
 import Databrary.Has (peeks)
 import Databrary.Store
 import Databrary.Model.Format
+import Databrary.Web
 import Databrary.Web.Types
 import Databrary.Web.Files
 #ifdef DEVEL
@@ -45,7 +46,7 @@ lookupWebFile f = do
 #ifdef DEVEL
   liftIO $ modifyMVar wc $ \wm -> do
     let wf = HM.lookup f wm
-        wfp = webFileRaw f
+        wfp = webFilePathRaw f
     maybe
       (return (HM.delete f wm, Nothing))
       (\r -> if r

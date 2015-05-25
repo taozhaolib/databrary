@@ -18,7 +18,7 @@ import Databrary.Has (view)
 import Databrary.Model.Identity
 import Databrary.Action.Auth
 import Databrary.Action
-import Databrary.Web.Files (WebFilePath, webFileRelRaw)
+import Databrary.Web (WebFilePath, webFileRelRaw)
 import Databrary.Web.Libs (allWebLibs)
 import Databrary.View.Html
 import Databrary.View.Template

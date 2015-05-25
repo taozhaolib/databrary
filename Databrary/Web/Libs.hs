@@ -8,7 +8,8 @@ import Control.Monad (mzero)
 import Data.String (fromString)
 import System.FilePath ((</>), splitFileName, (<.>), splitExtensions)
 
-import Databrary.Web.Files hiding ((<.>))
+import Databrary.Web hiding ((<.>))
+import Databrary.Web.Files
 
 jsLibs :: [(FilePath, FilePath)]
 jsLibs =

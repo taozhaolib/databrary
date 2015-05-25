@@ -375,7 +375,10 @@ app.provider('routerService', [
                 break;
             args = Array.prototype.slice.call(arguments, 1, i);
           }
-          var r = route.apply(null, args);
+          var r = {
+            method: route.method,
+            url: route.route.apply(null, args)
+          };
           if (i < arguments.length) {
             if (r.method === 'POST' || r.method === 'PUT')
               r.data = arguments[i];

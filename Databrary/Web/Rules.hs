@@ -5,15 +5,14 @@ module Databrary.Web.Rules
   ) where
 
 import Control.Monad (when, mzero, msum)
-import Control.Monad.Trans.Class (lift)
 import Control.Monad.Trans.Maybe (MaybeT(..))
 import Data.Maybe (isNothing)
 import Data.Monoid ((<>))
 import System.IO (hPutStrLn, stderr)
-import System.Posix.Files.ByteString (fileExist)
 
 import Databrary.Ops
 import Databrary.Store
+import Databrary.Web
 import Databrary.Web.Files
 import Databrary.Web.Constants
 import Databrary.Web.Routes
@@ -40,9 +39,7 @@ generateFixed f t
   | otherwise = mzero
 
 generateStatic :: WebGenerator
-generateStatic f _ = do
-  e <- lift $ fileExist (webFileAbsRaw f)
-  e ?> False
+generateStatic f t = maybe (const True) (<) t <$> webFileTime f
 
 generateWebFile :: WebGenerator
 generateWebFile f t = msum $ map (\g -> g f t)

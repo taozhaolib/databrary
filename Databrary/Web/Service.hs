@@ -10,6 +10,7 @@ import Control.Concurrent.MVar (newMVar)
 #endif
 import qualified Data.HashMap.Strict as HM
 
+import Databrary.Web
 import Databrary.Web.Types
 import Databrary.Web.Files
 import Databrary.Web.Cache

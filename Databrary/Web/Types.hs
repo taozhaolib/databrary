@@ -16,7 +16,7 @@ import System.Posix.ByteString.FilePath (RawFilePath)
 
 import Databrary.Has (MonadHas)
 import Databrary.Model.Time
-import Databrary.Web.Files (WebFilePath)
+import Databrary.Web (WebFilePath)
 
 data WebFileInfo = WebFileInfo
   { webFilePath :: !WebFilePath

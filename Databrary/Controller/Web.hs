@@ -23,8 +23,8 @@ import Databrary.Action.Route
 import Databrary.Action
 import Databrary.HTTP.File
 import Databrary.HTTP.Path.Parser (PathParser(..), (>/>))
+import Databrary.Web
 import Databrary.Web.Types
-import Databrary.Web.Files
 import Databrary.Web.Cache
 
 newtype StaticPath = StaticPath { staticFilePath :: RawFilePath }

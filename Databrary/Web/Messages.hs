@@ -12,6 +12,7 @@ import System.IO (withBinaryFile, IOMode(WriteMode), hPutStr)
 import Paths_databrary (getDataFileName)
 import qualified Databrary.JSON as JSON
 import Databrary.Store
+import Databrary.Web
 import Databrary.Web.Files
 
 generateMessagesJS :: WebGenerator
@@ -19,9 +20,9 @@ generateMessagesJS f t = do
   -- it'd be nice to use Service.Messages here but there's no good way
   mf <- lift $ getDataFileName "messages.conf"
   mt <- fileTime (rawFilePath mf)
-  lift $ webRegenerate mt f t $ \wf -> do
+  lift $ webRegenerate mt f t $ do
     ml <- C.getMap =<< C.load [C.Optional mf]
-    withBinaryFile (webFileAbs wf) WriteMode $ \h -> do
+    withBinaryFile (webFileAbs f) WriteMode $ \h -> do
       hPutStr h "app.constant('messageData',"
       BSB.hPutBuilder h $ JSON.encodeToByteStringBuilder $ JSON.toJSON ml
       hPutStr h ");"
