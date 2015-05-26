@@ -3,6 +3,7 @@ module Databrary.Controller.Tag
   ( queryTags
   , postTag
   , deleteTag
+  , viewTopTags
   ) where
 
 import qualified Data.Text as T
@@ -43,3 +44,8 @@ deleteTag = action DELETE (pathAPI </>> pathSlotId </> pathTagId) $ \(api, si, T
   s <- getSlot (if kw then PermissionEDIT else PermissionSHARED) si
   _r <- maybe (return False) (\t -> removeTagUse $ TagUse t kw u s) =<< lookupTag tn
   okResponse [] ("" :: T.Text)
+
+viewTopTags :: AppRoute ()
+viewTopTags = action GET (pathJSON >/> "tags") $ \() -> do
+  l <- lookupTopTagWeight 16
+  okResponse [] $ toJSON $ map tagWeightJSON l

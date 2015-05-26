@@ -109,6 +109,7 @@ routeMap = fromRouteList
   , route queryTags
   , route postTag
   , route deleteTag
+  , route viewTopTags
   , route postComment
 
   , route uploadStart
@@ -209,6 +210,7 @@ jsRoutes = mconcat
   , jsRoute "getTags" queryTags (tag)
   , jsRoute "postTag" postTag (JSON, slot, TagId False tag)
   , jsRoute "postKeyword" postTag (JSON, slot, TagId True tag)
+  , jsRoute "getTopTags" viewTopTags ()
   ] where
   token = Id ""
   party = Id 0

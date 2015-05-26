@@ -1185,7 +1185,7 @@ app.factory('modelService', [
     };
 
     Tag.top = function () {
-      return router.http(router.controllers.TagApi.top)
+      return router.http(router.controllers.getTopTags)
         .then(function(res) {
           return res.data;
         });

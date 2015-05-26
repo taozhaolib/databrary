@@ -8,6 +8,8 @@ module Databrary.Model.Tag.Types
   , MonadHasTagUse
   , TagCoverage(..)
   , MonadHasTagCoverage
+  , TagWeight(..)
+  , MonadHasTagWeight
   ) where
 
 import Control.Monad ((<=<))
@@ -71,13 +73,19 @@ data TagUse = TagUse
 
 makeHasRec ''TagUse ['useTag, 'tagWho, 'tagSlot]
 
+data TagWeight = TagWeight
+  { tagWeightTag :: Tag
+  , tagWeightWeight :: Int32
+  }
+
+makeHasRec ''TagWeight ['tagWeightTag]
+
 data TagCoverage = TagCoverage
-  { tagCoverageTag :: Tag
+  { tagCoverageWeight :: !TagWeight
   , tagCoverageContainer :: Container
-  , tagCoverageWeight :: Int32
   , tagCoverageSegments
   , tagCoverageKeywords
   , tagCoverageVotes :: [Segment]
   }
 
-makeHasRec ''TagCoverage ['tagCoverageTag, 'tagCoverageContainer]
+makeHasRec ''TagCoverage ['tagCoverageWeight, 'tagCoverageContainer]

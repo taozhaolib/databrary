@@ -6,7 +6,9 @@ module Databrary.Model.Tag
   , addTag
   , addTagUse
   , removeTagUse
+  , lookupTopTagWeight
   , lookupSlotTagCoverage
+  , tagWeightJSON
   , tagCoverageJSON
   ) where
 
@@ -54,14 +56,22 @@ removeTagUse t =
       then $(deleteTagUse True 't)
       else $(deleteTagUse False 't))
 
+lookupTopTagWeight :: MonadDB m => Int -> m [TagWeight]
+lookupTopTagWeight lim =
+  dbQuery $(selectQuery (selectTagWeight "") "$!ORDER BY weight DESC LIMIT ${fromIntegral lim :: Int64}")
+
 lookupSlotTagCoverage :: MonadDB m => Party -> Slot -> Int -> m [TagCoverage]
 lookupSlotTagCoverage acct slot lim =
   dbQuery $(selectSlotTagCoverage 'acct 'slot >>= (`selectQuery` "$!ORDER BY weight DESC LIMIT ${fromIntegral lim :: Int64}"))
 
+tagWeightJSON :: TagWeight -> JSON.Object
+tagWeightJSON TagWeight{..} = JSON.record (tagName tagWeightTag) $
+  [ "weight" JSON..= tagWeightWeight
+  ]
+
 tagCoverageJSON :: TagCoverage -> JSON.Object
-tagCoverageJSON TagCoverage{..} = JSON.record (tagName tagCoverageTag) $ catMaybes
-  [ Just $ "weight" JSON..= tagCoverageWeight
-  , Just $ "coverage" JSON..= tagCoverageSegments
+tagCoverageJSON TagCoverage{..} = tagWeightJSON tagCoverageWeight JSON..++ catMaybes
+  [ Just $ "coverage" JSON..= tagCoverageSegments
   , null tagCoverageKeywords ?!> "keyword" JSON..= tagCoverageKeywords
   , null tagCoverageVotes ?!> "vote" JSON..= tagCoverageVotes
   ]
