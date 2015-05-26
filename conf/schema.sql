@@ -234,6 +234,12 @@ CREATE FUNCTION "volume_access_check" ("volume" integer, "party" integer) RETURN
 $$;
 COMMENT ON FUNCTION "volume_access_check" (integer, integer) IS 'Permission level the party has on the given volume, either directly, delegated, or inherited.';
 
+CREATE TABLE "volume_doi" (
+	"volume" integer NOT NULL Unique References "volume",
+	"doi" varchar(16) NOT NULL Unique
+);
+COMMENT ON TABLE "volume_doi" IS 'DOIs issued for volumes (currently via EZID).';
+
 CREATE TABLE "volume_link" (
 	"volume" integer NOT NULL References "volume",
 	"head" text NOT NULL,
