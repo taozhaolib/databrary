@@ -231,6 +231,12 @@ CREATE FUNCTION "volume_access_check" ("volume" integer, "party" integer) RETURN
 $$;
 COMMENT ON FUNCTION "volume_access_check" (integer, integer) IS 'Permission level the party has on the given volume, either directly, delegated, or inherited.';
 
+CREATE TABLE "volume_doi" (
+	"volume" integer NOT NULL Unique References "volume",
+	"doi" varchar(16) NOT NULL Unique
+);
+COMMENT ON TABLE "volume_doi" IS 'DOIs issued for volumes (currently via EZID).';
+
 CREATE TABLE "volume_link" (
 	"volume" integer NOT NULL References "volume",
 	"head" text NOT NULL,
@@ -997,6 +1003,7 @@ INSERT INTO volume (id, name, body) VALUES (1, 'Databrary', 'Databrary is an ope
 Most developmental scientists rely on video recordings to capture the complexity and richness of behavior. However, researchers rarely share video data, and this has impeded scientific progress. By creating the cyber-infrastructure and community to enable open video sharing, the Databrary project aims to facilitate deeper, richer, and broader understanding of behavior.
 The Databrary project is dedicated to transforming the culture of developmental science by building a community of researchers committed to open video data sharing, training a new generation of developmental scientists and empowering them with an unprecedented set of tools for discovery, and raising the profile of behavioral science by bolstering interest in and support for scientific research among the general public.');
 SELECT setval('volume_id_seq', 1);
+INSERT INTO "volume_doi" VALUES (1, '10.17910/B7159Q');
 
 INSERT INTO volume_access (volume, party, individual, children) VALUES (1, 1, 'ADMIN', 'NONE');
 INSERT INTO volume_access (volume, party, individual, children) VALUES (1, 3, 'ADMIN', 'NONE');
