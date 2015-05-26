@@ -1,8 +1,8 @@
 'use strict';
 
 app.factory('updateInterceptor', [
-  '$rootScope', 'constantService', 'messageService', '$sce',
-  function ($rootScope, constants, messages, $sce) {
+  'constantService', 'messageService', '$sce',
+  function (constants, messages, $sce) {
     var version = '/' + constants.version;
 
     return {
