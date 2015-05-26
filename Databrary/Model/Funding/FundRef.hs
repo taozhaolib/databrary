@@ -7,12 +7,11 @@ module Databrary.Model.Funding.FundRef
 import Control.Monad ((<=<), (>=>), guard, mfilter)
 import Control.Monad.Catch (MonadThrow)
 import Control.Monad.Trans.Maybe (MaybeT(..), runMaybeT)
-import Data.Function (on)
 import qualified Data.HashMap.Strict as HM
 import Data.List (stripPrefix, sortBy, nubBy)
 import Data.Maybe (fromMaybe, mapMaybe)
 import Data.Monoid ((<>))
-import Data.Ord (Down(..))
+import Data.Ord (comparing, Down(..))
 import Data.String (IsString(..))
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
@@ -61,7 +60,7 @@ annotateFunder f@Funder{ funderName = n } a c = f{ funderName =
   }
   where
   ni = toCI n
-  ai = toCI <$> sortBy (compare `on` Down . T.length) a
+  ai = toCI <$> sortBy (comparing $ Down . T.length) a
   nai' = nubBy (onCI T.isInfixOf) $
     (case filter (T.isInfixOf `onCI` ni) ai of
       [] -> ni

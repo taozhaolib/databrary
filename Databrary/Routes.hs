@@ -34,6 +34,7 @@ import Databrary.Controller.Excerpt
 import Databrary.Controller.Zip
 import Databrary.Controller.Tag
 import Databrary.Controller.Comment
+import Databrary.Controller.Audit
 import Databrary.Controller.Transcode
 import Databrary.Controller.Web
 import Databrary.Web.Routes
@@ -119,6 +120,7 @@ routeMap = fromRouteList
   , route getCitation
   , route queryFunder
   , route remoteTranscode
+  , route viewActivity
 
   , route webFile
   ]
@@ -162,6 +164,7 @@ jsRoutes = mconcat
   , jsRoute "zipSlot" zipContainer (slot)
   , jsRoute "zipVolume" zipVolume (volume)
 
+  , jsRoute "get" viewRoot (JSON)
   , jsRoute "getUser" viewUser ()
   , jsRoute "postLogin" postLogin (JSON)
   , jsRoute "postLogout" postLogout (JSON)
@@ -211,6 +214,7 @@ jsRoutes = mconcat
   , jsRoute "postTag" postTag (JSON, slot, TagId False tag)
   , jsRoute "postKeyword" postTag (JSON, slot, TagId True tag)
   , jsRoute "getTopTags" viewTopTags ()
+  , jsRoute "getActivity" viewActivity ()
   ] where
   token = Id ""
   party = Id 0

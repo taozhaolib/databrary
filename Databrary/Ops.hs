@@ -14,12 +14,15 @@ module Databrary.Ops
   , orElseM
   , flatMapM
   , mapMaybeM
+  , liftK
+  , mergeBy
   ) where
 
 import Control.Applicative
+import Control.Arrow
 import Data.Functor
 import Data.Maybe (catMaybes)
-import Data.Monoid (Monoid(..))
+import Data.Monoid
 
 infixl 1 <?, <!?
 infixr 1 ?>, ?!>
@@ -120,3 +123,13 @@ flatMapM = maybe (return Nothing)
 
 mapMaybeM :: (Functor m, Monad m) => (a -> m (Maybe b)) -> [a] -> m [b]
 mapMaybeM f l = catMaybes <$> mapM f l
+
+liftK :: Monad m => (Kleisli m a b -> Kleisli m c d) -> (a -> m b) -> (c -> m d)
+liftK f = runKleisli . f . Kleisli
+
+mergeBy :: (a -> a -> Ordering) -> [a] -> [a] -> [a]
+mergeBy _ [] l = l
+mergeBy _ l [] = l
+mergeBy p al@(a:ar) bl@(b:br)
+  | p a b == GT = b : mergeBy p al br
+  | otherwise = a : mergeBy p ar bl

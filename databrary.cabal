@@ -10,7 +10,6 @@ Category:            Web
 Build-type:          Custom
 Cabal-version:       >=1.6
 
-extra-tmp-files: node_modules, bower_components
 data-files: messages.conf,
   schema/*.sql,
   bower_components/jquery/dist/jquery.js,

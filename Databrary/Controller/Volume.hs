@@ -10,6 +10,7 @@ module Databrary.Controller.Volume
   , postVolumeLinks
   , queryVolumes
   , volumeDownloadName
+  , volumeJSONQuery
   ) where
 
 import Control.Applicative (Applicative, (<*>), pure, optional)

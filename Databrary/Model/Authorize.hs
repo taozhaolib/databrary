@@ -10,10 +10,12 @@ module Databrary.Model.Authorize
   , changeAuthorize
   , removeAuthorize
   , authorizeJSON
+  , lookupAuthorizeActivity
   ) where
 
 import Control.Applicative ((<$>))
 import Control.Monad (when)
+import Data.Int (Int64)
 import Data.Maybe (fromMaybe)
 import Data.Monoid (mempty, (<>))
 import Database.PostgreSQL.Typed.Query (PGQuery, unsafeModifyQuery)
@@ -22,6 +24,7 @@ import Databrary.Has (peek, view)
 import qualified Databrary.JSON as JSON
 import Databrary.Service.DB
 import Databrary.Model.SQL
+import Databrary.Model.Time
 import Databrary.Model.Id
 import Databrary.Model.Audit
 import Databrary.Model.Permission
@@ -85,3 +88,8 @@ removeAuthorize auth = do
 authorizeJSON :: Authorize -> JSON.Object
 authorizeJSON Authorize{..} = accessJSON (authorizeAccess authorization)
   JSON..+? (("expires" JSON..=) <$> authorizeExpires)
+
+lookupAuthorizeActivity :: (MonadDB m, MonadHasIdentity c m) => Int -> m [(Timestamp, Party)]
+lookupAuthorizeActivity limit = do
+  ident :: Identity <- peek
+  dbQuery $(selectQuery (selectAuthorizeActivity 'ident) "$JOIN authorize_view ON audit.parent = authorize_view.child AND authorize_view.parent = 0 WHERE audit.audit_action IN ('add','change') AND audit.site >= 'EDIT' AND authorize_view.site > 'EDIT' ORDER BY audit.audit_time DESC LIMIT ${fromIntegral limit :: Int64}")

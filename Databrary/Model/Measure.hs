@@ -9,9 +9,9 @@ module Databrary.Model.Measure
   ) where
 
 import Control.Monad (guard)
-import Data.Function (on)
 import Data.List (find)
 import Data.Maybe (fromMaybe)
+import Data.Ord (comparing)
 import qualified Data.Text as T
 import Database.PostgreSQL.Typed.Protocol (PGError(..), pgErrorCode)
 import Database.PostgreSQL.Typed.Types (PGTypeName, pgTypeName, PGColumn(pgDecode))
@@ -28,7 +28,7 @@ import Databrary.Model.Record.Types
 import Databrary.Model.Measure.SQL
 
 measureOrder :: Measure -> Measure -> Ordering
-measureOrder = compare `on` (metricId . measureMetric)
+measureOrder = comparing $ metricId . measureMetric
 
 getMeasure :: Metric -> Measures -> Maybe Measure
 getMeasure m = find ((metricId m ==) . metricId . measureMetric)

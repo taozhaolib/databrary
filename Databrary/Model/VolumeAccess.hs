@@ -7,8 +7,10 @@ module Databrary.Model.VolumeAccess
   , changeVolumeAccess
   , volumeAccessProvidesADMIN
   , volumeAccessJSON
+  , lookupVolumeActivity
   ) where
 
+import Data.Int (Int64)
 import Data.Maybe (catMaybes)
 
 import Databrary.Ops
@@ -16,6 +18,7 @@ import Databrary.Has (peek, view)
 import qualified Databrary.JSON as JSON
 import Databrary.Service.DB
 import Databrary.Model.SQL
+import Databrary.Model.Time
 import Databrary.Model.Id.Types
 import Databrary.Model.Permission.Types
 import Databrary.Model.Identity.Types
@@ -59,3 +62,8 @@ volumeAccessJSON VolumeAccess{..} = JSON.object $ catMaybes
   [ ("individual" JSON..= volumeAccessIndividual) <? (volumeAccessIndividual >= PermissionNONE)
   , ("children"   JSON..= volumeAccessChildren)   <? (volumeAccessChildren   >= PermissionNONE)
   ]
+
+lookupVolumeActivity :: (MonadDB m, MonadHasIdentity c m) => Int -> m [(Timestamp, Volume)]
+lookupVolumeActivity limit = do
+  ident :: Identity <- peek
+  dbQuery $(selectQuery (selectVolumeActivity 'ident) "$WHERE audit.audit_action = 'add' AND audit.party = 0 AND audit.children > 'NONE' ORDER BY audit.audit_time DESC LIMIT ${fromIntegral limit :: Int64}")

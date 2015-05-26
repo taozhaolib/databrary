@@ -1,8 +1,9 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TemplateHaskell, OverloadedStrings #-}
 module Databrary.Model.Audit.SQL
   ( auditInsert
   , auditDelete
   , auditUpdate
+  , selectAuditActivity
   , whereEq
   ) where
 
@@ -21,7 +22,7 @@ actionCmd AuditActionChange = "UPDATE"
 actionCmd AuditActionRemove = "DELETE FROM"
 actionCmd a = error $ "actionCmd: " ++ show a
 
-auditQuery :: AuditAction -> TH.Name -- ^ @'AuditIdentity'
+auditQuery :: AuditAction -> TH.Name -- ^ @'AuditIdentity'@
   -> String -> String -> Maybe SelectOutput -> TH.ExpQ
 auditQuery action ident tablef stmt =
   maybe (makePGQuery flags sql) (makeQuery flags ((sql ++) . (" RETURNING " ++)))
@@ -45,6 +46,10 @@ auditUpdate :: TH.Name -> String -> [(String, String)] -> String -> Maybe Select
 auditUpdate ident table sets wher =
   auditQuery AuditActionChange ident table
     ("SET " ++ intercalate "," (map pairEq sets) ++ " WHERE " ++ wher)
+
+selectAuditActivity :: String -> Selector -- ^ @'Timestamp'@
+selectAuditActivity table =
+  selector ("audit." ++ table ++ " AS audit") "audit.audit_time"
 
 pairEq :: (String, String) -> String
 pairEq (c, v) = c ++ "=" ++ v

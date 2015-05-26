@@ -7,6 +7,7 @@ module Databrary.Model.Authorize.SQL
   , updateAuthorize
   , insertAuthorize
   , deleteAuthorize
+  , selectAuthorizeActivity
   ) where
 
 import qualified Language.Haskell.TH as TH
@@ -92,3 +93,11 @@ deleteAuthorize ident a = auditDelete ident "authorize"
   (whereEq $ authorizeKeys as)
   Nothing
   where as = nameRef a
+
+selectAuthorizeActivity :: TH.Name -- ^@'Identity'@
+  -> Selector -- ^ @('Timestamp', 'Party')@
+selectAuthorizeActivity ident = selectJoin '(,)
+  [ selectAuditActivity "authorize"
+  , joinOn "audit.child = party.id" 
+    $ selectParty ident
+  ]

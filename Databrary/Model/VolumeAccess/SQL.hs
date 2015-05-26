@@ -6,6 +6,7 @@ module Databrary.Model.VolumeAccess.SQL
   , updateVolumeAccess
   , insertVolumeAccess
   , deleteVolumeAccess
+  , selectVolumeActivity
   ) where
 
 import qualified Language.Haskell.TH as TH
@@ -91,3 +92,11 @@ deleteVolumeAccess ident a = auditDelete ident "volume_access"
   (whereEq $ volumeAccessKeys as)
   Nothing
   where as = nameRef a
+
+selectVolumeActivity :: TH.Name -- ^@'Identity'@
+  -> Selector -- ^ @('Timestamp', 'Volume')@
+selectVolumeActivity ident = selectJoin '(,)
+  [ selectAuditActivity "volume_access"
+  , joinOn "audit.volume = volume.id" 
+    $ selectVolume ident
+  ]

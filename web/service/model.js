@@ -1228,10 +1228,10 @@ app.factory('modelService', [
           .then(resData);
       },
       analytic: function () {
-        return router.http(router.controllers.AngularController.void, {}, {cache:false});
+        return router.http(router.controllers.get, {}, {cache:false});
       },
       activity: function () {
-        return router.http(router.controllers.SiteApi.activity)
+        return router.http(router.controllers.getActivity)
           .then(function (res) {
             for (var i = 0; i < res.data.length; i ++) {
               if ('volume' in res.data[i])
