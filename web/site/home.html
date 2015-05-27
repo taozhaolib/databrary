@@ -2,7 +2,7 @@
   <div class="wrap">
     <div class="row">
       <div class="home-logo">
-        <a ng-href="{{::page.router.index()}}" title="Databrary: An Open Data Library"><img ng-if="::!page.constants.sandbox" src="public/images/logo/databrary-nav.svg"><img ng-if="::page.constants.sandbox" src="public/images/logo/databrary-demo.svg"></a>
+        <a ng-href="{{::page.router.index()}}" title="Databrary: An Open Data Library"><img ng-if="::!page.constants.sandbox" src="/web/images/logo/databrary-nav.svg"><img ng-if="::page.constants.sandbox" src="/web/images/logo/databrary-demo.svg"></a>
       </div>
     </div>
   </div>
@@ -26,11 +26,11 @@
         <p class="hide-mobile">Manage your data and authorizations.</p>
       </div>
       <div class="bigbutton">
-        <img src="public/images/icon/home-searchstudy.svg"/>
+        <img src="/web/images/icon/home-searchstudy.svg"/>
         <span class="button-title"><a ng-href="{{::page.router.volumeSearch()}}">Browse Data</a></span>
       </div>
       <div class="bigbutton">
-        <img src="public/images/icon/home-userstudy.svg"/>
+        <img src="/web/images/icon/home-userstudy.svg"/>
         <span class="button-title"><a ng-href="{{::page.router.partySearch()}}">Browse People</a></span>
       </div>
     </div>
