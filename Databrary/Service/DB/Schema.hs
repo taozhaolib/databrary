@@ -75,4 +75,5 @@ updateDBSchema dir = do
   base = file "0"
   apply n = do
     confirm $ "Apply schema " ++ show n ++ "?"
+    dbExecute_ "INSERT INTO schema (name) VALUES (${n})"
     sqlFile (file n)

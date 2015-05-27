@@ -699,9 +699,9 @@ CREATE TABLE "measure_text" (
 	Primary Key ("record", "metric")
 ) INHERITS ("measure_abstract");
 
-CREATE TABLE "measure_number" (
+CREATE TABLE "measure_numeric" (
 	"record" integer NOT NULL References "record" ON DELETE CASCADE,
-	"metric" integer NOT NULL References "metric" ON UPDATE CASCADE, -- WHERE kind = "number"
+	"metric" integer NOT NULL References "metric" ON UPDATE CASCADE, -- WHERE kind = "numeric"
 	"datum" numeric NOT NULL,
 	Primary Key ("record", "metric")
 ) INHERITS ("measure_abstract");
@@ -715,7 +715,7 @@ CREATE TABLE "measure_date" (
 
 CREATE VIEW "measure" AS
 	SELECT record, metric, datum FROM measure_text UNION ALL
-	SELECT record, metric, text(datum) FROM measure_number UNION ALL
+	SELECT record, metric, text(datum) FROM measure_numeric UNION ALL
 	SELECT record, metric, text(datum) FROM measure_date;
 COMMENT ON VIEW "measure" IS 'Data from all measure tables, coerced to text.';
 
@@ -770,9 +770,9 @@ END; $$;
 CREATE VIEW audit."measure_text" AS
 	SELECT * FROM audit.measure;
 CREATE TRIGGER "measure_i" INSTEAD OF INSERT ON audit."measure_text" FOR EACH ROW EXECUTE PROCEDURE audit."measure_i" ();
-CREATE VIEW audit."measure_number" AS
+CREATE VIEW audit."measure_numeric" AS
 	SELECT * FROM audit.measure;
-CREATE TRIGGER "measure_i" INSTEAD OF INSERT ON audit."measure_number" FOR EACH ROW EXECUTE PROCEDURE audit."measure_i" ();
+CREATE TRIGGER "measure_i" INSTEAD OF INSERT ON audit."measure_numeric" FOR EACH ROW EXECUTE PROCEDURE audit."measure_i" ();
 CREATE VIEW audit."measure_date" AS
 	SELECT * FROM audit.measure;
 CREATE TRIGGER "measure_i" INSTEAD OF INSERT ON audit."measure_date" FOR EACH ROW EXECUTE PROCEDURE audit."measure_i" ();
@@ -815,7 +815,7 @@ CREATE FUNCTION "record_measures_mi" () RETURNS trigger LANGUAGE plpgsql AS $$ B
 END; $$;
 CREATE TRIGGER "record_measures_i" AFTER INSERT ON "measure_abstract" FOR EACH ROW EXECUTE PROCEDURE "record_measures_mi" ();
 CREATE TRIGGER "record_measures_i" AFTER INSERT ON "measure_text" FOR EACH ROW EXECUTE PROCEDURE "record_measures_mi" ();
-CREATE TRIGGER "record_measures_i" AFTER INSERT ON "measure_number" FOR EACH ROW EXECUTE PROCEDURE "record_measures_mi" ();
+CREATE TRIGGER "record_measures_i" AFTER INSERT ON "measure_numeric" FOR EACH ROW EXECUTE PROCEDURE "record_measures_mi" ();
 CREATE TRIGGER "record_measures_i" AFTER INSERT ON "measure_date" FOR EACH ROW EXECUTE PROCEDURE "record_measures_mi" ();
 
 CREATE FUNCTION "record_measures_mu" () RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
@@ -825,7 +825,7 @@ CREATE FUNCTION "record_measures_mu" () RETURNS trigger LANGUAGE plpgsql AS $$ B
 END; $$;
 CREATE TRIGGER "record_measures_u" AFTER UPDATE ON "measure_abstract" FOR EACH ROW EXECUTE PROCEDURE "record_measures_mu" ();
 CREATE TRIGGER "record_measures_u" AFTER UPDATE ON "measure_text" FOR EACH ROW EXECUTE PROCEDURE "record_measures_mu" ();
-CREATE TRIGGER "record_measures_u" AFTER UPDATE ON "measure_number" FOR EACH ROW EXECUTE PROCEDURE "record_measures_mu" ();
+CREATE TRIGGER "record_measures_u" AFTER UPDATE ON "measure_numeric" FOR EACH ROW EXECUTE PROCEDURE "record_measures_mu" ();
 CREATE TRIGGER "record_measures_u" AFTER UPDATE ON "measure_date" FOR EACH ROW EXECUTE PROCEDURE "record_measures_mu" ();
 
 CREATE FUNCTION "record_measures_md" () RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
@@ -835,12 +835,12 @@ CREATE FUNCTION "record_measures_md" () RETURNS trigger LANGUAGE plpgsql AS $$ B
 END; $$;
 CREATE TRIGGER "record_measures_d" AFTER DELETE ON "measure_abstract" FOR EACH ROW EXECUTE PROCEDURE "record_measures_md" ();
 CREATE TRIGGER "record_measures_d" AFTER DELETE ON "measure_text" FOR EACH ROW EXECUTE PROCEDURE "record_measures_md" ();
-CREATE TRIGGER "record_measures_d" AFTER DELETE ON "measure_number" FOR EACH ROW EXECUTE PROCEDURE "record_measures_md" ();
+CREATE TRIGGER "record_measures_d" AFTER DELETE ON "measure_numeric" FOR EACH ROW EXECUTE PROCEDURE "record_measures_md" ();
 CREATE TRIGGER "record_measures_d" AFTER DELETE ON "measure_date" FOR EACH ROW EXECUTE PROCEDURE "record_measures_md" ();
 
 CREATE TRIGGER "record_measures_t" AFTER TRUNCATE ON "measure_abstract" EXECUTE PROCEDURE "record_measures_refresh" ();
 CREATE TRIGGER "record_measures_t" AFTER TRUNCATE ON "measure_text" EXECUTE PROCEDURE "record_measures_refresh" ();
-CREATE TRIGGER "record_measures_t" AFTER TRUNCATE ON "measure_number" EXECUTE PROCEDURE "record_measures_refresh" ();
+CREATE TRIGGER "record_measures_t" AFTER TRUNCATE ON "measure_numeric" EXECUTE PROCEDURE "record_measures_refresh" ();
 CREATE TRIGGER "record_measures_t" AFTER TRUNCATE ON "measure_date" EXECUTE PROCEDURE "record_measures_refresh" ();
 
 
