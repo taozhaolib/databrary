@@ -2,6 +2,7 @@ package store
 
 import scala.collection.mutable
 import scala.concurrent.Future
+import play.api.libs.json.JsValue
 import play.api.libs.iteratee._
 import org.databrary.iteratee.ZipFile
 import macros._
@@ -18,7 +19,7 @@ object Zip {
     Enumerator(a) >>> Enumerator.flatten(e2)
 
 
-  private def slotAssetList(slot : Slot, prefix : String) : Future[Seq[String]] =
+  def slotAssetList(slot : Slot) : Future[Seq[(String, JsValue)]] =
     slot.assets.map { assets =>
       val names = mutable.Set.empty[String]
       Seq(assets.flatMap(cast[SlotFileAsset](_).filter(_.checkPermission(Permission.VIEW))).map { sa =>
@@ -30,7 +31,7 @@ object Zip {
           i += 1
           name = base + i + ext
         }
-        name 
+        (name , sa.json.js)
       } : _*)
     }
 
