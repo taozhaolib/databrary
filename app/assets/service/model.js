@@ -735,16 +735,17 @@ app.factory('modelService', [
         });
     };
 
-    function recordAdd(slot, record) {
+    function recordAdd(slot, record, seg) {
       var r = {
         id: record.id,
-        segment: slot.segment,
+        segment: seg || slot.segment,
         record: record,
       };
       if ('records' in slot)
         slot.records.push(r);
       if (slot.container !== slot && 'records' in slot.container)
         slot.container.records.push(r);
+      return r;
     }
 
     Slot.prototype.addRecord = function (r, seg) {
@@ -753,8 +754,8 @@ app.factory('modelService', [
       var s = this;
       return router.http(router.controllers.RecordApi.add, this.container.id, seg.format(), {record:r.id})
         .then(function (res) {
-          recordAdd(s, r);
-          return r.update(res.data);
+          r.update(res.data);
+          return recordAdd(s, r, seg);
         });
     };
 
@@ -765,8 +766,7 @@ app.factory('modelService', [
       return router.http(router.controllers.RecordApi.add, this.container.id, this.segment.format(), {category:c})
         .then(function (res) {
           var r = new Record(s.volume, res.data);
-          recordAdd(s, r);
-          return r;
+          return recordAdd(s, r);
         });
     };
 
@@ -779,19 +779,22 @@ app.factory('modelService', [
       var s = this;
       return router.http(router.controllers.RecordApi.move, r.id, this.container.id, {src: Segment.data(src), dst: Segment.data(dst)})
         .then(function (res) {
-          if (!('container' in res.data))
+          if ('measures' in res.data) {
+            r.update(res.data);
             return null;
-          var d = new Slot(s.container, res.data);
+          }
+          var d = new Segment(res.data.segment);
           if (s.records) {
             var ss = Segment.make(src);
-            for (var ri = 0; ri < s.records.length; ri ++)
+            for (var ri = 0; ri < s.records.length; ri ++) {
               if (s.records[ri].id === r.id && ss.contains(s.records[ri].segment)) {
-                if (d.segment.empty)
+                if (d.empty)
                   s.records.splice(ri, 1);
                 else
-                  s.records[ri].segment = d.segment;
+                  s.records[ri].segment = d;
                 break;
               }
+            }
           }
           return d;
         });
@@ -854,11 +857,34 @@ app.factory('modelService', [
         });
     };
 
+    Volume.prototype.createRecord = function (c) {
+      var v = this;
+      return router.http(router.controllers.RecordApi.create, this.id, c)
+        .then(function (res) {
+          return new Record(v, res.data);
+        });
+    };
+
     Record.prototype.save = function (data) {
       var r = this;
       return router.http(router.controllers.RecordApi.update, this.id, data)
         .then(function (res) {
           return r.update(res.data);
+        });
+    };
+
+    Record.prototype.remove = function () {
+      var r = this;
+      return router.http(router.controllers.RecordApi.remove, this.id)
+        .then(function () {
+          delete r.volume.records[r.id];
+          return true;
+        }, function (res) {
+          if (res.status == 409) {
+            r.update(res.data);
+            return false;
+          }
+          return $q.reject(res);
         });
     };
 

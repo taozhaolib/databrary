@@ -74,3 +74,16 @@ package object macros {
     }
   }
 }
+
+package macros {
+  case class Orderings[A](l : Ordering[A]*) extends Ordering[A] {
+    def compare(x : A, y : A) : Int = {
+      for (o <- l) {
+        val r = o.compare(x, y)
+        if (r != 0)
+          return r
+      }
+      0
+    }
+  }
+}

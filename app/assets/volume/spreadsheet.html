@@ -14,10 +14,7 @@
   </ul>
 </div>
 
-<div class="spreadsheet-options">  
-  <span ng-if="::editing">
-    <a href="" ng-click="refresh()">refresh</a>
-  </span>
+<div class="spreadsheet-options">
   <a ng-if="::!editing && !top" href="" ng-href="{{::volume.csvRoute()}}" target="_self">export data</a>
 </div>
 
@@ -31,7 +28,7 @@
     </colgroup>
     <thead>
       <tr class="spreadsheet-head-groups">
-        <th class="metric-col" ng-repeat="col in groups track by col.category.id" id="{{::id}}-category_{{::col.category.id}}" colspan="{{col.metrics.length}}" ng-class="::'col'+col.category.id">
+        <th class="metric-col" ng-repeat="col in groups track by col.category.id" id="{{::id}}-category_{{::col.category.id}}" colspan="{{col.metrics.length}}" ng-class="::'col'+col.category.id" ng-dblclick="setKey(col.category.id)">
           <span ng-bind="::col.category.name"></span>
           <span ng-if="::editing && !col.category.fixed" ng-click="clickCategoryAdd($event, col)" class="icon add addSessionInfo" tooltip="'spreadsheet.add.metric' | message:col.category.name"></span>
         </th>
@@ -49,7 +46,7 @@
         <td colspan="{{cols.length}}" class="null" ng-click="unlimit()" ng-bind="::'spreadsheet.unlimit' | message:more"></td>
       </tr>
       <tr ng-if="::editing">
-        <td id="{{::id}}-new" colspan="{{cols.length}}" class="add null" ng-click="clickNew($event)" ng-bind="::'add ' + (top ? 'materials' : 'session' | message)"</td>
+        <td id="{{::id}}-new" colspan="{{cols.length}}" class="add null" ng-click="clickNew($event)" ng-bind="'add ' + key.name"</td>
       </tr>
     </tfoot>
   </table>

@@ -29,7 +29,7 @@
   </fieldset></ng-form>
 
   <fieldset class="skinny" ng-if="volumeEditOverviewForm.data.published !== undefined">
-    <!-- title -->  
+    <!-- title -->
     <validator name="name" label="volume.name" required>
       <input type="text" name="name" ng-model="volumeEditOverviewForm.data.name" placeholder="{{::'volume.edit.name.placeholder' | message}}" required>
     </validator>

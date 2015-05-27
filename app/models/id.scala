@@ -41,6 +41,7 @@ final class IntId[+T] private (id : Int) extends GenericId[Int,T](id) with HasId
 }
 private[models] object IntId {
   private[models] def apply[T](i : Int) = new IntId[T](i)
+  implicit def ordering[T] : Ordering[HasId[T]] = Ordering.Int.on(_._id)
   // The normal family of conversions for database and web i/o:
   implicit def pathBindable[T] : PathBindable[IntId[T]] = PathBindable.bindableInt.transform(apply[T] _, _._id)
   implicit def queryStringBindable[T] : QueryStringBindable[IntId[T]] = QueryStringBindable.bindableInt.transform(apply[T] _, _._id)

@@ -956,8 +956,6 @@ app.controller('volume/slot', [
         return
 
       @place = () ->
-        records.sort (a, b) ->
-          a.record.category - b.record.category || a.record.id - b.record.id
         t = []
         overlaps = (rr) -> rr.record.id != r.record.id && r.overlaps(rr)
         for r in records
@@ -1009,12 +1007,9 @@ app.controller('volume/slot', [
         unless r?
           $scope.editing = true
           return
-        slot.addRecord(slot.volume.records[r], seg).then (rec) ->
+        slot.addRecord(slot.volume.records[r], seg).then (r) ->
             $scope.editing = true
-            r = new Record
-              id: rec.id
-              record: rec
-              segment: seg
+            r = new Record(r)
             records.push(r)
             Record.place()
             r.choose()

@@ -48,7 +48,7 @@
                       <span ng-if="current.asset.duration"> (<span ng-bind="current.asset.duration | timecode:true"></span>)</span>
                     </dd>
                     <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics() track by metric.id" ng-bind="::metric.name"></dt>
-                    <dd ng-if="!!current.record" ng-repeat-end ng-bind="::current.record.measures[metric.id]"></dd>
+                    <dd ng-if="!!current.record" ng-repeat-end ng-bind="current.record.measures[metric.id]"></dd>
                     <dt ng-if="!!current.age">age</dt>
                     <dd ng-if="!!current.age"><display-age value="current.age"></display-age></dd>
                   </dl>
@@ -70,14 +70,14 @@
                     <dl class="cf">
                       <dt ng-repeat-start="m in current.sortedMetrics" ng-init="metric=page.constants.metric[m]" ng-bind="::metric.name"></dt><br>
                       <dd ng-repeat-end ng-switch="::metric.options ? 'select' : (metric.long ? 'long' : metric.type)">
-                        <select ng-switch-when="select" name="{{::m}}" ng-model="current.data.measures[m]" ng-options="o for o in metric.options"/>
+                        <select ng-switch-when="select" name="{{::m}}" ng-model="current.data.measures[m]" ng-options="o for o in metric.options"></select>
                         <input ng-switch-when="text" type="text" name="{{::m}}" ng-model="current.data.measures[m]"/>
                         <textarea ng-switch-when="long" name="m" ng-model="current.data.measures[m]"></textarea>
                         <input ng-switch-when="date" input-date name="{{::m}}" ng-model="current.data.measures[m]" placeholder="YYYY-MM-DD"/>
                         <input ng-switch-when="number" type="text" name="{{::m}}" ng-model="current.data.measures[m]"/>
                       </dd>
                       <dt>
-                        <select class="add" name="add" ng-model="current.data.add" ng-options="metric.id+'' as metric.name for metric in current.addOptions()" ng-change="current.add()"/>
+                        <select class="add" name="add" ng-model="current.data.add" ng-options="metric.id+'' as metric.name for metric in current.addOptions()" ng-change="current.add()"></select>
                       </dt>
                     </dl>
                     </ng-form>
@@ -103,11 +103,11 @@
         <div id="slot-tags" class="slot-tags panel-tags-list" ng-form="form.tag">
           <div class="panel-tags-legend" tooltip="'keywords.display.description' | message">
             <span class="panel-tags-item legend keyword"></span>
-            <span message="keywords.title"></span> 
+            <span message="keywords.title"></span>
           </div>
           <div ng-if="::!editing" class="panel-tags-legend" tooltip="'tags.display.description' | message">
             <span class="panel-tags-item legend"></span>
-            <span message="tags.title"></span> 
+            <span message="tags.title"></span>
           </div> | 
           <ul class="panel-tags-items">
             <li ng-repeat="tag in tags" class="panel-tags-item" ng-class="{'active': tag.active,'keyword': tag.keyword.length}">
@@ -131,7 +131,7 @@
         </div>
 
         <section id="slot-timeline" class="slot-timeline slot frame">
-          
+
           <div class="slot-toolbar" ng-if="::editing" ng-switch="editing" ng-class="{'slot-toolbar-bg': editing!==true}">
             <div ng-switch-when="true">
               <button ng-if="::slot !== slot.volume.top" ng-click="addRecord()" class="mini">Add record</button>
@@ -189,7 +189,7 @@
                   <span class="icon zoomout" ng-if="ruler.zoomed" ng-click="zoom()"></span>
                 </div>
               </div>
-              
+
               <div class="slot-timeline-ruler" ng-click="click($event)" mouse-drag="dragSelection($down, $up)">
                 <div class="slot-timeline-ruler-time left" ng-bind="ruler.range.l | timecode:true"></div>
                 <div class="slot-timeline-ruler-time right" ng-bind="ruler.range.u | timecode:true"></div>
@@ -216,7 +216,7 @@
             </div>
 
             <div class="slot-timeline-tracks">
-              <div ng-repeat="t in assets" class="slot-timeline-track slot-track" ng-class="{select: t.asset === asset, dirty: t.dirty, 'slot-track-positioned': t.asset && !t.full, 'slot-track-select': t === current, 'slot-track-empty': !(t.asset || t.file)}" ng-click="t.click($event)" ng-dblclick="t.select($event)" mouse-drag="dragSelection($down, $up, t)">  
+              <div ng-repeat="t in assets" class="slot-timeline-track slot-track" ng-class="{select: t.asset === asset, dirty: t.dirty, 'slot-track-positioned': t.asset && !t.full, 'slot-track-select': t === current, 'slot-track-empty': !(t.asset || t.file)}" ng-click="t.click($event)" ng-dblclick="t.select($event)" mouse-drag="dragSelection($down, $up, t)">
                 <div class="slot-excerpt" ng-repeat="excerpt in t.excerpts" ng-if="editing !== 'position' && !excerpt.contains(t)" ng-style="excerpt.style()" ng-dblclick="excerpt.select($event)">
                 </div>
                 <div class="slot-track-asset-info">
