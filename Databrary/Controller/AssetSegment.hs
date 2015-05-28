@@ -13,7 +13,7 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Char8 as BSC
 import qualified Data.ByteString.Lazy as BSL
-import Data.Maybe (isNothing, isJust, fromMaybe)
+import Data.Maybe (isNothing, isJust)
 import Data.Monoid (mempty, (<>))
 import qualified Data.Text as T
 import qualified Database.PostgreSQL.Typed.Range as Range
@@ -27,7 +27,6 @@ import Databrary.Model.Id
 import Databrary.Model.Permission
 import Databrary.Model.Identity
 import Databrary.Model.Offset
-import Databrary.Model.Segment
 import Databrary.Model.Slot
 import Databrary.Model.Format
 import Databrary.Model.Asset
@@ -43,10 +42,10 @@ import Databrary.Action
 import Databrary.Controller.Paths
 import Databrary.Controller.Angular
 import Databrary.Controller.Permission
-import Databrary.Controller.Web
 import Databrary.Controller.Volume
 import Databrary.Controller.Slot
 import Databrary.Controller.Asset
+import Databrary.Controller.Format
 
 getAssetSegment :: Permission -> Id Slot -> Id Asset -> AuthActionM AssetSegment
 getAssetSegment p s a =
@@ -119,10 +118,9 @@ thumbAssetSegment :: AppRoute (Id Slot, Id Asset)
 thumbAssetSegment = action GET (pathSlotId </> pathId </< "thumb") $ \(si, ai) -> withAuth $ do
   as <- getAssetSegment PermissionPUBLIC si ai
   q <- peeks Wai.queryString
-  let afmt = view as
-  if formatIsImage (fromMaybe afmt (formatSample afmt))
+  let as' = assetSegmentInterp 0.25 as
+  if formatIsImage (view as')
     then do
-      let as' = as{ assetSegment = segmentInterp (assetSegment as) 0.25 }
       redirectRouteResponse [] downloadAssetSegment (slotId $ view as', assetId $ view as') q
     else
-      redirectRouteResponse [] formatIcon afmt q
+      redirectRouteResponse [] formatIcon (view as) q

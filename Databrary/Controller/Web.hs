@@ -3,17 +3,15 @@ module Databrary.Controller.Web
   ( StaticPath(..)
   , staticPath
   , webFile
-  , formatIcon
   ) where
 
 import Crypto.Hash (digestToHexByteString)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import Data.Char (isAscii, isAlphaNum)
-import Data.Monoid ((<>))
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
-import System.Posix.FilePath (joinPath, splitFileName, splitDirectories, splitExtension)
+import System.Posix.FilePath (joinPath, splitDirectories)
 
 import Databrary.Iso.Types (invMap)
 import Databrary.Ops
@@ -54,15 +52,3 @@ webFile = action GET ("web" >/> pathStatic) $ \sp -> do
   wf <- maybeAction =<< lookupWebFile p
   let wfp = webFileAbsRaw $ webFilePath wf
   serveFile wfp (unknownFormat{ formatMimeType = webFileFormat wf }) Nothing (digestToHexByteString $ webFileTag wf)
-
-formatIcon :: AppRoute Format
-formatIcon = invMap pf fp webFile where
-  fp f = Just $ staticPath
-    [ "images", "filetype"
-    , case formatExtension f of { e:_ -> e ; _ -> "_blank" } <> ".svg"
-    ]
-  pf (Just (StaticPath p))
-    | ("images/filetype/", i) <- splitFileName p
-    , (e, ".svg") <- splitExtension i
-    , Just f <- getFormatByExtension e = f
-  pf _ = unknownFormat

@@ -3,6 +3,7 @@ module Databrary.Model.Excerpt
   ( lookupAssetExcerpts
   , lookupSlotExcerpts
   , lookupVolumeExcerpts
+  , lookupVolumeThumb
   , changeExcerpt
   , removeExcerpt
   , excerptJSON
@@ -14,6 +15,7 @@ import Databrary.Ops
 import qualified Databrary.JSON as JSON
 import Databrary.Service.DB
 import Databrary.Model.SQL
+import Databrary.Model.Permission
 import Databrary.Model.Audit
 import Databrary.Model.Volume.Types
 import Databrary.Model.Container.Types
@@ -34,6 +36,15 @@ lookupSlotExcerpts (Slot c s) =
 lookupVolumeExcerpts :: MonadDB m => Volume -> m [Excerpt]
 lookupVolumeExcerpts v =
   dbQuery $ ($ v) <$> $(selectQuery selectVolumeExcerpt "$WHERE asset.volume = ${volumeId v}")
+
+lookupVolumeThumb :: MonadDB m => Volume -> m (Maybe AssetSegment)
+lookupVolumeThumb v = do
+  dbQuery1 $ assetSegmentInterp 0 . excerptAsset . ($ v) <$> $(selectQuery selectVolumeExcerpt "$\
+    \JOIN format ON asset.format = format.id \
+    \WHERE asset.volume = ${volumeId v} \
+      \AND COALESCE(GREATEST(excerpt.release, asset.release), slot_release.release) >= ${readRelease (volumePermission v)}::release \
+      \AND (asset.duration IS NOT NULL AND format.mimetype LIKE 'video/%' OR format.mimetype LIKE 'image/%') \
+    \ORDER BY container.top DESC LIMIT 1")
 
 changeExcerpt :: MonadAudit c m => Excerpt -> m Bool
 changeExcerpt e = do

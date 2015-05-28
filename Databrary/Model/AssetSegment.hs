@@ -6,6 +6,7 @@ module Databrary.Model.AssetSegment
   , lookupAssetSlotSegment
   , auditAssetSegmentDownload
   , assetSegmentJSON
+  , assetSegmentInterp
   ) where
 
 import Data.Maybe (catMaybes)
@@ -77,3 +78,6 @@ assetSegmentJSON as@AssetSegment{..}
     , ("excerpt" JSON..=) . excerptRelease <$> assetExcerpt
     ]
   fmt = view as
+
+assetSegmentInterp :: Float -> AssetSegment -> AssetSegment
+assetSegmentInterp f as = as{ assetSegment = segmentInterp f (assetSegment as) }

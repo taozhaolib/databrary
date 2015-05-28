@@ -78,6 +78,7 @@ routeMap = fromRouteList
   , route createVolume
   , route queryVolumes
   , route zipVolume
+  , route thumbVolume
 
   , route createContainer
   , route viewSlot
@@ -149,6 +150,7 @@ jsRoutes = mconcat
   , jsRoute "viewVolumeCreate" viewVolumeCreate ()
   , jsRoute "viewVolumeEdit" viewVolumeEdit (volume)
   , jsRoute "viewVolumeSearch" queryVolumes (HTML)
+  , jsRoute "thumbVolume" thumbVolume (volume)
 
   , jsRoute "viewSlot" viewSlot (HTML, slot)
   , jsRoute "viewSlotEdit" viewContainerEdit (slot)

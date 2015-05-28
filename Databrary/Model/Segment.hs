@@ -121,8 +121,8 @@ segmentOverlaps (Segment a) (Segment b) = Range.overlaps a b
 segmentIntersect :: Segment -> Segment -> Segment
 segmentIntersect (Segment a) (Segment b) = Segment (Range.intersect a b)
 
-segmentInterp :: Segment -> Float -> Segment
-segmentInterp (Segment r) f
+segmentInterp :: Float -> Segment -> Segment
+segmentInterp f (Segment r)
   | Just u <- upperBound r = Segment (Range.point (l + realToFrac f * (u - l)))
   | otherwise = Segment (Range.point 0)
   where l = fromMaybe 0 $ lowerBound r

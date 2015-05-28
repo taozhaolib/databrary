@@ -9,6 +9,7 @@ module Databrary.Controller.Volume
   , viewVolumeLinks
   , postVolumeLinks
   , queryVolumes
+  , thumbVolume
   , volumeDownloadName
   , volumeJSONQuery
   ) where
@@ -24,7 +25,7 @@ import qualified Data.Text as T
 import qualified Network.Wai as Wai
 
 import Databrary.Ops
-import Databrary.Has (peeks, peek)
+import Databrary.Has (view, peeks, peek)
 import qualified Databrary.JSON as JSON
 import Databrary.Service.DB
 import Databrary.HTTP.Client (HTTPClientM)
@@ -41,6 +42,8 @@ import Databrary.Model.Citation.CrossRef
 import Databrary.Model.Funding
 import Databrary.Model.Container
 import Databrary.Model.Record
+import Databrary.Model.Slot
+import Databrary.Model.Asset
 import Databrary.Model.Excerpt
 import Databrary.HTTP.Form.Deform
 import Databrary.HTTP.Path.Parser
@@ -50,6 +53,8 @@ import Databrary.Controller.Paths
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
 import Databrary.Controller.Angular
+import Databrary.Controller.Web
+import {-# SOURCE #-} Databrary.Controller.AssetSegment
 import Databrary.View.Volume
 
 getVolume :: Permission -> Id Volume -> AuthActionM Volume
@@ -201,3 +206,13 @@ queryVolumes = action GET (pathAPI </< "volume") $ \api -> withAuth $ do
   case api of
     JSON -> okResponse [] $ JSON.toJSON $ map volumeJSON p
     HTML -> blankForm $ htmlVolumeSearchForm vf
+
+thumbVolume :: AppRoute (Id Volume)
+thumbVolume = action GET (pathId </< "thumb") $ \vi -> withAuth $ do
+  v <- getVolume PermissionPUBLIC vi
+  e <- lookupVolumeThumb v
+  q <- peeks Wai.queryString
+  maybe
+    (redirectRouteResponse [] webFile (Just $ staticPath ["images", "draft.png"]) q)
+    (\as -> redirectRouteResponse [] downloadAssetSegment (slotId $ view as, assetId $ view as) q)
+    e
