@@ -36,7 +36,7 @@ getAuditIdentity = AuditIdentity <$> peek <*> getRemoteIp
 data Analytic = Analytic
   { analyticAction :: AuditAction
   , analyticRoute :: T.Text
-  , analyticData :: JSON.Value
+  , analyticData :: Maybe JSON.Value
   }
 
 auditAnalytic :: (MonadAudit c m) => Analytic -> m ()

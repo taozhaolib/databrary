@@ -28,5 +28,5 @@ angularAnalytics = do
   ar (JSON.Object o) = Analytic 
     <$> (JSON.parseMaybe JSON.parseJSON =<< HM.lookup "action" o)
     <*> (JSON.parseMaybe JSON.parseJSON =<< HM.lookup "route" o)
-    <*> HM.lookup "data" o
+    <*> return (HM.lookup "data" o)
   ar _ = Nothing
