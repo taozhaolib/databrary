@@ -203,14 +203,9 @@ app.provider('routerService', [
       resolve: {
         party: [
           'modelService', function (models) {
-            return models.Login.user.get(['parents', 'children']);
+            return models.Login.user.get(['parents', 'children', 'volumes']);
           }
-        ],
-        volumes: [
-          'modelService', function (models) {
-            return models.Volume.search({party: models.Login.user.id});
-          }
-        ],
+        ]
       },
       reloadOnSearch: false,
     });

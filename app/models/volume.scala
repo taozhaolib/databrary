@@ -170,7 +170,7 @@ object Volume extends TableId[Volume]("volume") {
 
   /** Retrieve the volumes accessible to the current user at at least (READ). */
   def getAccess(access : models.Permission.Value = models.Permission.READ)(implicit site : Site) : Future[Seq[Volume]] =
-    row.SELECT(sql"JOIN volume_access_view ON volume.id = volume_access_view.volume WHERE party = ${site.identity.id} AND access >= $access")
+    Volume.row.run(sql"SELECT DISTINCT ON (volume.id) " ++ _ + " FROM " ++ _ ++ sql" JOIN volume_access_view ON volume.id = volume_access_view.volume WHERE party = ${site.identity.id} AND access >= $access")
     .list
 
   def search(query : Option[String], party : Option[Party.Id], limit : Int = 12, offset : Int = 0)(implicit site : Site) : Future[Seq[Volume]] =
