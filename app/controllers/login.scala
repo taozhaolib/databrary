@@ -222,7 +222,7 @@ object LoginHtml extends LoginController with HtmlController {
 }
 
 object LoginApi extends LoginController with ApiController {
-  def get = SiteAction.async { implicit request =>
-    request.json(request.apiOptions).map(Ok(_))
+  def get = SiteAction { implicit request =>
+    Ok(request.json)
   }
 }

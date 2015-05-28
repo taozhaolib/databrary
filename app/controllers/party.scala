@@ -426,7 +426,10 @@ object PartyApi extends PartyController with ApiController {
 
   def profile =
     SiteAction.andThen(action(None, Some(Permission.NONE))).async { implicit request =>
-      request.obj.json(request.apiOptions).map(Ok(_))
+      JsonOptions(request.obj.json + ('access -> request.access.site), request.apiOptions,
+        (("volumes" -> ((opt : JsonOptions.Opt) => Volume.getAccess().flatMap(_.mapAsync[JsonRecord, Seq[JsonRecord]](_.json(Map("access" -> Nil))).map(JsonArray(_)))))
+        +: request.obj.jsonOpts.filterNot { case (k, _) => Seq("volumes", "access").contains(k) }) : _*)
+      .map(Ok(_))
     }
 
   def search =

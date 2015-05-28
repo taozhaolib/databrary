@@ -68,11 +68,6 @@ trait Site {
       Some('access -> access.site)
     , if (access.isAdmin) Some('superuser -> superuser) else None
     )
-
-  def json(options : JsonOptions.Options) : Future[JsonRecord] =
-    JsonOptions(json, options
-    , "volumes" -> (opt => Volume.getAccess()(this).flatMap(_.mapAsync[JsonRecord, Seq[JsonRecord]](_.json(Map("access" -> Nil))).map(JsonArray(_))))
-    )
 }
 
 trait AnonSite extends Site {

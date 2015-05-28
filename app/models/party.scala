@@ -115,9 +115,8 @@ final class SiteParty(val access : Access)(implicit val site : Site)
     party.account.filter(_ => checkPermission(Permission.SHARED)).map(a => ('email, a.email))
   )
 
-  def json(options : JsonOptions.Options) : Future[JsonRecord] =
-    JsonOptions(json, options
-    , "parents" -> { opt =>
+  def jsonOpts : Seq[JsonOptions.Tuple] = Seq(
+      "parents" -> { opt =>
         val full = checkPermission(Permission.ADMIN)
         val ap = party.authorizeParents(full)
         if (full && opt.contains("access"))
@@ -144,6 +143,8 @@ final class SiteParty(val access : Access)(implicit val site : Site)
     , "openid" -> (opt => async(if (party === site.identity || site.superuser)
         Json.toJson(party.account.flatMap(_.openid)) else JsNull))
     )
+  def json(options : JsonOptions.Options) : Future[JsonRecord] =
+    JsonOptions(json, options, jsonOpts : _*)
 }
 
 /** Refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */
