@@ -125,7 +125,7 @@
     border-top-left-radius b1
     border-bottom-left-radius b1
 
-.slot-timeline-time, .slot-timeline-control > button
+input[type='text'].slot-timeline-time, .slot-timeline-control > button
   @media screen and (max-width: grid-mobile-width)
     font-size 0.6em
     padding-left 2px
@@ -220,6 +220,10 @@
   text-overflow ellipsis
   width 96%
   padding-left b2
+  @media screen and (max-width:grid-tablet-width)
+    width 90%
+  @media screen and (max-width:grid-mobile-width)
+    width 80%
   .track-status
     color red
   &.uploading
