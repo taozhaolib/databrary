@@ -413,10 +413,17 @@ INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.ms-powerpoint', 'ppt', 'Microsoft PowerPoint presentation');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.oasis.opendocument.presentation', 'odp', 'OpenDocument presentation');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.openxmlformats-officedocument.presentationml.presentation', 'pptx', 'Microsoft PowerPoint (Office Open XML) presentation');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.datavyu', 'opf', 'Datavyu');
 SELECT nextval('format_id_seq'); -- placeholder for old video/mp4
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/webm', 'webm', 'WebM video');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/mpeg', 'mpg', 'MPEG program stream (MPEG-1/MPEG-2 video)');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/quicktime', 'mov', 'QuickTime video');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/mp2t', 'mts', 'MPEG transport stream');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/avi', 'avi', 'Audio Video Interleave');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/x-spss-sav', 'sav', 'SPSS System File');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('audio/wav', 'wav', 'Waveform audio');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/x-ms-wmv', 'wmv', 'Windows Media Video');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/x-chat', 'cha', 'Codes for the Human Analysis of Transcripts');
 
 -- The privledged formats with special handling (image and video for now) have hard-coded IDs:
 INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-800, 'video/mp4', 'mp4', 'MPEG-4 video');
@@ -951,14 +958,12 @@ COMMENT ON TABLE audit."analytic" IS 'Analytics data collected and reported by t
 ----------------------------------------------------------- bootstrap/test data
 
 INSERT INTO party (id, prename, sortname, orcid, affiliation) VALUES (1, 'Dylan', 'Simon', '0000000227931679', 'Databrary');
-INSERT INTO party (id, prename, sortname, affiliation) VALUES (2, 'Mike', 'Continues', 'Databrary');
 INSERT INTO party (id, prename, sortname, affiliation) VALUES (3, 'Lisa', 'Steiger', 'Databrary');
-INSERT INTO party (id, prename, sortname, affiliation) VALUES (4, 'Andrea', 'Byrne', 'Databrary');
 INSERT INTO party (id, prename, sortname, affiliation) VALUES (5, 'Karen', 'Adolph', 'New York University');
 INSERT INTO party (id, prename, sortname, affiliation) VALUES (6, 'Rick', 'Gilmore', 'Penn State University');
 SELECT setval('party_id_seq', 6);
 
-INSERT INTO account (id, email, openid) VALUES (1, 'dylan@databrary.org', 'http://dylex.net/');
+INSERT INTO account (id, email, password, openid) VALUES (1, 'dylan@databrary.org', '$2a$10$X5mY45HXhBHz/1SmtWHVMOGbmPA.qjqX59A5d7RKwr0K9Wl.G/Pfq', 'http://dylex.net/');
 INSERT INTO account (id, email, openid) VALUES (3, 'lisa@databrary.org', NULL);
 
 INSERT INTO authorize (child, parent, site, member) VALUES (1, 0, 'ADMIN', 'ADMIN');

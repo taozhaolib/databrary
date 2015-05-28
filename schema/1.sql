@@ -3,6 +3,9 @@ ALTER TYPE audit.audit_action RENAME TO action;
 COMMENT ON TYPE audit.action IS 'The various activities for which we keep audit records (in audit or a derived table).';
 
 ALTER TABLE "measure_number" RENAME TO "measure_numeric";
+ALTER INDEX "measure_number_pkey" RENAME TO "measure_numeric_pkey";
+ALTER TABLE "measure_numeric" RENAME CONSTRAINT "measure_number_metric_fkey" TO "measure_numeric_metric_fkey";
+ALTER TABLE "measure_numeric" RENAME CONSTRAINT "measure_number_record_fkey" TO "measure_numeric_record_fkey";
 
 DROP VIEW audit."measure_text";
 DROP VIEW audit."measure_number";
@@ -50,6 +53,7 @@ CREATE MATERIALIZED VIEW "authorize_inherit" AS
 	UNION ALL SELECT id, id, 'ADMIN', 'ADMIN', NULL FROM party WHERE id >= 0
 	UNION ALL SELECT id, -1, 'ADMIN', 'NONE', NULL FROM party WHERE id >= 0;
 COMMENT ON MATERIALIZED VIEW "authorize_inherit" IS 'Transitive inheritance closure of authorize.';
+CREATE INDEX ON "authorize_inherit" ("parent", "child");
 CREATE VIEW "authorize_valid" AS
 	SELECT * FROM authorize WHERE expires IS NULL OR expires > CURRENT_TIMESTAMP;
 COMMENT ON VIEW "authorize_valid" IS 'Active records from "authorize"';
@@ -72,9 +76,17 @@ CREATE FUNCTION "volume_creation" ("volume" integer) RETURNS timestamptz LANGUAG
 
 ALTER TABLE "funder" DROP "party";
 
-ALTER TABLE "format" ALTER "extension" TYPE varchar(8)[] USING CASE WHEN extension IS NULL THEN ARRAY[]::varchar(8)[] ELSE ARRAY[extension] END;
+ALTER TABLE "format" ALTER "extension" TYPE varchar(8)[] USING CASE WHEN extension IS NULL THEN ARRAY[]::varchar(8)[] ELSE ARRAY[extension] END,
+	ALTER "extension" SET NOT NULL;
+UPDATE format SET extension = ARRAY['mpg','mpeg'] WHERE extension = '{mpg}';
+UPDATE format SET extension = ARRAY['cha','chat'] WHERE extension = '{cha}';
+UPDATE format SET extension = ARRAY['jpg','jpeg'] WHERE extension = '{jpg}';
+UPDATE format SET extension = ARRAY['mts','m2ts'] WHERE extension = '{mts}';
+DELETE FROM format WHERE mimetype = 'text/html';
 
-ALTER TABLE "transcode" ALTER "start" TYPE "timestamptz";
+ALTER TABLE "transcode" ALTER "start" TYPE "timestamptz",
+	DROP CONSTRAINT "transcode_owner_fkey",
+	ADD Foreign Key ("owner") References "account";
 
 DROP MATERIALIZED VIEW "comment_thread";
 ALTER TABLE "comment" ALTER "time" TYPE "timestamptz";
@@ -91,6 +103,10 @@ CREATE INDEX ON "comment_thread" ("who");
 COMMENT ON MATERIALIZED VIEW "comment_thread" IS 'Comments along with their parent-defined path (top-down).  Parents must never form a cycle or this will not terminate.';
 
 ALTER TABLE "measure" RENAME TO "measure_abstract";
+ALTER INDEX "measure_pkey" RENAME TO "measure_abstract_pkey";
+ALTER TABLE "measure_abstract" RENAME CONSTRAINT "measure_check" TO "measure_abstract_check";
+ALTER TABLE "measure_abstract" RENAME CONSTRAINT "measure_metric_fkey" TO "measure_abstract_metric_fkey";
+ALTER TABLE "measure_abstract" RENAME CONSTRAINT "measure_record_fkey" TO "measure_abstract_record_fkey";
 
 DROP VIEW "measures";
 DROP VIEW "measure_view";
@@ -142,7 +158,24 @@ CREATE TRIGGER "measure_delete" INSTEAD OF DELETE ON "measure" FOR EACH ROW EXEC
 
 CREATE VIEW "measures" ("record", "measures") AS
 	SELECT record, array_agg(metric || ':' || datum ORDER BY metric) FROM measure GROUP BY record;
+COMMENT ON VIEW "measures" IS 'All measures for each record aggregated into a single array.';
 
 ALTER TABLE "token" ALTER "expires" TYPE timestamptz;
+
+ALTER TABLE "session" ADD "superuser" boolean DEFAULT false;
+UPDATE session SET superuser = false WHERE superuser IS NULL;
+ALTER TABLE "session" ALTER "superuser" SET NOT NULL;
+
+-- don't care about data here:
+DROP TABLE "upload";
+CREATE TABLE "upload" (
+	"token" char(32) NOT NULL Primary Key,
+	"expires" timestamptz NOT NULL,
+	"account" integer NOT NULL References "account" ON DELETE CASCADE,
+	"volume" integer NOT NULL References "volume" ON DELETE CASCADE,
+	"filename" text NOT NULL,
+	"size" bigint NOT NULL Check ("size" >= 0)
+) INHERITS ("account_token");
+COMMENT ON TABLE "upload" IS 'Tokens issued to track active uploads.';
 
 ALTER TABLE audit."analytic" ALTER "data" TYPE jsonb USING (data->'data')::jsonb;

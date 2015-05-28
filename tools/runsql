@@ -84,7 +84,7 @@ EOF
 
 check_dump() {
 	mkdir -p $schema/check
-	pg_dump -O -f $schema/check/$1.sql "${args[@]}" "${db[db]}"
+	pg_dump -O -Tschema -f $schema/check/$1.sql "${args[@]}" "${db[db]}"
 }
 
 check_diff() {

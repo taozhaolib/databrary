@@ -759,6 +759,10 @@ END; $delete$;
 CREATE TRIGGER "measure_delete" INSTEAD OF DELETE ON "measure" FOR EACH ROW EXECUTE PROCEDURE "measure_delete" ();
 
 SELECT audit.CREATE_TABLE ('measure');
+ALTER TABLE audit."measure"
+	ALTER "record" SET NOT NULL,
+	ALTER "metric" SET NOT NULL,
+	ALTER "datum" SET NOT NULL;
 
 CREATE FUNCTION audit."measure_i" () RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
 	IF NEW.audit_time IS NULL THEN
