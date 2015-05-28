@@ -30,8 +30,9 @@ int avFrame_rescale(const AVCodecContext *c, AVFrame *f)
 	t.width = c->width;
 	t.height = c->height;
 	av_frame_copy_props(&t, f);
-	if (!av_frame_get_buffer(&t, 32))
-		return -1;
+	int r = av_frame_get_buffer(&t, 32);
+	if (r < 0)
+		return r;
 	struct SwsContext *sws = sws_getContext(
 			f->width, f->height, f->format,
 			t.width, t.height, t.format,

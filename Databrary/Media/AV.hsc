@@ -461,10 +461,9 @@ avFrame AV infile offset width height outfile =
   fmt <- throwAVErrorIf "avcodec_find_best_pix_fmt_of_list" (FileContext outctx) $
     avcodecFindBestPixFmtOfList fmts ffmt 0 nullPtr
   #{poke AVCodecContext, pix_fmt} oc fmt
-  when (fmt /= ffmt || owidth /= fwidth || oheight /= fheight) $ do
-    r <- avFrameRescale oc frame
-    unless (r == 0) $
-      throwAVError 0 "av_frame_get_buffer" (FileContext outctx)
+  when (fmt /= ffmt || owidth /= fwidth || oheight /= fheight) $
+    throwAVErrorIf_ "av_frame_get_buffer" (FileContext outctx) $
+      avFrameRescale oc frame
 
   setAVDictionary opts "threads" "1"
   withAVCodec outctx os ocodec opts $ do
