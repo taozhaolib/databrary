@@ -99,7 +99,7 @@ logAccess Logs{ loggerAccess = Just l } qt q r = do
     & pad 4 (fromMaybe "-" $ lookup "user" rh)
     & pad 4 (show (floor $ 1000 * rt `diffUTCTime` qt :: Integer))
     & str (Wai.requestMethod q)
-    & str (Wai.rawPathInfo q)
+    & str (Wai.rawPathInfo q) <> str (Wai.rawQueryString q)
     & quote (lookup "location" rh)
     & quote (lookup "referer" qh)
     & quote (lookup "user-agent" qh)
