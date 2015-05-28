@@ -53,6 +53,8 @@ instance Has Segment AssetSlot where
 
 instance Has (Maybe Release) AssetSlot where
   view (AssetSlot a (Just s)) = view a <|> view s
-  view (AssetSlot a Nothing) = view a
+  view (AssetSlot a Nothing)
+    | volumeId (assetVolume a) == Id 0 = view a
+    | otherwise = Nothing -- "deleted" assets are always unreleased (private?), not view a
 instance Has Release AssetSlot where
   view = view . (view :: AssetSlot -> Maybe Release)

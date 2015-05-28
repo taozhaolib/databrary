@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, ViewPatterns #-}
 module Databrary.Controller.Zip
   ( zipContainer
   , zipVolume
@@ -38,6 +38,7 @@ import Databrary.Controller.Volume
 import Databrary.Controller.Party
 
 assetZipEntry :: AssetSlot -> AuthActionM (Maybe ZipEntry)
+assetZipEntry (dataPermission -> PermissionNONE) = return Nothing
 assetZipEntry AssetSlot{ slotAsset = a } = getAssetFile a >>= Trav.mapM (\f -> do
   req <- peek
   -- (t, _) <- assetCreation a

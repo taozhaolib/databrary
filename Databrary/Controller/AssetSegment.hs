@@ -73,6 +73,7 @@ viewAssetSegment = action GET (pathAPI </>> pathSlotId </> pathId) $ \(api, si, 
 
 serveAssetSegment :: Bool -> AssetSegment -> AuthAction
 serveAssetSegment dl as = do
+  _ <- checkDataPermission as
   store <- maybeAction =<< getAssetFile a
   szs <- peeks $ lookupQueryParameters "size"
   let sz = case szs of

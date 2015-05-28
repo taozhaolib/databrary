@@ -34,7 +34,6 @@ import qualified Control.Arrow as A
 import qualified Control.Category as C
 import Data.Maybe (fromMaybe)
 
-import Databrary.Ops ((?!>))
 import Databrary.Iso.Types
 import Databrary.Iso.TH
 
@@ -128,4 +127,4 @@ curried :: ((a, b) -> c) <-> (a -> b -> c)
 curried = curry :<->: uncurry
 
 defaultEq :: Eq a => a -> Maybe a <-> a
-defaultEq d = fromMaybe d :<->: \a -> a == d ?!> d
+defaultEq d = fromMaybe d :<->: \a -> if a == d then Nothing else Just a

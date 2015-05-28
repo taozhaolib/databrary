@@ -24,7 +24,6 @@ import Databrary.Ops
 import Databrary.Has (peek, peeks)
 import Databrary.Store
 import Databrary.Store.Types
-import Databrary.Model.Permission
 import Databrary.Model.Asset.Types
 
 maxAssetSize :: Word64
@@ -36,7 +35,6 @@ assetFile = fmap sf . BS.uncons <=< assetSHA1 where
   bs = BSL.toStrict . BSB.toLazyByteString
 
 getAssetFile :: MonadStorage c m => Asset -> m (Maybe RawFilePath)
-getAssetFile (dataPermission -> PermissionNONE) = return Nothing
 getAssetFile a = do
   s <- peek
   let 

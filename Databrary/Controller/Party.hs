@@ -13,7 +13,7 @@ import Control.Applicative (Applicative, (<*>), pure, optional)
 import Control.Monad (unless, when, liftM2, void)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
-import Data.Maybe (fromMaybe, isJust, fromJust)
+import Data.Maybe (isJust, fromMaybe)
 import Data.Monoid (mempty)
 import qualified Data.Text.Encoding as TE
 import qualified Data.Traversable as Trav
@@ -23,8 +23,6 @@ import Network.Wai.Parse (FileInfo(..))
 import Databrary.Ops
 import Databrary.Has (view, peek, peeks)
 import qualified Databrary.JSON as JSON
-import Databrary.Action.Route
-import Databrary.Action
 import Databrary.Service.DB
 import Databrary.Model.Enum
 import Databrary.Model.Id
@@ -36,16 +34,20 @@ import Databrary.Model.Authorize
 import Databrary.Model.Volume
 import Databrary.Model.VolumeAccess
 import Databrary.Model.Asset
+import Databrary.Model.AssetSlot
+import Databrary.Model.AssetSegment
 import Databrary.Model.Format
 import Databrary.Store.Temp
-import Databrary.Store.Asset
 import Databrary.HTTP.Path.Parser
 import Databrary.HTTP.Form.Deform
-import Databrary.HTTP.File
+import Databrary.Action.Route
+import Databrary.Action.Auth
+import Databrary.Action
 import Databrary.Controller.Paths
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
 import Databrary.Controller.Angular
+import Databrary.Controller.AssetSegment
 import Databrary.Controller.Web
 import Databrary.View.Party
 
@@ -165,11 +167,8 @@ queryParties = action GET (pathAPI </< "party") $ \api -> withAuth $ do
     HTML -> blankForm $ htmlPartySearchForm pf
 
 viewAvatar :: AppRoute (Id Party)
-viewAvatar = action GET (pathId </< "avatar") $ \i ->
+viewAvatar = action GET (pathId </< "avatar") $ \i -> withoutAuth $
   maybe
     (redirectRouteResponse [] webFile (Just $ staticPath ["images", "avatar.png"]) [])
-    (\a -> do
-      -- elsewhere? size <- runForm Nothing $ "size" .:> optional deform
-      store <- maybeAction =<< getAssetFile a
-      serveFile store (assetFormat a) Nothing (fromJust $ assetSHA1 a))
+    (serveAssetSegment False . assetSlotSegment . assetNoSlot)
     =<< lookupAvatar i

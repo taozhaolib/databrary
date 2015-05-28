@@ -79,4 +79,6 @@ webLinkFile :: FilePath -> WebGenerator
 webLinkFile s f t = do
   wf <- lift $ rawFilePath <$> getDataFileName s
   (_, wt) <- MaybeT $ fileInfo wf
-  lift $ webRegenerate wt f t $ createLink wf (webFileAbsRaw f)
+  lift $ webRegenerate wt f t $ do
+    _ <- removeFile (webFileAbsRaw f)
+    createLink wf (webFileAbsRaw f)

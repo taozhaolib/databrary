@@ -52,7 +52,6 @@ generateWebFile f t = msum $ map (\g -> g f t)
 
 regenerateWebFile :: WebFilePath -> IO (Maybe WebFilePath)
 regenerateWebFile f = do
-  _ <- removeFile (webFileAbsRaw f)
   r <- runMaybeT $ generateWebFile f Nothing
   when (isNothing r) $
     hPutStrLn stderr ("regenerateWebFile: " <> webFileRel f)
