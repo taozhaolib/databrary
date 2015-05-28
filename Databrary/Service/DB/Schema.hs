@@ -11,7 +11,7 @@ import qualified Data.ByteString.Lazy as BSL
 import Data.List (sort)
 import Database.PostgreSQL.Typed.Protocol (pgErrorCode)
 import Database.PostgreSQL.Typed.Query (rawPGSimpleQuery)
-import Database.PostgreSQL.Typed.Dynamic (pgDecodeRep)
+import Database.PostgreSQL.Typed.Dynamic (pgDecodeRep, pgLiteralRep)
 import System.Directory (getDirectoryContents)
 import System.FilePath ((</>), (<.>), splitExtension)
 import System.IO (stderr, hPutStr, hPutChar, hFlush)
@@ -75,5 +75,5 @@ updateDBSchema dir = do
   base = file "0"
   apply n = do
     confirm $ "Apply schema " ++ show n ++ "?"
-    dbExecute_ "INSERT INTO schema (name) VALUES (${n})"
+    dbExecute_ $ BSL.fromChunks ["INSERT INTO schema (name) VALUES (", pgLiteralRep n, ")"]
     sqlFile (file n)
