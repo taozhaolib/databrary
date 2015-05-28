@@ -1,6 +1,6 @@
 name := "databrary"
 
-scalaVersion in ThisBuild := "2.11.5"
+scalaVersion in ThisBuild := "2.11.6"
 
 scalacOptions in ThisBuild ++= Seq("-target:jvm-1.7","-optimise","-feature","-deprecation","-Xlint","-Yinline-warnings")
 
@@ -30,17 +30,17 @@ lazy val databrary = (project in file("."))
   .dependsOn(macros, dbrary, media)
 
 libraryDependencies ++= Seq(
-  "org.databrary" %% "play-logback-access" % "0.2",
+  "org.databrary" %% "play-logback-access" % "0.3",
   "org.databrary" %% "iteratees" % "0.1",
   "org.mindrot" % "jbcrypt" % "0.3m",
   ws,
   "com.typesafe.play" %% "play-mailer" % "2.4.0",
   "com.github.fge" % "json-schema-validator" % "2.2.6",
   "org.webjars" % "jquery" % "1.11.2",
-  "org.webjars" % "angularjs" % "1.3.14",
-  "org.webjars" % "ng-flow" % "2.5.1",
+  "org.webjars" % "angularjs" % "1.3.15",
+  "org.webjars" % "ng-flow" % "2.6.1",
   "org.webjars" % "normalize.styl" % "3.0.0",
-  "org.webjars" % "lodash" % "3.3.1"
+  "org.webjars" % "lodash" % "3.6.0"
 )
 
 mappings in Universal ~= { s =>

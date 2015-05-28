@@ -1,9 +1,8 @@
 'use strict';
 
 app.controller('volume/edit', [
-  '$scope', 'constantService', 'displayService', 'routerService', 'modelService', 'Store', 'volume',
-  function ($scope, constants, display, router, models, Store, volume) {
-    $scope.flowOptions = Store.flowOptions;
+  '$scope', 'constantService', 'displayService', 'routerService', 'modelService', 'volume',
+  function ($scope, constants, display, router, models, volume) {
     $scope.volume = volume;
     display.title = volume ? volume.title : constants.message('volume.edit.create');
 
@@ -33,7 +32,7 @@ app.controller('volume/edit', [
       if (url.includes(volume ? volume.editRoute() : router.volumeCreate()))
         return;
       if (!leavingSoSoon())
-        return display.cancelRouteChange(event); 
+        return display.cancelRouteChange(event);
     });
 
     $scope.$watch(function () {

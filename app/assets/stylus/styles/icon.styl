@@ -8,22 +8,14 @@
   background-position center
   width b23+1px
   height b23
-  &.public,
-  &.excerpt
-    padding-left b1 - b6
-  &.excerpts
-    padding-left b1
-  &.classification.RESTRICTED,
-  &.classification.SHARED
-    padding-left b1 - b12
   &.volume
     size b1
   &.record,
   &.session
     height b23
     width b23+b8
-  &.consent
-    width b1+b6
+  &.release
+    min-width 28px
 
   &.activity
     background-image url('/public/images/icon/activity.svg')
@@ -40,32 +32,17 @@
   &.close
     background-image url('/public/images/icon/close.png')
 
-  &.consent.PRIVATE
-    background-image url('/public/icons/consent/private.svg')
+  &.release.PRIVATE
+    background-image url('/public/icons/release/private.svg')
 
-  &.consent.SHARED
-    background-image url('/public/icons/consent/shared.svg')
+  &.release.SHARED
+    background-image url('/public/icons/release/shared.svg')
 
-  &.consent.EXCERPTS
-    background-image url('/public/icons/consent/excerpts.svg')
+  &.release.EXCERPTS
+    background-image url('/public/icons/release/excerpts.svg')
 
-  &.consent.PUBLIC
-    background-image url('/public/icons/consent/public.svg')
-
-  &.classification
-    width b1
-  
-  &.classification.PRIVATE
-    background-image url('/public/icons/classification/private.svg')
-
-  &.classification.RESTRICTED
-    background-image url('/public/icons/classification/restricted.png')
-
-  &.classification.SHARED
-    background-image url('/public/icons/classification/shared.png')
-
-  &.classification.PUBLIC
-    background-image url('/public/icons/classification/public.svg')
+  &.release.PUBLIC
+    background-image url('/public/icons/release/public.svg')
 
   &.record
     background-image url('/public/images/icon/record.png')
@@ -84,17 +61,19 @@
       margin-right b3
     &:hover:not(.button)
       opacity 0.4
-    &.line
-      width b1
 
   &.edit
   &.edit:hover
     background-image url('/public/images/icon/edit.svg')
     background-size contain
-    
+
   &.view-icon
   &.view-icon:hover
     background-image url('/public/images/icon/view.svg')
+    background-size contain
+
+  &.info
+    background-image url('/public/images/icon/info.svg')
     background-size contain
 
   &.jump
@@ -155,16 +134,7 @@
     &.add
       width b1
     &.session
-      width b1+b8    
-    &.public,
-    &.excerpt
-      background-position 2px 4px
-    &.consent.EXCERPTS
-      padding-left b1 + 2px
-      background-position 1px 4px
-    &.classification.RESTRICTED,
-    &.classification.SHARED
-      background-position 1px 4px
+      width b1+b8
 
 .sort
   background-position right
@@ -178,7 +148,6 @@
 
   &.sort-desc
     background-image url('/public/images/icon/sort-desc.png')
-
 
 th
   &.add

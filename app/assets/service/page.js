@@ -15,7 +15,7 @@ app.factory('pageService', [
     //
 
     page.permission = page.constants.permission;
-    page.classification = page.constants.classification;
+    page.release = page.constants.release;
 
     //
 

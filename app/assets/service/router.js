@@ -305,22 +305,6 @@ app.provider('routerService', [
       reloadOnSearch: false,
     });
 
-    routes.volumeSpreadsheet = makeRoute(controllers.VolumeHtml.spreadsheet, ['id'], {
-      controller: 'volume/spreadsheet',
-      templateUrl: 'volume/editSpreadsheet.html',
-      resolve: {
-        volume: [
-          'pageService', function (page) {
-            return checkPermission(page.$q,
-              page.models.Volume.get(page.$route.current.params.id,
-                {'top':'', 'records':'', 'containers':'', 'assets':'top'}),
-              page.permission.EDIT);
-          }
-        ]
-      },
-      reloadOnSearch: false,
-    });
-
     //
 
     function slotRoute(edit) { return {
@@ -333,7 +317,7 @@ app.provider('routerService', [
             return (edit ? checkPermission(page.$q, r, page.permission.EDIT) : r)
               .then(function (volume) {
                 return volume.getSlot(page.$route.current.params.id, page.$route.current.params.segment,
-                  ['consents', 'records', 'assets', 'excerpts', 'tags', 'comments']);
+                  ['releases', 'records', 'assets', 'excerpts', 'tags', 'comments']);
               });
           },
         ],
@@ -348,25 +332,34 @@ app.provider('routerService', [
 
     //
 
-    routes.slotAsset = makeRoute(controllers.AssetSlotHtml.view, ['sid', 'segment', 'id']);
+    routes.slotAsset = makeRoute(controllers.AssetSlotHtml.view, ['vid', 'cid', 'segment', 'id'], {
+      controller: 'asset/view',
+      templateUrl: 'asset/view.html',
+      resolve: {
+        asset: [
+          'pageService', function (page) {
+            return page.models.Volume.get(page.$route.current.params.vid)
+              .then(function (volume) {
+                return volume.getAsset(page.$route.current.params.id, page.$route.current.params.cid, page.$route.current.params.segment);
+              });
+          },
+        ]
+      },
+      reloadOnSearch: false,
+    });
+
     routes.record = makeRoute(controllers.RecordHtml.view, ['id']);
     routes.volumeThumb = makeRoute(controllers.VolumeController.thumb, ['id', 'size']);
     routes.volumeZip = makeRoute(controllers.VolumeController.zip, ['id']);
     routes.volumeCSV = makeRoute(controllers.VolumeController.csv, ['id']);
     routes.slotZip = makeRoute(controllers.SlotController.zip, ['vid', 'id', 'segment']);
-    routes.assetThumb = makeRoute(controllers.AssetSlotController.thumb, ['sid', 'segment', 'id', 'size']);
-    routes.assetDownload = makeRoute(controllers.AssetSlotController.download, ['sid', 'segment', 'id', 'inline']);
+    routes.assetThumb = makeRoute(controllers.AssetSlotController.thumb, ['cid', 'segment', 'id', 'size']);
+    routes.assetDownload = makeRoute(controllers.AssetSlotController.download, ['cid', 'segment', 'id', 'inline']);
     routes.partyAvatar = makeRoute(controllers.PartyHtml.avatar, ['id', 'size']);
     routes.assetEdit = makeRoute(controllers.AssetHtml.edit, ['id']);
     routes.recordEdit = makeRoute(controllers.RecordHtml.edit, ['id']);
 
     //
-
-    /*
-    $routeProvider.otherwise({
-      redirectTo: '/'
-    });
-    */
 
     this.$get = [
       '$rootScope', '$location', '$http', '$cacheFactory', 'constantService', 'analyticService',

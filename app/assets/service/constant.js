@@ -2,7 +2,7 @@
 
 app.factory('constantService', [
   '$log', '$sce', 'constantData', function ($log, $sce, constants) {
-    
+
     constants.regex = {
       doi: /^(?:[dD][oO][iI]:|(?:http:\/\/)?dx\.doi\.org\/)?(10\.[0-9\.]+\/\S+)\s*$/,
     };
@@ -24,12 +24,12 @@ app.factory('constantService', [
     };
 
     invertArray(constants.permission);
-    invertArray(constants.classification);
-    invertArray(constants.consent);
+    invertArray(constants.release);
     constants.categoryName = invertBy(constants.category, "name");
     constants.metricName = invertBy(constants.metric, "name");
 
     /* convenient aliases: */
+    constants.permission.VIEW = constants.permission.PUBLIC;
     constants.permission.CONTRIBUTE = constants.permission.EDIT;
     constants.permission.SUPER = constants.permission.length;
 

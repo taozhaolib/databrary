@@ -54,7 +54,6 @@ POST    /volume/$vID<[0-9]+>/edit                                               
 GET     /volume/$vID<[0-9]+>/access                                                               controllers.VolumeHtml.admin(vID : models.Volume.Id)
 GET     /volume/$vID<[0-9]+>/access/search                                                        controllers.VolumeHtml.accessSearch(vID : models.Volume.Id)
 POST    /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>                                                controllers.VolumeHtml.accessChange(vID : models.Volume.Id, pID : models.Party.Id)
-GET     /volume/$vID<[0-9]+>/spreadsheet                                                          controllers.VolumeHtml.spreadsheet(vID : models.Volume.Id, js : Option[Boolean] ?= None)
 GET     /volume/$vID<[0-9]+>/zip                                                                  controllers.VolumeController.zip(vID : models.Volume.Id)
 GET     /volume/$vID<[0-9]+>/csv                                                                  controllers.VolumeController.csv(vID : models.Volume.Id)
 GET     /volume/$vID<[0-9]+>/thumb                                                                controllers.VolumeController.thumb(vID : models.Volume.Id, size : Int ?= controllers.AssetController.defaultThumbSize)
@@ -84,7 +83,7 @@ GET     /transcode                                                              
 GET     /transcode/$assetId<[0-9]+>                                                               controllers.AssetHtml.transcoding(assetId : models.Asset.Id)
 POST    /transcode/$assetId<[0-9]+>                                                               controllers.AssetHtml.transcode(assetId : models.Asset.Id)
 
-GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>                                                     controllers.AssetSlotHtml.view(    sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id)
+GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>                                 controllers.AssetSlotHtml.view(vID : models.Volume.Id, sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id)
 GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/download                                            controllers.AssetSlotController.download(sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, inline : Boolean ?= false)
 GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/head                                                controllers.AssetSlotController.head(    sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, size : Int ?= controllers.AssetController.defaultThumbSize)
 GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/thumb                                               controllers.AssetSlotController.thumb(   sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, size : Int ?= controllers.AssetController.defaultThumbSize)
@@ -118,6 +117,7 @@ GET     /api/null                                                               
 GET     /api/activity                                                                             controllers.SiteApi.activity
 
 # ----- LOGIN ----- #
+# GET            ?volumes
 GET     /api/user                                                                                 controllers.LoginApi.get
 POST    /api/user/login                                                                           controllers.LoginApi.post
 POST    /api/user/logout                                                                          controllers.LoginApi.logout
@@ -182,7 +182,7 @@ GET     /api/record                                                             
 GET     /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.get(recordId : models.Record.Id)
 POST    /api/record                                                                               controllers.RecordApi.create(volume : models.Volume.Id, category : Option[models.RecordCategory.Id] ?= None)
 POST    /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.update(recordId : models.Record.Id)
-#                                                                                                 TODO: DELETE /api/record/recordId<[0-9]+>
+DELETE  /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.remove(recordId : models.Record.Id)
 POST    /api/record/$recordId<[0-9]+>/measure/$metricId<-?[0-9]+>                                 controllers.RecordApi.measureUpdate(recordId : models.Record.Id, metricId : models.Metric.Id)
 POST    /api/slot/$containerId<[0-9]+>/record                                                     controllers.RecordApi.add(containerId : models.Container.Id, segment : dbrary.Segment)
 POST    /api/record/$recordId<[0-9]+>/slot/$containerId<[0-9]+>                                   controllers.RecordApi.move(recordId : models.Record.Id, containerId : models.Container.Id)

@@ -1,8 +1,8 @@
 'use strict'
 
 app.directive 'accessSearchForm', [
-  'modelService', 'constantService',
-  (models, constants) ->
+  'constantService',
+  (constants) ->
     restrict: 'E'
     templateUrl: 'volume/accessSearch.html',
     link: ($scope, $element, $attrs) ->
@@ -32,6 +32,6 @@ app.directive 'accessSearchForm', [
           name:
             tips: constants.message('access.search.name.help')
         , true
-      
+
       return
 ]

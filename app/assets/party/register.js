@@ -25,13 +25,16 @@ app.controller('party/register', [
       },
 
       agreement: function (step) {
+        $scope.registerForm.$setUnsubmitted();
         step.$scope.proceed = function () {
           $scope.registerForm.$setPristine(); // maybe should be $setSubmitted
           page.models.Login.register($scope.registerForm.data)
             .then(function () {
+              $scope.registerForm.$setUnsubmitted();
               $scope.registerForm.sent = true;
               $scope.proceed();
             }, function (res) {
+              $scope.registerForm.$setUnsubmitted();
               page.messages.addError({
                 body: page.constants.message('error.generic'),
                 report: res
@@ -53,9 +56,11 @@ app.controller('party/register', [
           };
 
         form.save = function () {
+          form.$setSubmitted();
           page.messages.clear(form);
           page.models.Login.passwordToken(token.party, form.data)
             .then(function () {
+              form.$setUnsubmitted();
               form.validator.server({});
 
               page.messages.add({
@@ -63,10 +68,10 @@ app.controller('party/register', [
                 body: page.constants.message('reset.save.success', form.data.email),
                 owner: form
               });
-
               form.sent = true;
               page.$location.url(page.router.register());
             }, function (res) {
+              form.$setUnsubmitted();
               form.validator.server(res);
             });
         };
@@ -101,7 +106,6 @@ app.controller('party/register', [
       request: function (step) {
         var form = $scope.authApplyForm = step.$scope.authApplyForm;
         form.sent = false;
-
         form.successFn = function () {
           form.sent = true;
           updateUserAuth();

@@ -31,14 +31,14 @@ object Truth {
 
 /** A passively conditional value based on a Truth instance. */
 final case class Maybe[+A](a : A)(implicit t : Truth[A]) {
-  final implicit val pass : Boolean = t.pass(a)
+  final def pass : Boolean = t.pass(a)
   /** A more concise version of the common `Some(_).filter(_)` idiom.
     * @return Some(a) if pass(a), None otherwise
     */
-  final def opt : Option[A] =
-    if (pass) Some(a) else None
+  final def opt[B](f : A => B = identity[A] _) : Option[B] =
+    if (pass) Some(f(a)) else None
   /** Conditionally map only true values. */
-  final def map[B >: A](f : A => B) : B =
+  final def andThen[B >: A](f : A => B) : B =
     if (pass) f(a) else a
   final def orElse[B >: A](b : => B) : B =
     if (pass) a else b
@@ -47,8 +47,12 @@ final case class Maybe[+A](a : A)(implicit t : Truth[A]) {
 }
 
 object Maybe {
+  import scala.language.implicitConversions
+  implicit def pass(m : Maybe[_]) : Boolean = m.pass
+  implicit def opt[A](m : Maybe[A]) : Option[A] = m.opt()
+
   def bracket(l : String = "", a : String, r : String = "")(implicit t : Truth[String]) : String =
-    Maybe(a)(t).map(l + _ + r)
+    Maybe(a)(t).andThen(l + _ + r)
   def join(l : String, j : String, r : String)(implicit t : Truth[String]) : String =
     if (t.pass(l) && t.pass(r)) l + j + r
     else l + r

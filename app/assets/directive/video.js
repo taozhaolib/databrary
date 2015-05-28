@@ -7,6 +7,7 @@ app.directive('video', [
     require: '^?ngController',
     link: function ($scope, $element, $attrs, view) {
       $element.on('loadedmetadata', function () {
+        var video = this;
         var seek = $scope.$eval($attrs.seek), stop;
         if (seek instanceof Segment) {
           stop = seek.u;
@@ -14,27 +15,29 @@ app.directive('video', [
         }
 
         if (isFinite(seek) && seek > 0) {
-          this.currentTime = seek / 1000;
+          video.currentTime = seek / 1000;
           $element.off('loadedmetadata');
         }
 
         if (isFinite(stop) && stop > seek) {
           stop /= 1000;
           var checkStop = function() {
-            if (this.currentTime < stop)
+            if (video.currentTime < stop)
               return;
-            this.pause();
+            video.pause();
             $element.off('timeupdate', checkStop);
           };
           $element.on('timeupdate', checkStop);
         }
 
-        if (view && view.registerVideo) {
+        if (view && view.registerVideo)
           view.registerVideo($element);
-          $scope.$on('$destroy', function () {
+        $scope.$on('$destroy', function () {
+          $element.empty();
+          video.load();
+          if (view && view.deregisterVideo)
             view.deregisterVideo($element);
-          });
-        }
+        });
       });
     }
   }; }

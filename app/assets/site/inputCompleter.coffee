@@ -64,19 +64,19 @@ app.directive 'inputCompleter', [
           $scope.choices = []
         return
 
-      $scope.choose = (c) ->
+      $scope.choose = (c, event) ->
         $scope.selected = undefined
         resend = undefined
         handle(
           if typeof c.select == 'function'
-            c.select()
+            c.select(event)
           else
             c.select)
         return
 
       $scope.enter = ($event) ->
         if $scope.selected?
-          $scope.choose($scope.choices[$scope.selected])
+          $scope.choose($scope.choices[$scope.selected], $event)
           return
         # bypass debounce:
         $scope.value = value = input.value

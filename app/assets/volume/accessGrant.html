@@ -10,9 +10,7 @@
       <div class="permission-heading">
         <a ng-href="{{::access.party.route()}}" class="permission-auth-username" ng-bind="::access.party.name"></a>
         <span class="permission-auth-email" ng-if="::access.party.email" ng-bind="::access.party.email"></span>
-        <button class="mini access-grant-remove" ng-click="accessGrantForm.remove(this)" class="col-desktop-1 col-tablet-1 col-mobile-1">
-          <span class="icon trash"></span>
-        </button>
+        <button class="mini icon trash access-grant-remove" ng-click="accessGrantForm.remove(this)" class="col-desktop-1 col-tablet-1 col-mobile-1"></button>
       </div>
 
       <div>
@@ -25,7 +23,11 @@
         <fieldset class="clean skinny radio-set">
           <div ng-if="::!access.party.institution">
             <input type="checkbox" ng-model="accessGrantForm.data.extend">
-            <label class="option" ng-bind="::'access.grant.inherit' | message:access.party.name"></label>
+            <label class="option inline">
+              <span ng-bind="::'access.grant.inherit' | possessive:access.party"></span>
+              <a ng-href="{{::access.party.route()}}#affiliates" target="_blank"> affiliates</a>
+            </label>
+
           </div>
         </fieldset>
       </div>

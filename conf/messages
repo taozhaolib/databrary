@@ -339,27 +339,27 @@ access.edit.READ.who=For those you trust to view all data.
 access.edit.EDIT.who=For those you trust to view, change, add, and remove data.
 access.edit.ADMIN.who=For fellow volume investigators only.
 
-consent.NONE=There is no release for this session.
-consent.PRIVATE=Private: The identifying data in this session have not been released for sharing.
-consent.SHARED=Shared: The identifying data in this session have been released for sharing only with authorized Databrary users. No excerpts may be used.
-consent.EXCERPTS=Excerpt: The identifying data in this session have been released for sharing with authorized Databrary users, and excerpts may be used for research and educational purposes.
-consent.PUBLIC=Public: The identifying data in this session have been released publicly.
+release.prompt=Choose sharing level...
 
-classification.PRIVATE=Private: never shared; only available to individuals and groups explicitly granted access.
-classification.RESTRICTED=Restricted: potentially identifying data; only shared with appropriate participant release.
-classification.SHARED=Shared: only shared with authorized Databrary users for educational or research purposes.
-classification.PUBLIC=Public: available to anybody for unrestricted use.
+release.DEFAULT.session=Shared according to participant session release level
+release.DEFAULT.title=Unreleased
+release.DEFAULT.deselect=This file is deidentified (no faces, voices, dates, etc.), or I wish to override any participant release
+release.DEFAULT.select=Use current file or participant release level
+release.DEFAULT.description=This content has not been shared
+release.PRIVATE.title=Private
+release.PRIVATE.select=Available only to collaborators
+release.PRIVATE.description=This content has not been shared and is restricted to collaborators
+release.SHARED.title=Authorized Users
+release.SHARED.select=Available only to authorized Databrary users
+release.SHARED.description=This content is restricted to authorized Databrary users
+release.EXCERPTS.title=Excerpts
+release.EXCERPTS.select=Available only to authorized Databrary users, who may use it in presentations for informational or educational purposes
+release.EXCERPTS.description=This content is restricted to authorized Databrary users, who may use it in presentations for informational or educational purposes
+release.PUBLIC.title=Public
+release.PUBLIC.select=Available openly to anybody
+release.PUBLIC.description=This content is available openly to anyone
 
-classification.excerpt.prompt=Choose sharing level...
-classification.excerpt.PRIVATE=Not shared.
-classification.excerpt.RESTRICTED=Shared with appropriate participant release.
-classification.excerpt.SHARED=Shared with authorized Databrary users for educational or research purposes.
-classification.excerpt.PUBLIC=Available to anybody for unrestricted use.
-
-classification.select.PRIVATE=Never share this file: only available to collaborators.
-classification.select.RESTRICTED=This file contains identifiable data such as faces, voices, or dates.
-classification.select.SHARED=Only share this file with authorized Databrary users for educational or research purposes.
-classification.select.PUBLIC=This file may be available to anybody for unrestricted use.
+release.excerpt.warning=You are choosing to make this clip more widely available than the file from which it originates. Click OK if this is acceptable.
 
 asset.untranscoded=This video is being converted to Databrary''s standard format, so some features may not work yet.
 
@@ -405,7 +405,7 @@ not.condition=No conditions
 not.group=Not grouped
 
 excerpts.title=Highlights
-excerpts.download=Download this highlight.
+excerpts.download=Download this file.
 
 position=Position
 position.placeholder=MM:SS
@@ -439,8 +439,14 @@ tags.vote.up=Vote this tag up.
 tags.vote.null=Remove your vote on this tag.
 tags.auto.error=The auto-suggestion list is out-of-order.
 tags.vote.up.success=Tag <strong>{0}</strong> voted up.
-tags.vote.null.success=Tag <strong>{0}</strong> vote cancelled.
+tags.vote.null.success=Tag <strong>{0}</strong> vote canceled.
 tags.vote.error=Error while voting for tag <strong>{0}</strong>.
+tags.display.description=User-provided terms that help others find similar content
+tag.add.help=Add a tag to this content to help others find it
+
+keywords.title=Keywords
+keywords.display.description=Preferred terms provided by the author to help others find this content
+keyword.add.help=Add preferred terms to label your data, such as the keywords associated with any related publication
 
 # Access
 access.global.legend=Share this volume
@@ -451,7 +457,7 @@ access.global.PUBLIC.SHARED=Shared: Share with authorized researchers and select
 access.global.restricted=You must be an authorized Databrary Investigator in order to share volumes.
 
 access.grant.legend=Collaborators
-access.grant.inherit=Extend access to those in {0}''s lab/group.
+access.grant.inherit=Extend access to {0} 
 access.grant.save.success=Access changed successfully.
 access.grant.save.error=Could not update access at this time.
 access.grant.remove.success=Access removed successfully.
@@ -516,7 +522,7 @@ wizard.register-password.instructions=Please set a secure password. Remember tha
 
 wizard.register-agent.name=Request Authorization
 wizard.register-agent.description=Begin the authorization process.
-wizard.register-agent.instructions=In order to access Databrary resources, you must be authorized either as an Authorized Investigator through a sponsoring institution, or by an authorized Databrary Investigator as an Affiliate. Read more about <a href="http://databrary.org/access/guide/investigators.html" target="_blank">who qualifies for authorization</a> and <a href="http://databrary.org/access/guide/investigators/authorization.html" target="_blank">how to get authorized</a>. 
+wizard.register-agent.instructions=In order to access Databrary resources, you must be authorized either as an Authorized Investigator through a sponsoring institution, or by an authorized Databrary Investigator as an Affiliate. Read more about <a href="http://databrary.org/access/guide/investigators.html" target="_blank">who qualifies for authorization</a> and <a href="http://databrary.org/access/guide/investigators/authorization.html" target="_blank">how to get authorized</a>. If you cannot find your institution or sponsoring PI below, you can still proceed with registration by selecting ''None of these''.
 
 wizard.register-request.name=Submit Authorization
 wizard.register-request.description=Confirm your authorization request.
@@ -562,23 +568,18 @@ volume.edit.success=Volume saved successfully.
 
 wizard.volume-edit-materials.name=Materials
 wizard.volume-edit-materials.description=Upload clips, images, stimuli, documents, and other materials.
-wizard.volume-edit-materials.instructions=<p>Provide any files related to this volume.  For each file, you must indicate whether it contains <b>restricted</b> identifying information (such as faces or birthdates), or <b>shared</b> or <b>public</b> non-data (stimuli or displays used during data collection, blank questionnaire forms).</p><p>Any representative video clips or still images may additionally be selected as highlights, and possibly shared more broadly given appropriate, explicit consent for release by depicted individuals.</p><p>See our <a href="/asset/formats">list of accepted file types</a>.</p>
+wizard.volume-edit-materials.instructions=<p>Provide any files related to this volume.  For each file, you must indicate whether it contains <b>restricted</b> identifying information (such as faces or birthdates), or <b>shared</b> or <b>public</b> non-data (stimuli or displays used during data collection, blank questionnaire forms).</p><p>Any representative video clips or still images may additionally be selected as highlights, and possibly shared more broadly given appropriate, explicit consent for release by depicted individuals.</p><p>Click the <em>folder</em> (<img src="/public/images/icon/session.png">) on the left or "no file" to upload files. Click the <em>plus</em> (<img src="/public/images/icon/add.png">) sign on the rightmost tab to add a new tab. Click the <em>plus</em> (<img src="/public/images/icon/add.png">) sign within a tab to add a new column within the given tab.</p>See our <a href="/asset/formats">list of accepted file types</a>.</p>
 
 wizard.volume-edit-data.name=Data
 wizard.volume-edit-data.description=Provide data from collected sessions.
-wizard.volume-edit-data.instructions=<p>Here you can enter data about individual sessions, participants, or data collections.  Each row in this spreadsheet represents a single session.</p><p>Click the <em>folder</em> (<img src="/public/images/icon/session.png">) on the left to upload files for each session. Click the <em>plus</em> (<img src="/public/images/icon/add.png">) sign on the rightmost tab to add a new tab. Click the <em>plus</em> (<img src="/public/images/icon/add.png">) sign within a tab to add a new column within the given tab. Any highlighted cells will be modified by your current edit.</p>
-wizard.volume-edit-data.releasekeyhide=Hide legend of session release levels
-wizard.volume-edit-data.releasekeyshow=Show legend of session release levels
-wizard.volume-edit-data.classkeyhide=Hide legend of file classification levels
-wizard.volume-edit-data.classkeyshow=Show legend of file classification levels
-
+wizard.volume-edit-data.instructions=<p>Here you can enter data about individual sessions, participants, or data collections.  Each row in this spreadsheet represents a single session.</p><p>Click the <em>folder</em> (<img src="/public/images/icon/session.png">) on the left to upload files for each session. Click the <em>plus</em> (<img src="/public/images/icon/add.png">) sign on the rightmost tab to add a new tab. Click the <em>plus</em> (<img src="/public/images/icon/add.png">) sign within a tab to add a new column within the given tab.</p>
 
 asset.file=File
 asset.file.help=Select the file you wish to upload.
 asset.name=Name
 asset.name.help=You may optionally provide a brief description of this file for other users.
 asset.name.placeholder=New file name
-asset.classification=Classification
+asset.classification=Release
 asset.excerpt=
 asset.excerpt.checkbox-label=Highlight on volume
 asset.add-drop=Drop file here or click to upload a new file.
@@ -594,10 +595,11 @@ asset.update.success=Updated "{0}" successfully.
 asset.update.error=Unable to update "{0}".
 asset.replace.success=Replaced "{0}" successfully.
 asset.restore=Paste the previously removed file: "{0}".
-asset.remove.success=Removed "{0}" successfully.  You may restore it by selecting "Add File" on the toolbar and then using the Paste button on the top right corner of the Viewer.
+asset.remove.success=Removed "{0}" successfully.  You may restore it by selecting "Add File" on the tool bar and then using the Paste button on the top right corner of the Viewer.
 asset.remove.error=Unable to remove "{0}".
 asset.remove.confirm=Are you sure you want to remove this file?
 asset.add=(new file)
+asset.empty=(New file. Edits can be made in the viewer.)
 
 asset.display.unavailable=Preview unavailable
 asset.display.nopermission=You are not authorized to view this file
@@ -619,9 +621,13 @@ volume.edit.access.success=Volume access updated successfully.
 volume.edit.access.error=Unable to update volume access.
 
 download.zip=Download all files as zip
+download.zip.prompt.empty=You do not have download access to any of the files in this volume. Check with your sponsoring party or the volume creator if you think you have arrived at this message in error.
+download.zip.prompt.partial=Based on the release levels for the files in this volume, you will download the files listed below, which may be a partial list of the files available in this volume. Please be aware of the individual file permissions as specified for each file. 
+download.csv.prompt=The data contained in this CSV export may contain personally identifying information such as birthdate, gender, race, and ethnicity, dates of testing, and location of testing. Please handle with care and do not distribute to parties who do not have authorization to view these data.
 
 # --- Spreadsheet
 slot.remove.notempty=You must remove all associated records and files before you can remove this.
+record.remove.notempty=You must remove all associated sessions and materials before you can remove this.
 spreadsheet.add.category=Add new tab
 spreadsheet.add.metric=Add new column to {0}
 spreadsheet.unlimit=Show all {0} rows...

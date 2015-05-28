@@ -16,13 +16,9 @@ app.factory('displayService', [
       messages.clear();
     });
 
-    $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
+    $rootScope.$on('$routeChangeSuccess', function () {
       display.loading = false;
-
-      var data = {current: current.controller};
-      if (previous)
-        data.previous = previous.controller;
-      analytics.add('open', data);
+      analytics.add('open');
     });
 
     display.error = undefined;
@@ -70,7 +66,7 @@ app.factory('displayService', [
       return $filter('age')(value, ageKey);
     };
 
-    /*$routeChangeStart is always fires before $locationChangeStart*/ 
+    /*$routeChangeStart is always fires before $locationChangeStart*/
     display.cancelRouteChange = function(event){
       display.loading = false;
       event.preventDefault();

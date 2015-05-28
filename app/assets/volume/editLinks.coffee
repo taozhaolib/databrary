@@ -34,7 +34,7 @@ app.directive 'volumeEditLinksForm', [
             form.validator.server {}
             form.data = data.filter (ref) -> ref.head != '' || ref.url != ''
             blank()
-        
+
             page.messages.add
               type: 'green'
               body: page.constants.message('volume.edit.success')

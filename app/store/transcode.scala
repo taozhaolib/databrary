@@ -14,8 +14,8 @@ import site._
 object Transcode {
   private implicit def context : ExecutionContext = site.context.background
   private val logger = play.api.Logger("transcode")
-  private val host : Option[String] = current.configuration.getString("transcode.host").flatMap(Maybe(_).opt)
-  private val dir : Option[File] = current.configuration.getString("transcode.dir").flatMap(Maybe(_).opt).map { s =>
+  private val host : Option[String] = current.configuration.getString("transcode.host").flatMap(Maybe(_).opt())
+  private val dir : Option[File] = current.configuration.getString("transcode.dir").flatMap(Maybe(_).opt()).map { s =>
     new File(s)
   }
 
@@ -24,7 +24,7 @@ object Transcode {
   private def procLogger(prefix : String) = {
     val pfx = if (prefix.nonEmpty) prefix + ": " else prefix
     scala.sys.process.ProcessLogger(
-      s => logger.info(pfx + s), 
+      s => logger.info(pfx + s),
       s => logger.warn(pfx + s))
   }
 
@@ -47,7 +47,7 @@ object Transcode {
   def start(id : models.Transcode.Id, args : Seq[String]) : Future[Int] =
     ctl(id, args : _*)
     .map(_.toInt)
-    .whenComplete { r => 
+    .whenComplete { r =>
       logger.debug("running " + id + ": " + r.toEither.merge.toString)
     }
 

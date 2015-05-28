@@ -7,7 +7,7 @@ app.directive 'tagAdd', [
     templateUrl: 'site/tagAdd.html'
     link: ($scope, $element, $attrs) ->
       form = $scope.tagAddForm
-      $scope.placeholder = $attrs.placeholder
+      $scope.keyword = 'keyword' of $attrs
 
       select = (tag) -> ->
         $scope.vote(tag, true).then () -> ''

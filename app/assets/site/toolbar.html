@@ -22,9 +22,10 @@
               <a ng-href="{{::page.router.volumeSearch()}}"><span><b>Volumes</b></span></a>
             </li>
             <li ng-class="{'hide-mobile':!hoverNav}">
+              <a href="//databrary.org/news.html">News</a>
+            <li ng-class="{'hide-mobile':!hoverNav}">
               <a href="//databrary.org/about.html"><span>About</span></a>
               <ul>
-                <li><a href="//databrary.org">News &amp; Events</a></li>
                 <li><a href="//databrary.org/about/mission.html">Mission</a></li>
                 <li><a href="//databrary.org/about/use-cases.html">Use Cases</a></li>
                 <li><a href="//databrary.org/about/team.html">Our Team</a></li>
@@ -65,7 +66,7 @@
 
         <span ng-if="page.models.Login.isLoggedIn()">
           <a href="" ng-class="{'toolbar-superuser': page.models.Login.user.superuser !== undefined, on: !!page.models.Login.user.superuser}" ng-click="hoverUserToggle($event)">
-            <img ng-src="{{::page.models.Login.user.avatarRoute()}}" class="toolbar-avatar"> 
+            <img ng-src="{{::page.models.Login.user.avatarRoute()}}" class="toolbar-avatar">
             <span class="username hide-mobile hide-tablet" ng-bind="::page.models.Login.user.name"></span>
           </a>
         </span>
@@ -121,11 +122,11 @@
         <div class="toolbar-search">
           <ng-form class="search-form">
             <div class="search-form-search">
-              <input type="search" ng-model="search.data.query" placeholder="{{::'search.prompt' | message}}" key-enter="search()"/>
+              <input type="search" ng-model="search.data.query" focus placeholder="{{::'search.prompt' | message}}" key-enter="search()"/>
             </div>
           </ng-form>
-        </div>  
-      </section>    
+        </div>
+      </section>
 
     </div>
   </div>

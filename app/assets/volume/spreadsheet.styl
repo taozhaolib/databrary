@@ -7,6 +7,7 @@
       text-indent -28px
       span.consent
       span.classification
+        width 28px
         margin-right b8
         background-position 0
     li:before
@@ -20,7 +21,7 @@
 
 .spreadsheet:not(.edit)
   .spreadsheet-table
-    border-bottom 2px solid grey    
+    border-bottom 2px solid grey
   .spreadsheet-tbody
     border-right 2px solid grey
 
@@ -80,10 +81,10 @@
     overflow hidden
     text-overflow ellipsis
     position relative
-    
+
     img.format
       margin-right b8
-      
+
     a.session.icon
       background-size contain
       background-position-y 50%
@@ -97,15 +98,15 @@
   td.consent
     min-width 32px
     background-position 40px
-    
+
 
   td.null
     background-color gray
-    font-size 0.8em 
+    font-size 0.8em
     text-align center
 
   td.editing
-    position relative    
+    position relative
 
   td.blank
     color gray
@@ -139,7 +140,6 @@
       right 0
 
   td.error
-    // TODO
     background-color red !important
 
   tr.expand
@@ -148,8 +148,8 @@
     td
       overflow visible
       text-overflow clip
-      word-break break-all
-      word-break break-word
+      // word-break break-all
+      // word-break break-word
 
 .spreadsheet-head-groups
   th
@@ -217,6 +217,11 @@
   select
   input[type='text']
   input[type='date']
-  textarea    
+  textarea
     height 100%
     min-height b1+b4
+    vertical-align middle
+
+.top-level-materials
+  font-style oblique
+  color #999

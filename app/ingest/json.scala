@@ -14,12 +14,12 @@ case class JsonException(errors: Seq[(json.JsPath, Seq[ValidationError])])
 private final case class JsContext(path : json.JsPath, data : json.JsValue) {
   def \(child : String) = JsContext(path \ child, data \ child)
   def apply(idx : Int) = JsContext(path(idx), data(idx))
-  def as[A](implicit read : json.Reads[A]) : A = 
+  def as[A](implicit read : json.Reads[A]) : A =
     read.reads(data).repath(path) match {
       case json.JsSuccess(v, _) => v
       case json.JsError(e) => throw JsonException(e)
     }
-  def asOpt[A](implicit read : json.Reads[A]) : Option[A] = 
+  def asOpt[A](implicit read : json.Reads[A]) : Option[A] =
     if (data.isInstanceOf[json.JsUndefined])
       None
     else
@@ -132,7 +132,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
     jc.asOpt[A](read).fold[Future[Option[A]]](async(None)) { v =>
       if (current.exists(_.equals(v)))
         async(Some(v))
-      else 
+      else
         change.filter(_ => current.isEmpty || overwrite).fold[Future[Option[A]]](
           Future.failed(popErr(target, "conflicting value: " + v + " <> " + current.get)(jc)))(
           _(v).map { r =>
@@ -164,7 +164,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
       }
 
       _ <- jc.children
-        .filterNot(jc => Seq("key", "category", "position").contains(jc.key.as[String]))
+        .filterNot(jc => Seq("id", "key", "category", "position").contains(jc.key.as[String]))
         .foreachAsync { implicit jc =>
           val met = jc.key.as[models.Metric[_]]
           write(r, r.measures.datum(met), jc)(v => r.setMeasure(new models.Measure(met, v)))(readsValue)
@@ -187,13 +187,13 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
       /* for now copy and don't delete */
       val infile = store.TemporaryFileLinkOrCopy(file)
       for {
-        a <- models.FileAsset.create(v, fmt, (jc \ "classification").as[models.Classification.Value], (jc \ "name").asOpt[String], infile)
+        a <- models.FileAsset.create(v, fmt, (jc \ "release").as[models.Release.Value], (jc \ "name").asOpt[String], infile)
         _ <- models.Ingest.setAsset(a, path)
       } yield a
     } {
       case a : models.FileAsset =>
         for {
-          _ <- update(a, Some(a.classification), jc \ "classification")
+          _ <- update(a, Some(a.release), jc \ "release")
           _ <- update(a, a.name, jc \ "name")
         } yield a
       case a =>
@@ -216,7 +216,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
           } yield t.asset
         } { a =>
           for {
-            _ <- update(a, Some(a.classification), jc \ "classification")
+            _ <- update(a, Some(a.release), jc \ "release")
             _ <- update(a, a.name, jc \ "name")
           } yield a
         })
@@ -238,7 +238,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
             .getOrElse(throw popErr(v, "container " + i + "/" + key + " not found"))))
           _ <- models.Ingest.setContainer(c, key)
         } yield (c)
-      } { c => 
+      } { c =>
         if (!id.forall(_ === c.id))
           throw popErr(c, "container id mismatch")
         for {
@@ -249,7 +249,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
       }
 
       // XXX this doesn't update the model
-      _ <- write(c, Maybe(c.consent).opt, jc \ "consent")(c.setConsent(_))
+      _ <- write(c, Maybe(c.release).opt(), jc \ "release")(c.setRelease(_))
 
       _ <- (jc \ "records").children.foreachAsync { implicit jc =>
         for {
@@ -285,7 +285,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
       cite <- v.citation
       ...
       */
-     
+
       c <- (jc \ "containers").children.mapAsync(container(_))
     } yield (c)
   }

@@ -49,6 +49,14 @@ abstract class SiteException extends Exception with Results {
   def resultApi : Future[Result]
   def result(implicit request : SiteRequest[_]) : Future[Result] =
     if (request.isApi) resultApi else resultHtml
+
+  class ActionCheck[R[_] <: SiteRequest[_]](check : R[_] => Future[Boolean]) extends ActionFilter[R] {
+    def filter[A](request : R[A]) =
+      check(request).flatMap {
+        case true => async(None)
+        case false => result(request).map(Some(_))
+      }
+  }
 }
 
 object SiteException extends ActionFunction[SiteRequest.Base, SiteRequest.Base] {
@@ -105,10 +113,8 @@ object RequestObject {
         throw NotFoundException)(
         o => request.withObj(o)))
   }
-  def permission[O <: HasPermission](perm : Permission.Value = Permission.VIEW) = new ActionFilter[RequestObject[O]#Site] {
-    protected def filter[A](request : RequestObject[O]#Site[A]) =
-      async(if (!request.obj.checkPermission(perm)) throw ForbiddenException else None)
-  }
+  def permission[O <: HasPermission](perm : Permission.Value = Permission.VIEW) =
+    new ForbiddenException.ActionCheck[RequestObject[O]#Site](request => async(request.obj.checkPermission(perm)))
   def check[O <: HasPermission](get : SiteRequest[_] => Future[Option[O]], perm : Permission.Value = Permission.VIEW) =
     getter(get) andThen permission(perm)
 
@@ -125,7 +131,7 @@ object SiteAction extends ActionBuilder[SiteRequest.Base] {
     request.session.get("session").flatMapAsync(models.SessionToken.get _).flatMap { session =>
       val site = SiteRequest[A](request, session)
       AngularController.analytics(site).flatMap(_ =>
-      SiteException.invokeBlock(site, 
+      SiteException.invokeBlock(site,
         if (session.exists(!_.valid)) { request : SiteRequest.Base[A] =>
           session.foreachAsync(_.remove).map { _ =>
             LoginController.needed("login.expired")(request)
@@ -151,12 +157,8 @@ object SiteAction extends ActionBuilder[SiteRequest.Base] {
 
   val auth : ActionBuilder[SiteRequest.Auth] = andThen(Auth)
 
-  class AccessCheck[R[_] <: SiteRequest[_]](check : site.Access => Boolean) extends ActionFilter[R] {
-    def filter[A](request : R[A]) = macros.async {
-      if (check(request.access)) None
-      else Some(Results.Forbidden)
-    }
-  }
+  class AccessCheck[R[_] <: SiteRequest[_]](check : site.Access => Boolean)
+    extends ForbiddenException.ActionCheck[R](request => macros.async(check(request.access)))
 
   case class Access[R[_] <: SiteRequest[_]](access : Permission.Value) extends AccessCheck[R](_.site >= access)
   case class RootMember[R[_] <: SiteRequest[_]](access : Permission.Value) extends AccessCheck[R](_.member >= access)

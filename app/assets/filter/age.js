@@ -11,7 +11,7 @@ app.filter('age', [
         return days;
       }
 
-      if (days >= LIMIT) 
+      if (days >= LIMIT)
         return "90+ yrs";
 
       switch (outputFormat) {

@@ -197,7 +197,7 @@ object LoginHtml extends LoginController with HtmlController {
   }
 
   def openID(email : String) = SiteAction.async { implicit request =>
-    val em = Maybe(email).opt
+    val em = Maybe(email).opt()
     (for {
       info <- OpenID.verifiedId
       acct <- Account.getOpenid(info.id, em)
@@ -222,7 +222,7 @@ object LoginHtml extends LoginController with HtmlController {
 }
 
 object LoginApi extends LoginController with ApiController {
-  def get = SiteAction { implicit request =>
-    Ok(request.json)
+  def get = SiteAction.async { implicit request =>
+    request.json(request.apiOptions).map(Ok(_))
   }
 }

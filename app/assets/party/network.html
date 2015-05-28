@@ -1,4 +1,4 @@
-<div class="network-parents-region">
+<div id="sponsors" class="network-parents-region">
   <h4 class="view-title smaller" message="auth.parents.title"></h4>
   <p class="view-subtitle" message="auth.parents.subtitle"></p>
 
@@ -31,7 +31,7 @@
             </div>
             <div class="col-desktop-6 col-tablet-3 col-mobile-5" ng-if="::!parent.member">
               &nbsp;
-            </div>              
+            </div>
             <div class="col-desktop-6 col-tablet-3 col-mobile-5" ng-if="::parent.site">
               <div class="permission-auth-heading">
                 <span message="auth.site.view"></span>&nbsp;<span ng-bind="::'auth.site' | message:'their'"></span>
@@ -63,7 +63,7 @@
   </fieldset>
 </div>
 
-<div class="network-children-region">
+<div id="affiliates" class="network-children-region">
   <h4 class="view-title smaller" message="auth.children.title"></h4>
   <p class="view-subtitle" message="auth.children.subtitle"></p>
 
@@ -95,7 +95,7 @@
             </div>
             <div class="col-desktop-6 col-tablet-3 col-mobile-5" ng-if="::!child.member">
               &nbsp;
-            </div>              
+            </div>
             <div class="col-desktop-6 col-tablet-3 col-mobile-5" ng-if="::child.site">
               <div class="permission-auth-heading">
                 <span message="auth.site.view"></span>&nbsp;<span ng-bind="::'auth.site' | possessive:party"></span>

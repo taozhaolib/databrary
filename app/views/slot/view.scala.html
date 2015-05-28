@@ -29,9 +29,9 @@
                         <dd><time>@display.date(slot)</time></dd>
                     }
 
-                    @if(slot.consent != Consent.NONE) {
+                    @if(Maybe(slot.release)) {
                         <dt>Release level</dt>
-                        <dd>@Consent.message(slot.consent)</dd>
+                        <dd>@Release.message(slot.release, "consent")</dd>
                     }
                 </dl>
             </div>

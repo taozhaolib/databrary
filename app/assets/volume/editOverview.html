@@ -29,7 +29,7 @@
   </fieldset></ng-form>
 
   <fieldset class="skinny" ng-if="volumeEditOverviewForm.data.published !== undefined">
-    <!-- title -->  
+    <!-- title -->
     <validator name="name" label="volume.name" required>
       <input type="text" name="name" ng-model="volumeEditOverviewForm.data.name" placeholder="{{::'volume.edit.name.placeholder' | message}}" required>
     </validator>
@@ -53,7 +53,7 @@
     </validator>
   </fieldset>
 
-  <fieldset class="skinny" ng-if="::!!volume">
+  <fieldset class="skinny" ng-if="::!!volume" id="overview-keywords">
     <label>Keywords</label>
     <tags target="volume" keyword edit="true"></tags>
   </fieldset>

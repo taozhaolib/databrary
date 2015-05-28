@@ -18,6 +18,7 @@ app.directive('partyEditAccountForm', [
       });
 
       form.save = function () {
+        form.$setSubmitted();
         page.messages.clear(form);
         party.save(form.data).then(
           function () {
@@ -29,9 +30,11 @@ app.directive('partyEditAccountForm', [
               owner: form
             });
 
+            form.$setUnsubmitted();
             init();
             form.$setPristine();
           }, function (res) {
+            form.$setUnsubmitted();
             form.validator.server(res);
           });
       };

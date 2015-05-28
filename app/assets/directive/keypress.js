@@ -26,6 +26,7 @@ _.each(keys, function(key, name){
               (event.keyCode == key) ||
               (event.which == key))
               return $scope.$apply(function () {
+                event.$key = name;
                 return action($scope, {$event:event});
               });
           });

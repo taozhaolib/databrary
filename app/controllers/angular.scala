@@ -20,7 +20,7 @@ object AngularController extends SiteController {
   private def parseBool(s : String) : Boolean =
     !s.equals("0") && !"false".startsWith(s.toLowerCase)
 
-  private val browserBlacklist = """^Mozilla/.* \(.*\<(MSIE [0-9]\.[0-9]|AppleWebKit/.* Version/[0-5]\..* Safari/)""".r.pattern
+  private val browserBlacklist = """Mozilla/.* \(.*\b(MSIE [0-9]\.[0-9]|AppleWebKit/.* Version/[0-5]\..* Safari/).*""".r.pattern
 
   def jsEnabled(implicit request : RequestHeader) : Boolean =
     request.getQueryString("js").fold(
@@ -57,8 +57,7 @@ object AngularController extends SiteController {
         /* hack to fix quoting (consider using https://github.com/SlexAxton/messageformat.js if things get more complicated) */
         _.mapValues(java.text.MessageFormat.format(_)))))
     , ('permission, json.Json.toJson(Permission.values.toSeq.map(_.toString)))
-    , ('consent, json.Json.toJson(Consent.values.toSeq.map(_.toString)))
-    , ('classification, json.Json.toJson(Classification.values.toSeq.map(_.toString)))
+    , ('release, json.Json.toJson(Release.values.toSeq.map(_.toString)))
     , ('metric, JsonRecord.map[Metric[_]](_.json)(Metric.getAll))
     , ('category, JsonRecord.map[RecordCategory](_.json)(RecordCategory.getAll))
     , ('format, JsonRecord.map[AssetFormat](_.json)(AssetFormat.getAll))
@@ -104,7 +103,6 @@ object AngularController extends SiteController {
     , VolumeHtml.view
     , VolumeHtml.add
     , VolumeHtml.edit
-    , VolumeHtml.spreadsheet
     , VolumeController.thumb
     , VolumeController.zip
     , VolumeController.csv
@@ -138,14 +136,17 @@ object AngularController extends SiteController {
     , AssetSlotHtml.view
     , AssetSlotController.thumb
     , AssetSlotController.download
+    , AssetSlotApi.get
     , AssetSlotApi.setExcerpt
     , AssetSlotApi.removeExcerpt
     , RecordHtml.view
     , RecordHtml.edit
     , RecordApi.get
+    , RecordApi.create
     , RecordApi.add
     , RecordApi.move
     , RecordApi.update
+    , RecordApi.remove
     , RecordApi.measureUpdate
     , CommentApi.post
     , TagApi.search

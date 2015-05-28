@@ -61,7 +61,8 @@ input
   &[type="file"]
     display block
     background-color white
-    border-padding-top f4 1px solid gray
+    border none
+    box-shadow none
 
   &[type="radio"],
   &[type="checkbox"]
@@ -74,6 +75,11 @@ input
     &:focus
       box-shadow outset-shadow
       outline 0
+  &[type="text"],
+  &[type="url"],
+  &[type="email"],
+  &[type="password"]
+    height 31px
 
 select
   padding-bottom f4

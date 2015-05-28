@@ -1,87 +1,52 @@
 <div class="spreadsheet-legend" ng-if="::editing && !top">
-  <a href="" ng-click="showConsents=false" ng-show="showConsents" message="wizard.volume-edit-data.releasekeyhide"></a>
-  <a href="" ng-click="showConsents=true" ng-hide="showConsents" message="wizard.volume-edit-data.releasekeyshow"></a>
+  <a href="" ng-click="showConsents=false" ng-show="showConsents">
+    Hide legend of session release levels
+  </a>
+  <a href="" ng-click="showConsents=true" ng-hide="showConsents">
+    Show legend of session release levels
+  </a>
   <ul ng-show="showConsents">
-    <li ng-repeat="(i,c) in page.constants.consent" ng-if="i>0">
-      <span class="icon consent" ng-class="c"></span>
-      <span ng-bind="'consent.'+c | message"></span>
+    <li ng-repeat="(i,c) in page.constants.release" ng-if="i>0">
+      <span class="icon release" ng-class="c"></span>
+      <span ng-bind="'release.'+c+'.title' | message"></span>: 
+      <span ng-bind="'release.'+c+'.description' | message"></span>
     </li>
   </ul>
 </div>
 
-<div class="spreadsheet-legend" ng-if="::editing && top">
-  <a href="" ng-click="showClassification=false" ng-show="showClassification" message="wizard.volume-edit-data.classkeyhide"></a>
-  <a href="" ng-click="showClassification=true" ng-hide="showClassification" message="wizard.volume-edit-data.classkeyshow"></a>
-  <ul ng-show="showClassification">
-    <li ng-repeat="(i,c) in page.constants.classification" ng-if="i>=0">
-      <span class="icon classification" ng-class="c"></span>
-      <span ng-bind="'classification.'+c | message"></span>
-    </li>
-  </ul>
-</div>
-
-<div class="spreadsheet-options">  
-  <span ng-if="::!editing && volume.checkPermission(page.permission.EDIT)">
-    <a href="" ng-href="{{::page.router.volumeSpreadsheet(volume.id)}}#goto-{{::id}}">edit spreadsheet</a>
-  </span>
-  <span ng-if="::editing">
-    <a href="" ng-click="refresh()">refresh</a>
-  </span>
-  <span ng-if="::!editing && !top && volume.checkPermission(page.permission.EDIT)">
-    |
-  </span>
+<div class="spreadsheet-options">
   <a ng-if="::!editing && !top" href="" ng-href="{{::volume.csvRoute()}}" target="_self">export data</a>
 </div>
 
 <div class="spreadsheet" ng-class="::{'edit': editing, 'view': !editing}">
   <table class="spreadsheet-table">
-    <colgroup>
-      <col class="name"/>
-      <col ng-if="::!top" class="date"/>
-      <col class="consent"/>
+    <colgroup ng-repeat="g in groups track by g.category.id">
+      <col ng-repeat="metric in g.metrics track by metric.id" ng-class="[g.category.name, metric.name]"/>
     </colgroup>
-    <colgroup ng-repeat="col in recordCols track by col.category.id">
-      <col ng-repeat="metric in col.metrics track by metric.id" ng-class="[col.category.name, metric.name]"/>
-    </colgroup>
-    <colgroup ng-if="::assets">
-      <col class="name"/>
-      <col class="classification"/>
-      <col class="excerpt"/>
-    </colgroup>
-    <colgroup ng-if="::editing">
+    <colgroup ng-if="categories.length">
       <col class="add">
     </colgroup>
     <thead>
       <tr class="spreadsheet-head-groups">
-        <th colspan="{{::2+!top}}" id="{{::id}}-head" ng-class="::top ? 'col-materials' : 'col-sessions'" ng-click="clickSlot($event)" message="{{::top ? 'materials' : 'session'}}"></th>
-        <th class="metric-col" ng-repeat="col in recordCols track by col.category.id" id="{{::id}}-category_{{::col.category.id}}" colspan="{{col.metrics.length}}" ng-class="::'col'+col.category.id">
-          <span ng-bind="col.category.name"></span>
-          <span ng-if="::editing" ng-click="clickCategoryAdd($event, col)" class="icon add addSessionInfo" tooltip="'spreadsheet.add.metric' | message:col.category.name"></span>
+        <th class="metric-col" ng-repeat="col in groups track by col.category.id" id="{{::id}}-category_{{::col.category.id}}" colspan="{{col.metrics.length}}" ng-class="::'col'+col.category.id" ng-dblclick="setKey(col.category.id)">
+          <span ng-bind="::col.category.name"></span>
+          <span ng-if="::editing && !col.category.fixed" ng-click="clickCategoryAdd($event, col)" class="icon add addSessionInfo" tooltip="'spreadsheet.add.metric' | message:col.category.name"></span>
         </th>
-        <th ng-if="::assets" colspan="3">
-          file
-        </th>
-        <th ng-if="::editing" id="{{::id}}-add" class="add" ng-click="clickAdd($event)" tooltip="'spreadsheet.add.category' | message"></th>
+        <th ng-if="categories.length" id="{{::id}}-add" class="add" ng-click="clickAdd($event)" tooltip="'spreadsheet.add.category' | message"></th>
       </tr>
       <tr class="spreadsheet-head-metrics">
-        <th id="{{::id}}-name" class="first" ng-click="clickSlot($event, 'name')" ng-class="colClasses('name')"/>
-        <th ng-if="::!top" id="{{::id}}-date" ng-click="clickSlot($event, 'date')" ng-class="colClasses('date')">test date</th>
-        <th id="{{::id}}-consent" class="last" ng-click="clickSlot($event, 'consent')" ng-class="colClasses('consent')">release</th>
-        <th ng-repeat="col in metricCols" id="{{::id}}-metric_{{::$index}}" ng-click="clickMetric(col)" ng-class="colClasses(col)" ng-bind="col.metric.name"></th>
-        <th ng-if-start="::assets" class="first">name</th>
-        <th>classification</th>
-        <th ng-if-end class="last">excerpt</th>
-        <th ng-if="::editing" class="first last"></th>
+        <th ng-repeat="col in cols" id="{{::id}}-metric_{{::$index}}" ng-click="clickMetric(col)" ng-class="colClasses(col)" ng-bind="col.metric.name"></th>
+        <th ng-if="categories.length" class="first last"></th>
       </tr>
     </thead>
     <tbody class="spreadsheet-tbody" id="{{::id}}" ng-click="click($event)">
     </tbody>
     <tfoot>
       <tr ng-if="more">
-        <td colspan="{{totalCols}}" class="null" ng-click="unlimit()" ng-bind="::'spreadsheet.unlimit' | message:more"></td>
+        <td colspan="{{cols.length}}" class="null" ng-click="unlimit()" ng-bind="::'spreadsheet.unlimit' | message:more"></td>
       </tr>
       <tr ng-if="::editing">
-        <td id="{{::id}}-new" colspan="{{totalCols}}" class="add null" ng-click="clickNew($event)" ng-bind="::'add ' + (top ? 'materials' : 'session' | message)"</td>
+        <td id="{{::id}}-new" colspan="{{cols.length}}" class="add null" ng-click="clickNew($event)" ng-bind="'add ' + key.name"</td>
       </tr>
     </tfoot>
   </table>

@@ -27,8 +27,8 @@ final class VolumeAccess(val volume : Volume, val party : Party, val individual 
   def json = JsonObject.flatten(
     Some('volume -> volume.json),
     Some('party -> party.json),
-    Maybe(individual).opt.map('individual -> _),
-    Maybe(children).opt.map('children -> _)
+    Maybe(individual).opt('individual -> _),
+    Maybe(children).opt('children -> _)
   )
 }
 
@@ -49,10 +49,10 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
     row(Volume.fixed(volume), Party.row)
     .SELECT(sql"WHERE individual >= $access ORDER BY individual DESC")
     .list
-  /** Retrieve the volume access entries granted to a party for (at least) READ. */ 
-  private[models] def getVolumes(party : Party)(implicit site : Site) : Future[Seq[VolumeAccess]] =
+  /** Retrieve the volume access entries directly granted to a party for at least (READ). */
+  private[models] def getVolumes(party : Party, access : Permission.Value = Permission.READ)(implicit site : Site) : Future[Seq[VolumeAccess]] =
     row(Volume.row, Party.fixed(party))
-    .SELECT(sql"WHERE individual >= 'READ' AND " + Volume.condition + " ORDER BY individual DESC")
+    .SELECT(sql"WHERE individual >= $access AND " + Volume.condition + " ORDER BY individual DESC")
     .list
 
   /** Update or add volume access in the database.

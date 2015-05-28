@@ -24,12 +24,12 @@ object HTTP extends HeaderNames {
     catching(classOf[IllegalArgumentException]).opt(asctimeDate.parseLocalDateTime(s))
   def date(d : Timestamp) : String =
     rfc1123Date.print(d)
-  
+
   private val rangeRegex = "bytes=([0-9]*)-([0-9]*)".r
   def parseRange(s : String, size : Long) : Option[(Long, Long)] =
     (s match {
       case rangeRegex(start, end) => Maybe.toNumber {
-        (Maybe(start).opt.map(_.toLong), Maybe(end).opt.map(_.toLong))
+        (Maybe(start).opt(_.toLong), Maybe(end).opt(_.toLong))
       } getOrElse ((None, None))
       case _ => (None, None)
     }) match {

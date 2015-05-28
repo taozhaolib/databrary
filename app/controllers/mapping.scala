@@ -18,7 +18,7 @@ object Mappings {
   val text : Mapping[String] = Forms.text.transform[String](_.trim, identity)
   val nonEmptyText : Mapping[String] = text verifying Constraints.nonEmpty
   val maybeText : Mapping[Option[String]] =
-    Forms.optional(Forms.text).transform[Option[String]](_.flatMap(s => Maybe(s.trim).opt), identity)
+    Forms.optional(Forms.text).transform[Option[String]](_.flatMap(s => Maybe(s.trim).opt()), identity)
   import models.{AbstractTag,TagName}
   val tag : Mapping[AbstractTag] = Forms.text
     .verifying("tag.invalid", t => TagName.validate(t).nonEmpty)
@@ -55,7 +55,7 @@ final case class NoMapping[T]() extends MaybeMapping[T] {
   val constraints = Nil
   def bind(data : Map[String, String]) : Either[Seq[FormError], Option[T]] = Right(None)
   def unbind(value : Option[T]) : Map[String, String] = Map.empty
-  def unbindAndValidate(value : Option[T]) : (Map[String, String], Seq[FormError]) = 
+  def unbindAndValidate(value : Option[T]) : (Map[String, String], Seq[FormError]) =
     Map.empty -> value.fold[Seq[FormError]](Nil)(_ => Seq(FormError("", "non-empty NoMapping value")))
   def withPrefix(prefix : String) : Mapping[Option[T]] = this
   def verifying(constraints : Constraint[Option[T]]*) : Mapping[Option[T]] = this
@@ -74,7 +74,7 @@ final case class SomeMapping[T](wrapped : Mapping[T]) extends MaybeMapping[T] {
     value.fold(Map.empty[String,String])(wrapped.unbind(_))
   def unbindAndValidate(value : Option[T]) =
     value.fold(Map.empty[String,String] -> Seq(FormError(key, "empty SomeMapping value")))(wrapped.unbindAndValidate(_))
-  def withPrefix(prefix : String) : Mapping[Option[T]] = 
+  def withPrefix(prefix : String) : Mapping[Option[T]] =
     SomeMapping[T](wrapped.withPrefix(prefix))
   def verifying(constraints : Constraint[Option[T]]*) : Mapping[Option[T]] =
     SomeMapping[T](wrapped.verifying(constraints.map { c =>
@@ -106,7 +106,7 @@ final case class OptionMapping[T](wrapped : Mapping[T], val constraints : Seq[Co
       wrapped.unbindAndValidate(_))
     (m, e ++ collectErrors(value))
   }
-  def withPrefix(prefix : String) : Mapping[Option[T]] = 
+  def withPrefix(prefix : String) : Mapping[Option[T]] =
     copy(wrapped = wrapped.withPrefix(prefix))
   def verifying(addConstraints : Constraint[Option[T]]*) : Mapping[Option[T]] =
     copy(constraints = constraints ++ addConstraints)

@@ -95,14 +95,14 @@ final class SiteParty(val access : Access)(implicit val site : Site)
   def ===(a : SiteParty) = party === a.party
   def ===(a : Party) = party === a
 
-  def permission = max(access.permission, min(site.access.site, Permission.READ))
+  def permission = max(access.permission, max(min(site.access.site, Permission.READ), min(site.access.member, Permission.EDIT)))
 
   /** List of volumes with which this user is associated, sorted by level (ADMIN first). */
   def volumeAccess = VolumeAccess.getVolumes(party)
 
   def setAvatar(file : play.api.libs.Files.TemporaryFile, format : AssetFormat, name : Option[String] = None)  : Future[FileAsset] =
     for {
-      asset <- FileAsset.create(Volume.Core, format, Classification.PUBLIC, name, file)
+      asset <- FileAsset.create(Volume.Core, format, Release.PUBLIC, name, file)
       _ <- Audit.changeOrAdd("avatar", SQLTerms('asset -> asset.id), SQLTerms('party -> party.id)).execute
     } yield asset
 

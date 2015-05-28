@@ -3,10 +3,10 @@
     <fieldset class="clean">
       <div class="col-desktop-9 col-tablet-4 col-mobile-3">
         <button ng-click="partyEditGrantForm.saveAll()" class="green" message="save" ng-disabled="partyEditGrantForm.$pristine" class="col-desktop-1 col-tablet-1 col-mobile-1"></button>
-        <button ng-click="partyEditGrantForm.resetAll()" class="yellow" message="revert" ng-disabled="partyEditGrantForm.$pristine"class=" col-desktop-1 col-tablet-1 col-mobile-1"></button>
+        <button ng-click="partyEditGrantForm.resetAll()" class="yellow" message="revert" ng-disabled="partyEditGrantForm.$pristine || partyEditGrantForm.$submitted" class="col-desktop-1 col-tablet-1 col-mobile-1"></button>
       </div>
       <auth-search-form principal="child" placeholder-text="{{::'auth.search.grant.legend' | message}}" class="col-desktop-6 col-tablet-5 col-mobile-3"></auth-search-form>
-    </fieldset>  
+    </fieldset>
   </scroll-float>
   <fieldset ng-show="partyEditGrantForm.data.length > 0">
     <legend message="auth.grant.legend"></legend>

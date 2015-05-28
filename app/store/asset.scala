@@ -127,7 +127,7 @@ private[store] object Segment extends StoreDir("store.cache") {
     generate(f, (f : File) => media.AV.segment(FileAsset.file(asset), section, f), cache)
   }
 
-  private[store] def read(t : TimeseriesData, size : Option[Int]) : Future[StreamEnumerator] = 
+  private[store] def read(t : TimeseriesData, size : Option[Int]) : Future[StreamEnumerator] =
     t.section.singleton.fold(segment(t.source, t.section))(o => frame(t.source, Some(o), size))
 
   private[store] def resize(asset : BackedAsset, size : Int) : Future[StreamEnumerator] =

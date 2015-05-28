@@ -13,8 +13,5 @@ app.directive 'volumeExcerpts', [
         $scope.current = asset
 
       $scope.hasThumbnail = (asset) ->
-        asset.checkPermission(constants.permission.READ) && (asset.format.type == 'image' || asset.format.type == 'video' && asset.asset.duration)
-
-      $scope.jumpLink = (excerpt) ->
-        excerpt.container.route {asset: excerpt.id, select:excerpt.segment.format()}
+        asset.checkPermission(constants.permission.VIEW) && (asset.format.type == 'image' || asset.format.type == 'video' && asset.duration && !asset.pending)
 ]

@@ -94,11 +94,9 @@ final class Volume private (val id : Volume.Id, val name : String, alias_ : Opti
   def pageURL = controllers.routes.VolumeHtml.view(id, None)
 
   lazy val fileName : Future[String] = {
-    def last(s : String) =
-      Maybe(s.lastIndexOf(' ')).fold(s)(i => s.substring(i+1))
     for {
       owns <- partyAccess(Permission.ADMIN)
-      own = owns.headOption.map(_.party.name).map(last _)
+      own = owns.headOption.map(_.party.sortname)
       cite <- citation
       nme = store.truncate(alias.getOrElse(name))
     } yield {
@@ -170,6 +168,11 @@ object Volume extends TableId[Volume]("volume") {
     row.SELECT(sql"WHERE id = $i AND " + condition)
     .singleOpt
 
+  /** Retrieve the volumes accessible to the current user at at least (READ). */
+  def getAccess(access : models.Permission.Value = models.Permission.READ)(implicit site : Site) : Future[Seq[Volume]] =
+    row.SELECT(sql"JOIN volume_access_view ON volume.id = volume_access_view.volume WHERE party = ${site.identity.id} AND access >= $access")
+    .list
+
   def search(query : Option[String], party : Option[Party.Id], limit : Int = 12, offset : Int = 0)(implicit site : Site) : Future[Seq[Volume]] =
     row.SELECT(LiteralStatement("")
       + party.fold("")(_ => " JOIN volume_access ON volume.id = volume_access.volume")
@@ -214,7 +217,7 @@ object Volume extends TableId[Volume]("volume") {
       var cc : Container = l.head._1
       val cr = Seq.newBuilder[(Segment, Record)]
       def next() {
-        cc._records.set(cr.result)
+        cc._records.set(cr.result.sortBy(_._2)(Record.ordering))
         cr.clear
         r += cc
       }

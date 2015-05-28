@@ -1,8 +1,11 @@
 package site
 
-import play.api.mvc._
+import scala.concurrent.Future
 import play.api.Play
+import play.api.mvc._
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import macros._
+import macros.async._
 import dbrary._
 import models._
 import scala._
@@ -17,10 +20,10 @@ object Site {
   val appVersion = appName + "/" + version
 
   type DB = com.github.mauricio.async.db.Connection
-  lazy val dbPool : DB = 
+  lazy val dbPool : DB =
     Play.current.plugin[PostgresAsyncPlugin].fold(throw new Exception("PostgresAsyncPlugin not registered"))(_.pool)
 
-  lazy val accessLog = 
+  lazy val accessLog =
     Play.current.plugin[org.databrary.LogbackAccessPlugin].fold(throw new Exception("LogbackAccessPlugin not registered"))(_.api)
 
   val url = Play.current.configuration.getString("site.url").getOrElse("")
@@ -62,8 +65,13 @@ trait Site {
   final def json =
     identity.json(this) ++
     JsonObject.flatten(
-      Some('access -> access.site),
-      if (access.isAdmin) Some('superuser -> superuser) else None
+      Some('access -> access.site)
+    , if (access.isAdmin) Some('superuser -> superuser) else None
+    )
+
+  def json(options : JsonOptions.Options) : Future[JsonRecord] =
+    JsonOptions(json, options
+    , "volumes" -> (opt => Volume.getAccess()(this).flatMap(_.mapAsync[JsonRecord, Seq[JsonRecord]](_.json(Map("access" -> Nil))).map(JsonArray(_))))
     )
 }
 

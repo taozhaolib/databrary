@@ -25,7 +25,7 @@
   display inline
 
 //SLOT-TOOLBAR
-.slot-toolbar  
+.slot-toolbar
   border-bottom 1px solid neutral53
   padding b3
   .float
@@ -83,6 +83,9 @@
   transition left .05s linear
 
 .slot-timeline-temporal
+  background-image url('/public/images/elements/timeline-ruler.svg')
+  background-position 0 100%
+  background-repeat repeat-x
   position relative
   text-align center
   width 100%
@@ -98,9 +101,9 @@
     padding-top 0
     padding-bottom 0
     border-radius 0
-    height 31px 
+    height 31px
     box-shadow none
-    vertical-align middle 
+    vertical-align middle
 
 .slot-timeline-time
   background-color gray
@@ -157,7 +160,6 @@
 
 .slot-timeline-ruler-time
   margin-top 2
-  font-size f23
 
   &.left
     float left
@@ -173,15 +175,10 @@
   border-top 1px solid #dddddd
 
 .slot-track-asset
-  min-width b8
-  margin-height b8
   background-color green53
   border 1px solid green11
   opacity 0.3
-  cursor pointer
-  position absolute
-  top 0
-  bottom 0
+
   transition box-shadow, background-color, border-color trans-time trans-ease
 
 .slot-excerpt
@@ -193,26 +190,30 @@
   background-color green53
   border 1px green13 solid
   opacity 0.6
-  
+
+.slot-message-empty
+  font-style oblique
+  color grey
+
 .slot-track-asset-info
   padding b6
   overflow ellipsis
   position relative
-      
+
   .classification-info,.upload-progress-info
     position absolute
     top b3
     right b8
     span
       font-style italic
-  
+
   .upload-progress-info
     margin-right b1+b3
-  
+
   progress
     @media screen and (max-width: 640px)
       width 100px
-  
+
 .slot-track-asset-info-name
   display inline-block
   overflow hidden
@@ -260,21 +261,25 @@
 .slot-tag-segment
 .slot-tag-keyword
 .slot-tag-vote
-.slot-consent
+.slot-release
 .slot-record
+.slot-track-asset
   position absolute
-  border-radius b8
-  float left
+  border-radius b4
   min-width 3px
   width auto
+  margin-height auto
+  top 0
+  bottom 0
   height 80%
-  margin-top b8
+  cursor pointer
+  float left
 
 .slot-tag-segment
   background-color blue51
   border 1px solid neutral
 
-.slot-tag-keyword      
+.slot-tag-keyword
   background-color #ffbe99 //not orange because opacity makes it very grey
   border 1px solid orange
   opacity 0.55
@@ -290,12 +295,13 @@
   position absolute
   left 0
 
-.slot-consent
+.slot-release
   background-color purple51
   border 1px solid purple53
 
-.slot-consent-select
+.slot-release-select
   background-color purple52
+  border 2px solid purple
 
 .slot-record-background
   position absolute
@@ -312,6 +318,7 @@
 
 .slot-record-select
   background-color yellow52
+  border 2px solid yellow
 
 .slot-handle
   position absolute
@@ -339,7 +346,7 @@
   transition-duration 0.5s
   z-index 2
   overflow hidden
-  dl > dd 
+  dl > dd
     margin-left 0
   select.add
     margin-top b8
@@ -393,7 +400,7 @@
 .player-action-icon
   display inline-block
   margin-left b8
-    
+
 .player-action-word
   float right
   height 24px
@@ -401,7 +408,7 @@
   font-line b2
   position relative
   top -b6
-  padding 0 b8 
+  padding 0 b8
   margin b6 b8
 
 .player-info-name
@@ -418,7 +425,7 @@
     position relative
     top 0
     height b23
-    
+
   .category
     text-transform capitalize
     font-weight bold
@@ -450,10 +457,10 @@
   padding-top b2
   padding-bottom b2
   width: 100%
-  
+
   &.over-zone
     background-color green51
-  
+
 .player-excerpt-form
   margin-top b2
   padding-top b2
@@ -474,3 +481,8 @@
       color green51
     .portrait-extra,.panel-comments-body
       color pale
+
+.dropzone-message
+  position relative
+  top -b6
+  padding-right b6
