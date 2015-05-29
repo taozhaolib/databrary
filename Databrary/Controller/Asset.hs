@@ -231,13 +231,13 @@ viewAssetCreate = action GET (pathHTML >/> pathId </< "asset") $ \vi -> withAuth
 
 createSlotAsset :: AppRoute (API, Id Slot)
 createSlotAsset = multipartAction $ action POST (pathAPI </> pathSlotId </< "asset") $ \(api, si) -> withAuth $ do
-  v <- getSlot PermissionEDIT si
+  v <- getSlot PermissionEDIT Nothing si
   processAsset api $ AssetTargetSlot v
 
 viewSlotAssetCreate :: AppRoute (Id Slot)
 viewSlotAssetCreate = action GET (pathHTML >/> pathSlotId </< "asset") $ \si -> withAuth $ do
   angular
-  s <- getSlot PermissionEDIT si
+  s <- getSlot PermissionEDIT Nothing si
   blankForm $ htmlAssetForm $ AssetTargetSlot s
 
 deleteAsset :: AppRoute (API, Id Asset)

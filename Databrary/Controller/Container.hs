@@ -8,11 +8,13 @@ module Databrary.Controller.Container
   , containerDownloadName
   ) where
 
+import Control.Monad (mfilter)
 import Data.Maybe (maybeToList)
 import qualified Data.Text as T
 
 import Databrary.Ops
 import qualified Databrary.Iso as I
+import Databrary.Has (view)
 import Databrary.Model.Id
 import Databrary.Model.Permission
 import Databrary.Model.Volume
@@ -30,16 +32,16 @@ import Databrary.Controller.Volume
 import {-# SOURCE #-} Databrary.Controller.Slot
 import Databrary.View.Container
 
-getContainer :: Permission -> Id Slot -> AuthActionM Container
-getContainer p (Id (SlotId i s))
-  | segmentFull s = checkPermission p =<< maybeAction =<< lookupContainer i
+getContainer :: Permission -> Maybe (Id Volume) -> Id Slot -> AuthActionM Container
+getContainer p mv (Id (SlotId i s))
+  | segmentFull s = checkPermission p =<< maybeAction . maybe id (\v -> mfilter $ (v ==) . view) mv =<< lookupContainer i
   | otherwise = result =<< notFoundResponse
 
 containerDownloadName :: Container -> [T.Text]
 containerDownloadName c = maybeToList $ containerName c
 
-viewContainer :: AppRoute (API, Id Container)
-viewContainer = I.second (slotContainerId . unId I.:<->: containerSlotId) I.<$> viewSlot
+viewContainer :: AppRoute (API, (Maybe (Id Volume), Id Container))
+viewContainer = I.second (I.second $ slotContainerId . unId I.:<->: containerSlotId) I.<$> viewSlot
 
 containerForm :: (Functor m, Monad m) => Container -> DeformT m Container
 containerForm c = do
@@ -52,10 +54,10 @@ containerForm c = do
     , containerRelease = release
     }
 
-viewContainerEdit :: AppRoute (Id Slot)
-viewContainerEdit = action GET (pathHTML >/> pathSlotId </< "edit") $ \ci -> withAuth $ do
+viewContainerEdit :: AppRoute (Maybe (Id Volume), Id Slot)
+viewContainerEdit = action GET (pathHTML >/> pathMaybe pathId </> pathSlotId </< "edit") $ \(vi, ci) -> withAuth $ do
   angular
-  c <- getContainer PermissionEDIT ci
+  c <- getContainer PermissionEDIT vi ci
   blankForm $ htmlContainerForm (Right c)
 
 createContainer :: AppRoute (API, Id Volume)
@@ -68,14 +70,14 @@ createContainer = action POST (pathAPI </> pathId </< "slot") $ \(api, vi) -> wi
   c <- addContainer bc
   case api of
     JSON -> okResponse [] $ containerJSON c
-    HTML -> redirectRouteResponse [] viewContainer (api, containerId c) []
+    HTML -> redirectRouteResponse [] viewContainer (api, (Just vi, containerId c)) []
 
 postContainer :: AppRoute (API, Id Slot)
 postContainer = action POST (pathAPI </> pathSlotId) $ \(api, ci) -> withAuth $ do
-  c <- getContainer PermissionEDIT ci
+  c <- getContainer PermissionEDIT Nothing ci
   c' <- runForm (api == HTML ?> htmlContainerForm (Right c)) $ containerForm c
   changeContainer c'
   case api of
     JSON -> okResponse [] $ containerJSON c'
-    HTML -> redirectRouteResponse [] viewSlot (api, ci) []
+    HTML -> redirectRouteResponse [] viewSlot (api, (Just (view c'), ci)) []
 

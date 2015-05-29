@@ -5,19 +5,20 @@ module Databrary.Controller.Slot
   , slotDownloadName
   ) where
 
-import Control.Monad (when)
+import Control.Monad (when, mfilter)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import qualified Data.Text as T
 import qualified Network.Wai as Wai
 
 import Databrary.Ops
-import Databrary.Has (peek, peeks)
+import Databrary.Has (view, peek, peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.Service.DB
 import Databrary.Model.Id
 import Databrary.Model.Identity
 import Databrary.Model.Permission
+import Databrary.Model.Volume
 import Databrary.Model.Container
 import Databrary.Model.Slot
 import Databrary.Model.AssetSlot
@@ -32,9 +33,9 @@ import Databrary.Controller.Permission
 import Databrary.Controller.Angular
 import Databrary.Controller.Container
 
-getSlot :: Permission -> Id Slot -> AuthActionM Slot
-getSlot p i =
-  checkPermission p =<< maybeAction =<< lookupSlot i
+getSlot :: Permission -> Maybe (Id Volume) -> Id Slot -> AuthActionM Slot
+getSlot p mv i =
+  checkPermission p =<< maybeAction . maybe id (\v -> mfilter $ (v ==) . view) mv =<< lookupSlot i
 
 slotJSONField :: (MonadDB m, MonadHasIdentity c m) => Slot -> BS.ByteString -> Maybe BS.ByteString -> m (Maybe JSON.Value)
 slotJSONField o "assets" _ =
@@ -59,11 +60,10 @@ slotDownloadName :: (MonadDB m) => Slot -> m [T.Text]
 slotDownloadName s = do
   return $ containerDownloadName (slotContainer s)
 
-viewSlot :: AppRoute (API, Id Slot)
-viewSlot = action GET (pathAPI </> pathSlotId) $ \(api, i) -> withAuth $ do
+viewSlot :: AppRoute (API, (Maybe (Id Volume), Id Slot))
+viewSlot = action GET (pathAPI </> pathMaybe pathId </> pathSlotId) $ \(api, (vi, i)) -> withAuth $ do
   when (api == HTML) angular
-  c <- getSlot PermissionPUBLIC i
+  c <- getSlot PermissionPUBLIC vi i
   case api of
     JSON -> okResponse [] =<< slotJSONQuery c =<< peeks Wai.queryString
     HTML -> okResponse [] $ BSC.pack $ show $ containerId $ slotContainer c -- TODO
-

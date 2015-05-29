@@ -7,7 +7,7 @@ module Databrary.Controller.AssetSegment
   , thumbAssetSegment
   ) where
 
-import Control.Monad (when)
+import Control.Monad (when, mfilter)
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Builder as BSB
@@ -27,6 +27,7 @@ import Databrary.Model.Id
 import Databrary.Model.Permission
 import Databrary.Model.Identity
 import Databrary.Model.Offset
+import Databrary.Model.Volume
 import Databrary.Model.Slot
 import Databrary.Model.Format
 import Databrary.Model.Asset
@@ -47,9 +48,9 @@ import Databrary.Controller.Slot
 import Databrary.Controller.Asset
 import Databrary.Controller.Format
 
-getAssetSegment :: Permission -> Id Slot -> Id Asset -> AuthActionM AssetSegment
-getAssetSegment p s a =
-  checkPermission p =<< maybeAction =<< lookupSlotAssetSegment s a
+getAssetSegment :: Permission -> Maybe (Id Volume) -> Id Slot -> Id Asset -> AuthActionM AssetSegment
+getAssetSegment p mv s a =
+  checkPermission p =<< maybeAction . maybe id (\v -> mfilter $ (v ==) . view) mv =<< lookupSlotAssetSegment s a
 
 assetSegmentJSONField :: (MonadDB m, MonadHasIdentity c m) => AssetSegment -> BS.ByteString -> Maybe BS.ByteString -> m (Maybe JSON.Value)
 assetSegmentJSONField _ _ _ = return Nothing
@@ -63,10 +64,10 @@ assetSegmentDownloadName a = do
   s <- slotDownloadName (view a)
   return $ v ++ s ++ assetDownloadName (view a)
 
-viewAssetSegment :: AppRoute (API, Id Slot, Id Asset)
-viewAssetSegment = action GET (pathAPI </>> pathSlotId </> pathId) $ \(api, si, ai) -> withAuth $ do
+viewAssetSegment :: AppRoute (API, Maybe (Id Volume), Id Slot, Id Asset)
+viewAssetSegment = action GET (pathAPI </>>> pathMaybe pathId </>> pathSlotId </> pathId) $ \(api, vi, si, ai) -> withAuth $ do
   when (api == HTML) angular
-  as <- getAssetSegment PermissionPUBLIC si ai
+  as <- getAssetSegment PermissionPUBLIC vi si ai
   case api of
     JSON -> okResponse [] =<< assetSegmentJSONQuery as =<< peeks Wai.queryString
     HTML -> okResponse [] $ T.pack $ show $ assetId $ slotAsset $ segmentAsset as -- TODO
@@ -111,13 +112,13 @@ serveAssetSegment dl as = do
 
 downloadAssetSegment :: AppRoute (Id Slot, Id Asset)
 downloadAssetSegment = action GET (pathSlotId </> pathId </< "download") $ \(si, ai) -> withAuth $ do
-  as <- getAssetSegment PermissionPUBLIC si ai
+  as <- getAssetSegment PermissionPUBLIC Nothing si ai
   inline <- peeks $ lookupQueryParameters "inline"
   serveAssetSegment (null inline) as
 
 thumbAssetSegment :: AppRoute (Id Slot, Id Asset)
 thumbAssetSegment = action GET (pathSlotId </> pathId </< "thumb") $ \(si, ai) -> withAuth $ do
-  as <- getAssetSegment PermissionPUBLIC si ai
+  as <- getAssetSegment PermissionPUBLIC Nothing si ai
   q <- peeks Wai.queryString
   let as' = assetSegmentInterp 0.25 as
   if formatIsImage (view as')

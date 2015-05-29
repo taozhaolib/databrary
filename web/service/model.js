@@ -233,13 +233,13 @@ app.factory('modelService', [
     };
 
     Party.prototype.avatarRoute = function (size, nonce) {
-      size = size || 56;
-
-      var params = {};
+      var params = {
+        size: size || 56
+      };
       if (nonce)
         params.nonce = nonce;
 
-      return router.partyAvatar([this.id, size], params);
+      return router.partyAvatar([this.id], params);
     };
 
     Party.prototype.authorizeSearch = function (apply, param) {
@@ -502,7 +502,11 @@ app.factory('modelService', [
     };
 
     Volume.prototype.thumbRoute = function (size) {
-      return router.volumeThumb([this.id, size]);
+      var params = {};
+      if (size)
+        params.size = size;
+
+      return router.volumeThumb([this.id], params);
     };
 
     Volume.prototype.zipRoute = function () {
@@ -696,13 +700,13 @@ app.factory('modelService', [
       if (Segment.isFull(segment))
         if ((options = checkOptions(this, options)) || this._PLACEHOLDER)
           return router.http(router.controllers.getSlot,
-            this.volume.id, this.id, Segment.format(segment), options)
+            this.id, Segment.format(segment), options)
             .then(function (res) {
               return c.update(res.data);
             });
         else return $q.successful(this);
       else return router.http(router.controllers.getSlot,
-        this.volume.id, this.id, Segment.format(segment), checkOptions(null, options))
+        this.id, Segment.format(segment), checkOptions(null, options))
         .then(function (res) {
           return new Slot(c, res.data);
         });

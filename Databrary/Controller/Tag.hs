@@ -31,7 +31,7 @@ queryTags = action GET (pathJSON >/> "tags" >/> PathDynamic) $ \t ->
 postTag :: AppRoute (API, Id Slot, TagId)
 postTag = action POST (pathAPI </>> pathSlotId </> pathTagId) $ \(api, si, TagId kw tn) -> withAuth $ do
   u <- authAccount
-  s <- getSlot (if kw then PermissionEDIT else PermissionSHARED) si
+  s <- getSlot (if kw then PermissionEDIT else PermissionSHARED) Nothing si
   t <- addTag tn
   r <- addTagUse $ TagUse t kw u s
   guardAction r $ 
@@ -41,7 +41,7 @@ postTag = action POST (pathAPI </>> pathSlotId </> pathTagId) $ \(api, si, TagId
 deleteTag :: AppRoute (API, Id Slot, TagId)
 deleteTag = action DELETE (pathAPI </>> pathSlotId </> pathTagId) $ \(api, si, TagId kw tn) -> withAuth $ do
   u <- authAccount
-  s <- getSlot (if kw then PermissionEDIT else PermissionSHARED) si
+  s <- getSlot (if kw then PermissionEDIT else PermissionSHARED) Nothing si
   _r <- maybe (return False) (\t -> removeTagUse $ TagUse t kw u s) =<< lookupTag tn
   okResponse [] ("" :: T.Text)
 

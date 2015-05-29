@@ -3,6 +3,7 @@ module Databrary.HTTP.Path.Parser
   ( PathParser(..)
   , (</>)
   , (</>>)
+  , (</>>>)
   , (>/>)
   , (</<)
   , (|/|)
@@ -71,12 +72,15 @@ producePath (PathTuple p q) (a, b) = producePath p a ++ producePath q b
 producePath (PathEither p _) (Left a) = producePath p a
 producePath (PathEither _ p) (Right a) = producePath p a
 
-infixr 2 </>, </>>, >/>, </<
+infixr 2 </>, </>>, </>>>, >/>, </<
 (</>) :: PathParser a -> PathParser b -> PathParser (a, b)
 (</>) = PathTuple
 
 (</>>) :: PathParser a -> PathParser (b, c) -> PathParser (a, b, c)
 (</>>) l r = [iso|(a, (b, c)) <-> (a, b, c)|] I.<$> PathTuple l r
+
+(</>>>) :: PathParser a -> PathParser (b, c, d) -> PathParser (a, b, c, d)
+(</>>>) l r = [iso|(a, (b, c, d)) <-> (a, b, c, d)|] I.<$> PathTuple l r
 
 (>/>) :: PathParser () -> PathParser a -> PathParser a
 (>/>) a b = I.snd I.<$> PathTuple a b

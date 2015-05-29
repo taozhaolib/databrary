@@ -152,13 +152,13 @@ jsRoutes = mconcat
   , jsRoute "viewVolumeSearch" queryVolumes (HTML)
   , jsRoute "thumbVolume" thumbVolume (volume)
 
-  , jsRoute "viewSlot" viewSlot (HTML, slot)
-  , jsRoute "viewSlotEdit" viewContainerEdit (slot)
+  , jsRoute "viewSlot" viewSlot (HTML, (Just volume, slot))
+  , jsRoute "viewSlotEdit" viewContainerEdit (Just volume, slot)
 
   , jsRoute "viewRecord" viewRecord (HTML, record)
 
   , jsRoute "viewFormats" viewFormats ()
-  , jsRoute "viewAssetSegment" viewAssetSegment (HTML, slot, asset)
+  , jsRoute "viewAssetSegment" viewAssetSegment (HTML, Just volume, slot, asset)
   , jsRoute "viewAssetEdit" viewAssetEdit (asset)
   , jsRoute "downloadAssetSegment" downloadAssetSegment (slot, asset)
   , jsRoute "thumbAssetSegment" thumbAssetSegment (slot, asset)
@@ -195,7 +195,7 @@ jsRoutes = mconcat
   , jsRoute "getFunders" queryFunder ()
   , jsRoute "getCitation" getCitation ()
 
-  , jsRoute "getSlot" viewSlot (JSON, slot)
+  , jsRoute "getSlot" viewSlot (JSON, (Nothing, slot))
   , jsRoute "postSlot" postContainer (JSON, slot)
   , jsRoute "createContainer" createContainer (JSON, volume)
 
@@ -204,7 +204,7 @@ jsRoutes = mconcat
   , jsRoute "postRecordMeasure" postRecordMeasure (JSON, record, metric)
 
   , jsRoute "getAsset" viewAsset (JSON, asset)
-  , jsRoute "getAssetSegment" viewAssetSegment (JSON, slot, asset)
+  , jsRoute "getAssetSegment" viewAssetSegment (JSON, Nothing, slot, asset)
   , jsRoute "postAsset" postAsset (JSON, asset)
   , jsRoute "createAsset" createAsset (JSON, volume)
   , jsRoute "deleteAsset" deleteAsset (JSON, asset)

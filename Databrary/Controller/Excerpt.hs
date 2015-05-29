@@ -25,7 +25,7 @@ pathExcerpt = pathJSON >/> pathSlotId </> pathId </< "excerpt"
 
 postExcerpt :: AppRoute (Id Slot, Id Asset)
 postExcerpt = action POST pathExcerpt $ \(si, ai) -> withAuth $ do
-  as <- getAssetSegment PermissionEDIT si ai
+  as <- getAssetSegment PermissionEDIT Nothing si ai
   c <- runForm Nothing $ 
     "release" .:> deformNonEmpty deform
   let e = Excerpt as c
@@ -36,6 +36,6 @@ postExcerpt = action POST pathExcerpt $ \(si, ai) -> withAuth $ do
 
 deleteExcerpt :: AppRoute (Id Slot, Id Asset)
 deleteExcerpt = action DELETE pathExcerpt $ \(si, ai) -> withAuth $ do
-  as <- getAssetSegment PermissionEDIT si ai
+  as <- getAssetSegment PermissionEDIT Nothing si ai
   r <- removeExcerpt as
   okResponse [] $ assetSegmentJSON (if r then as{ assetExcerpt = Nothing } else as)

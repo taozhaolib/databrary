@@ -61,7 +61,7 @@ containerZipEntry c = do
     , zipEntryTime = Nothing
     , zipEntryCRC32 = Nothing
     , zipEntrySize = Nothing
-    , zipEntryComment = BSL.toStrict $ BSB.toLazyByteString $ actionURL (Just req) viewContainer (HTML, containerId c) []
+    , zipEntryComment = BSL.toStrict $ BSB.toLazyByteString $ actionURL (Just req) viewContainer (HTML, (Nothing, containerId c)) []
     , zipEntryContent = ZipDirectory a
     }
 
@@ -96,7 +96,7 @@ zipEmpty _ = True
 
 zipContainer :: AppRoute (Id Slot)
 zipContainer = action GET (pathSlotId </< "zip") $ \ci -> withAuth $ do
-  c <- getContainer PermissionPUBLIC ci
+  c <- getContainer PermissionPUBLIC Nothing ci
   z <- containerZipEntry c
   auditSlotDownload (not $ zipEmpty z) (containerSlot c)
   zipResponse ("databrary-" <> BSC.pack (show (volumeId (containerVolume c))) <> "-" <> BSC.pack (show (containerId c))) [z]

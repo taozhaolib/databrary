@@ -6,6 +6,7 @@ module Databrary.Controller.Comment
 import Data.Maybe (maybeToList)
 
 import Databrary.Ops
+import Databrary.Has (view)
 import Databrary.Model.Permission
 import Databrary.Model.Id
 import Databrary.Model.Slot
@@ -22,7 +23,7 @@ import Databrary.View.Comment
 postComment :: AppRoute (API, Id Slot)
 postComment = action POST (pathAPI </> pathSlotId </< "comment") $ \(api, si) -> withAuth $ do
   u <- authAccount
-  s <- getSlot PermissionSHARED si
+  s <- getSlot PermissionSHARED Nothing si
   c <- runForm (api == HTML ?> htmlCommentForm s) $ do
     text <- "text" .:> (deformRequired =<< deform)
     parent <- "parent" .:> deformNonEmpty deform
@@ -33,4 +34,4 @@ postComment = action POST (pathAPI </> pathSlotId </< "comment") $ \(api, si) ->
   c' <- addComment c
   case api of
     JSON -> okResponse [] $ commentJSON c'
-    HTML -> redirectRouteResponse [] viewSlot (api, slotId $ commentSlot c') []
+    HTML -> redirectRouteResponse [] viewSlot (api, (Just (view c'), slotId (commentSlot c'))) []

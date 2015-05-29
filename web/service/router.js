@@ -314,7 +314,7 @@ app.provider('routerService', [
       reloadOnSearch: false,
     }; }
     routes.slot = makeRoute(controllers.viewSlot, ['vid', 'id', 'segment'], slotRoute(false));
-    routes.slotEdit = makeRoute(controllers.viewSlotEdit, ['vid', 'id', 'segment'], slotRoute(true));
+    routes.slotEdit = makeRoute(controllers.viewSlotEdit, ['id', 'segment'], slotRoute(true));
 
     //
 
@@ -340,8 +340,8 @@ app.provider('routerService', [
       reloadOnSearch: false,
     });
 
-    routes.partyAvatar = makeRoute(controllers.partyAvatar, ['id', 'size']);
-    routes.volumeThumb = makeRoute(controllers.thumbVolume, ['id', 'size']);
+    routes.partyAvatar = makeRoute(controllers.partyAvatar, ['id']);
+    routes.volumeThumb = makeRoute(controllers.thumbVolume, ['id']);
     routes.volumeCSV = makeRoute(controllers.VolumeController.csv, ['id']);
     routes.volumeZip = makeRoute(controllers.zipVolume, ['id']);
     routes.slotZip = makeRoute(controllers.zipSlot, ['vid', 'id', 'segment']);
