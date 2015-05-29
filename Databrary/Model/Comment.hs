@@ -59,7 +59,7 @@ addComment c@Comment{..} = do
 commentJSON :: Comment -> JSON.Object
 commentJSON Comment{ commentSlot = Slot{..}, ..} = JSON.record commentId $ catMaybes
   [ Just $ "container" JSON..= containerJSON slotContainer
-  , segmentFull slotSegment ?!> ("segment" JSON..= slotSegment)
+  , segmentJSON slotSegment
   , Just $ "who" JSON..= partyJSON (accountParty commentWho)
   , Just $ "time" JSON..= commentTime
   , Just $ "text" JSON..= commentText

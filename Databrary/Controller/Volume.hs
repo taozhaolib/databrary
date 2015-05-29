@@ -19,7 +19,7 @@ import Control.Monad (mfilter, guard, void, when, liftM2)
 import Control.Monad.Trans.Class (lift)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
-import Data.Maybe (fromMaybe, isNothing)
+import Data.Maybe (fromMaybe, isNothing, catMaybes)
 import Data.Monoid ((<>), mempty)
 import qualified Data.Text as T
 import qualified Network.Wai as Wai
@@ -42,6 +42,8 @@ import Databrary.Model.Citation.CrossRef
 import Databrary.Model.Funding
 import Databrary.Model.Container
 import Databrary.Model.Record
+import Databrary.Model.Segment
+import Databrary.Model.RecordSlot
 import Databrary.Model.Slot
 import Databrary.Model.Asset
 import Databrary.Model.Excerpt
@@ -73,7 +75,12 @@ volumeJSONField vol "links" _ =
 volumeJSONField vol "funding" _ =
   Just . JSON.toJSON . map fundingJSON <$> lookupVolumeFunding vol
 volumeJSONField vol "containers" _ =
-  Just . JSON.toJSON . map containerJSON <$> lookupVolumeContainers vol
+  Just . JSON.toJSON . map (\(c, rl) -> containerJSON c JSON..+ "records" JSON..= map rjs rl) <$> lookupVolumeContainersRecordIds vol
+  where
+  rjs (s, r) = JSON.object $ catMaybes
+    [ segmentJSON s
+    , Just $ "record" JSON..= r
+    ]
 volumeJSONField vol "records" _ =
   Just . JSON.toJSON . map recordJSON <$> lookupVolumeRecords vol
 volumeJSONField o "excerpts" _ =

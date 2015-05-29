@@ -32,5 +32,4 @@ auditSlotDownload success Slot{ slotContainer = c, slotSegment = seg } = do
 
 slotJSON :: Slot -> JSON.Object
 slotJSON Slot{..} = containerJSON slotContainer JSON..+?
-  ( segmentFull slotSegment ?!> ("segment" JSON..= slotSegment)
-  )
+  segmentJSON slotSegment

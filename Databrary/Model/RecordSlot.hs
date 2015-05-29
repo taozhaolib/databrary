@@ -1,9 +1,10 @@
-{-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes, RecordWildCards, DataKinds #-}
+{-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes, RecordWildCards, DataKinds, ViewPatterns #-}
 module Databrary.Model.RecordSlot
   ( module Databrary.Model.RecordSlot.Types
   , lookupRecordSlots
   , lookupSlotRecords
   , lookupContainerRecords
+  , lookupVolumeContainersRecordIds
   , moveRecordSlot
   , recordSlotJSON
   ) where
@@ -16,9 +17,11 @@ import Database.PostgreSQL.Typed.Types (PGTypeName(..))
 import Databrary.Ops
 import qualified Databrary.JSON as JSON
 import Databrary.Service.DB
+import Databrary.Model.Id.Types
 import Databrary.Model.Segment
 import Databrary.Model.Permission
 import Databrary.Model.Audit
+import Databrary.Model.Volume.Types
 import Databrary.Model.Container.Types
 import Databrary.Model.Slot.Types
 import Databrary.Model.Metric
@@ -39,6 +42,17 @@ lookupSlotRecords (Slot c s) =
 
 lookupContainerRecords :: (MonadDB m) => Container -> m [RecordSlot]
 lookupContainerRecords = lookupSlotRecords . containerSlot
+
+groupSlotRecordIds :: [(Slot, Maybe (Id Record))] -> [(Container, [(Segment, Id Record)])]
+groupSlotRecordIds [] = []
+groupSlotRecordIds ((s, Nothing) : l) = (slotContainer s, []) : groupSlotRecordIds l
+groupSlotRecordIds (sr@(Slot{ slotContainer = c }, _) : (span ((containerId c ==) . containerId . slotContainer . fst) -> (cl, l))) =
+  (c, [ (s, r) | (Slot{ slotSegment = s }, Just r) <- sr : cl ]) : groupSlotRecordIds l
+
+lookupVolumeContainersRecordIds :: (MonadDB m) => Volume -> m [(Container, [(Segment, Id Record)])]
+lookupVolumeContainersRecordIds v =
+  groupSlotRecordIds <$>
+    dbQuery (($ v) <$> $(selectQuery selectVolumeSlotRecordId "$WHERE container.volume = ${volumeId v} ORDER BY container.id"))
 
 moveRecordSlot :: (MonadAudit c m) => RecordSlot -> Segment -> m Bool
 moveRecordSlot rs@RecordSlot{ recordSlot = s@Slot{ slotSegment = src } } dst = do
@@ -64,6 +78,6 @@ recordSlotAge rs@RecordSlot{..} =
 
 recordSlotJSON :: RecordSlot -> JSON.Object
 recordSlotJSON rs@RecordSlot{..} = JSON.record (recordId slotRecord) $ catMaybes
-  [ segmentFull (slotSegment recordSlot) ?!> ("segment" JSON..= slotSegment recordSlot)
+  [ segmentJSON (slotSegment recordSlot)
   , ("age" JSON..=) <$> recordSlotAge rs
   ]

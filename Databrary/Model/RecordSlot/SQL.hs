@@ -3,6 +3,7 @@ module Databrary.Model.RecordSlot.SQL
   ( selectContainerSlotRecord
   , selectRecordSlotRecord
   , selectVolumeSlotRecord
+  , selectVolumeSlotRecordId
   , selectSlotRecord
   , insertSlotRecord
   , updateSlotRecord
@@ -12,6 +13,7 @@ module Databrary.Model.RecordSlot.SQL
 import qualified Language.Haskell.TH as TH
 
 import Databrary.Has (view)
+import Databrary.Model.Id.Types
 import Databrary.Model.Segment
 import Databrary.Model.Volume.Types
 import Databrary.Model.Record.Types
@@ -63,6 +65,20 @@ selectVolumeSlotRecord = selectJoin 'makeVolumeSlotRecord
     selectVolumeRecord
   , joinOn "slot_record.container = container.id AND record.volume = container.volume"
     selectVolumeContainer
+  ]
+
+segmentRecordIdTuple :: Segment -> Id Record -> (Segment, Id Record)
+segmentRecordIdTuple = (,)
+
+makeVolumeSlotRecordId :: (Volume -> Container) -> Maybe (Segment, Id Record) -> Volume -> (Slot, Maybe (Id Record))
+makeVolumeSlotRecordId cf Nothing v = (containerSlot (cf v), Nothing)
+makeVolumeSlotRecordId cf (Just (s, r)) v = (Slot (cf v) s, Just r)
+
+selectVolumeSlotRecordId :: Selector -- ^ @'Volume' -> '(Slot, Maybe (Id Record))'@
+selectVolumeSlotRecordId = selectJoin 'makeVolumeSlotRecordId
+  [ selectVolumeContainer
+  , maybeJoinOn "container.id = slot_record.container"
+    $ selectColumns 'segmentRecordIdTuple "slot_record" ["segment", "record"]
   ]
 
 selectSlotRecord :: TH.Name -- ^ @'Identity'@

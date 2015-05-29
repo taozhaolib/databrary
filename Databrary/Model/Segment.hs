@@ -1,4 +1,4 @@
-{-# LANGUAGE DataKinds, DeriveDataTypeable #-}
+{-# LANGUAGE OverloadedStrings, DataKinds, DeriveDataTypeable #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Databrary.Model.Segment
   ( Segment(..)
@@ -13,6 +13,7 @@ module Databrary.Model.Segment
   , segmentOverlaps
   , segmentIntersect
   , segmentInterp
+  , segmentJSON
   ) where
 
 import Control.Applicative ((<|>), optional)
@@ -126,3 +127,6 @@ segmentInterp f (Segment r)
   | Just u <- upperBound r = Segment (Range.point (l + realToFrac f * (u - l)))
   | otherwise = Segment (Range.point 0)
   where l = fromMaybe 0 $ lowerBound r
+
+segmentJSON :: Segment -> Maybe JSON.Pair
+segmentJSON s = segmentFull s ?!> "segment" JSON..= s

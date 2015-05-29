@@ -11,7 +11,7 @@ module Databrary.Model.AssetSlot
   ) where
 
 import Control.Applicative ((<*>))
-import Control.Monad (when, liftM2)
+import Control.Monad (when)
 import Data.Maybe (catMaybes, fromMaybe, isNothing)
 import Database.PostgreSQL.Typed (pgSQL)
 
@@ -69,5 +69,5 @@ findAssetContainerEnd c =
 assetSlotJSON :: AssetSlot -> JSON.Object
 assetSlotJSON AssetSlot{..} = assetJSON slotAsset JSON..++ catMaybes
   [ ("container" JSON..=) . containerId . slotContainer <$> assetSlot
-  , liftM2 (?!>) segmentFull ("segment" JSON..=) =<< slotSegment <$> assetSlot
+  , segmentJSON . slotSegment =<< assetSlot
   ]
