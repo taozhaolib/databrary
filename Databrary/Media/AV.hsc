@@ -15,7 +15,7 @@ import Control.Applicative ((<*>))
 import Control.Arrow (first)
 import Control.Concurrent.MVar (MVar, newMVar, takeMVar, putMVar)
 import Control.Exception (Exception, throwIO, bracket, bracket_, finally, onException)
-import Control.Monad (void, when, unless, forM, forM_)
+import Control.Monad (void, when, forM, forM_)
 import qualified Data.ByteString as BS
 import qualified Data.Foldable as Fold
 import Data.Int (Int32, Int64)

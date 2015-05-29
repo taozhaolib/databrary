@@ -89,7 +89,7 @@ serveAssetSegment dl as = do
         okResponse hd s
   if full
     then
-      if isJust sz && formatIsImage afmt
+      if isJust sz && afmt == imageFormat
         then samp Nothing
         else okResponse hd (store, part)
     else do
