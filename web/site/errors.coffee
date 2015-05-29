@@ -11,7 +11,7 @@ app.directive('errors', [
       $scope.$on 'displayService-error', (event, error) ->
         page.display.title = page.constants.message('error.title')
         error.message ?= page.constants.message(
-            if (msg = 'error.' + error.status + '.message') of page.constants.messages
+            if (msg = 'error.r' + error.status) of page.constants.messages
               msg
             else
               'error.resolve'
