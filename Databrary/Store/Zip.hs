@@ -30,11 +30,11 @@ import System.IO (withBinaryFile, IOMode(ReadMode, WriteMode))
 import System.IO.Error (mkIOError, eofErrorType)
 import System.Posix.Directory.Foreign (dtDir, dtReg)
 import System.Posix.Directory.Traversals (getDirectoryContents)
-import System.Posix.FilePath ((</>), addTrailingPathSeparator)
-import System.Posix.Files.ByteString (getFileStatus, isDirectory, modificationTimeHiRes, fileSize)
+import System.Posix.FilePath (addTrailingPathSeparator)
+import System.Posix.Files.ByteString (isDirectory, modificationTimeHiRes, fileSize)
 
 import Databrary.Ops
-import Databrary.Store
+import Databrary.Files
 
 data ZipEntryContent
   = ZipDirectory [ZipEntry]
@@ -195,11 +195,11 @@ streamZip entries comment write = do
               run s h = do
                 b <- BS.hGetSome h $ fromIntegral $ fromIntegral B.defaultChunkSize `min` s
                 if BS.null b
-                  then ioError $ mkIOError eofErrorType "ZipEntryFile" (Just h) (Just $ unRawFilePath f)
+                  then ioError $ mkIOError eofErrorType "ZipEntryFile" (Just h) (Just $ toFilePath f)
                   else do
                     write $ B.byteString b
                     run (s - fromIntegral (BS.length b)) h
-          liftIO $ withBinaryFile (unRawFilePath f) ReadMode $ run size
+          liftIO $ withBinaryFile (toFilePath f) ReadMode $ run size
           modify' (size +)
           central (fromJust crc) size
         | otherwise -> do
@@ -210,7 +210,7 @@ streamZip entries comment write = do
                   else do
                     write $ B.byteString b
                     run (crc32Update c b, s + fromIntegral (BS.length b)) h
-          (c, s) <- liftIO $ withBinaryFile (unRawFilePath f) ReadMode $ run (0, 0)
+          (c, s) <- liftIO $ withBinaryFile (toFilePath f) ReadMode $ run (0, 0)
           modify' (s +)
           let z64 = s >= zip64Size
           send (if z64 then 24 else 16)

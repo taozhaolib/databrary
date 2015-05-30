@@ -49,7 +49,7 @@ import Databrary.Model.AssetSlot
 import Databrary.Model.AssetSegment
 import Databrary.Model.Excerpt
 import Databrary.Model.Transcode
-import Databrary.Store
+import Databrary.Files hiding ((</>))
 import Databrary.Store.Types
 import Databrary.Store.Asset
 import Databrary.Store.Upload

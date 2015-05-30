@@ -13,6 +13,7 @@ import Databrary.JSON (quoteByteString)
 import Databrary.HTTP.Path.JS
 import Databrary.HTTP.Route
 import Databrary.Web
+import Databrary.Web.Types
 import Databrary.Web.Files
 
 import {-# SOURCE #-} Databrary.Routes
@@ -23,8 +24,9 @@ jsRoute n r v = B.char7 '\n' <> quoteByteString '"' n
   <> B.string7 ",route:" <> jsPath (routePath r) v <> B.string7 "},"
 
 generateRoutesJS :: WebGenerator
-generateRoutesJS f = staticWebGenerate f $
-  withBinaryFile (webFileAbs f) WriteMode $ \h -> do
+generateRoutesJS f = staticWebGenerate
+  (withBinaryFile (webFileAbs f) WriteMode $ \h -> do
     hPutStr h "app.constant('routeData',{"
     B.hPutBuilder h jsRoutes
-    hPutStrLn h "});"
+    hPutStrLn h "});")
+  f

@@ -6,12 +6,15 @@ module Databrary.Web.Rules
 
 import Control.Monad (when, mzero, msum)
 import Control.Monad.Trans.Maybe (MaybeT(..))
+import Control.Monad.Trans.Reader (ReaderT(..))
 import Data.Maybe (isNothing)
 import Data.Monoid ((<>))
 import System.IO (hPutStrLn, stderr)
 
 import Databrary.Ops
+import Databrary.Files
 import Databrary.Web
+import Databrary.Web.Types
 import Databrary.Web.Files
 import Databrary.Web.Constants
 import Databrary.Web.Routes
@@ -33,15 +36,15 @@ fixedGenerators =
   ]
 
 generateFixed :: WebGenerator
-generateFixed f t
-  | Just g <- lookup (webFileRel f) fixedGenerators = g f t
+generateFixed f
+  | Just g <- lookup (webFileRel f) fixedGenerators = g f
   | otherwise = mzero
 
 generateStatic :: WebGenerator
-generateStatic f t = maybe (const True) (<) t <$> webFileTime f
+generateStatic = fileNewer
 
 generateWebFile :: WebGenerator
-generateWebFile f t = msum $ map (\g -> g f t)
+generateWebFile f = msum $ map ($ f)
   [ generateFixed
   , generateCoffeeJS
   , generateStylusCSS
@@ -51,7 +54,7 @@ generateWebFile f t = msum $ map (\g -> g f t)
 
 regenerateWebFile :: WebFilePath -> IO (Maybe WebFilePath)
 regenerateWebFile f = do
-  r <- runMaybeT $ generateWebFile f Nothing
+  r <- runMaybeT $ runReaderT (generateWebFile f) Nothing
   when (isNothing r) $
     hPutStrLn stderr ("regenerateWebFile: " <> webFileRel f)
   return $ f <$ r

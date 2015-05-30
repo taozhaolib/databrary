@@ -8,20 +8,20 @@ import Control.Applicative ((<$>), (<*>))
 #ifdef DEVEL
 import Control.Concurrent.MVar (modifyMVar)
 import Control.Monad.IO.Class (liftIO)
-#endif
 import Control.Monad.Trans.Maybe (MaybeT(..))
+import Control.Monad.Trans.Reader (ReaderT(..))
+#endif
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import qualified Data.HashMap.Strict as HM
-import Data.Maybe (fromMaybe, fromJust)
+import Data.Maybe (fromMaybe)
 import System.FilePath (takeExtension)
 
 import Databrary.Has (peeks)
-import Databrary.Store
+import Databrary.Files
 import Databrary.Model.Format
 import Databrary.Web
 import Databrary.Web.Types
-import Databrary.Web.Files
 #ifdef DEVEL
 import Databrary.Web.Rules
 #endif
@@ -38,7 +38,7 @@ makeWebFileInfo :: WebFilePath -> IO WebFileInfo
 makeWebFileInfo f = WebFileInfo f
   (fromMaybe "application/octet-stream" $ lookup (takeExtension $ webFileRel f) staticFormats)
   <$> hashFile (webFileAbsRaw f)
-  <*> (fromJust <$> runMaybeT (webFileTime f))
+  <*> (modificationTimestamp <$> getFileStatus f)
 
 lookupWebFile :: MonadWeb c m => RawFilePath -> m (Maybe WebFileInfo)
 lookupWebFile f = do
@@ -46,7 +46,7 @@ lookupWebFile f = do
 #ifdef DEVEL
   liftIO $ modifyMVar wc $ \wm -> do
     let wf = HM.lookup f wm
-        wfp = webFilePathRaw f
+        wfp = fromRawFilePath f
     maybe
       (return (HM.delete f wm, Nothing))
       (\r -> if r
@@ -55,7 +55,7 @@ lookupWebFile f = do
           return (HM.insert f wf' wm, Just wf')
         else
           return (wm, wf))
-      =<< runMaybeT (generateWebFile wfp (webFileTimestamp <$> wf))
+      =<< runMaybeT (runReaderT (generateWebFile wfp) (webFileTimestamp <$> wf))
 #else
   return $ HM.lookup f wc
 #endif

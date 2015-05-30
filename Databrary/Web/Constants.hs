@@ -22,6 +22,7 @@ import Databrary.Model.RecordCategory
 import Databrary.Model.Format
 import Databrary.Model.Party
 import Databrary.Web
+import Databrary.Web.Types
 import Databrary.Web.Files
 
 constantsJSON :: JSON.Value
@@ -52,9 +53,10 @@ constantsJS :: BSB.Builder
 constantsJS = BSB.string7 "app.constant('constantData'," <> constantsJSONB <> BSB.string7 ");"
 
 regenerateConstants :: BSB.Builder -> WebGenerator
-regenerateConstants b f = staticWebGenerate f $
-  withBinaryFile (webFileAbs f) WriteMode $ \h ->
-    BSB.hPutBuilder h b
+regenerateConstants b f = staticWebGenerate
+  (withBinaryFile (webFileAbs f) WriteMode $ \h ->
+    BSB.hPutBuilder h b)
+  f
 
 generateConstantsJSON :: WebGenerator
 generateConstantsJSON = regenerateConstants constantsJSONB

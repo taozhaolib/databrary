@@ -30,7 +30,7 @@ import Databrary.Model.Permission
 import Databrary.Model.Volume
 import Databrary.Model.Format
 import Databrary.Model.Token
-import Databrary.Store
+import Databrary.Files
 import Databrary.Store.Upload
 import Databrary.Store.Asset
 import Databrary.HTTP.Form.Deform
@@ -78,7 +78,7 @@ uploadChunk = action POST (pathJSON </< "upload") $ \() -> withAuth $ do
     Wai.KnownLength l | l /= len -> badLength
     _ -> return ()
   rb <- peeks Wai.requestBody
-  n <- liftIO $ withBinaryFile (unRawFilePath file) WriteMode $ \h -> do
+  n <- liftIO $ withBinaryFile (toFilePath file) WriteMode $ \h -> do
     hSeek h AbsoluteSeek (toInteger off)
     let block n = do
           b <- rb
@@ -101,7 +101,7 @@ testChunk :: AppRoute ()
 testChunk = action GET (pathJSON </< "upload") $ \() -> withAuth $ do
   (up, off, len) <- runForm Nothing chunkForm
   file <- peeks $ uploadFile up
-  r <- liftIO $ withBinaryFile (unRawFilePath file) ReadMode $ \h -> do
+  r <- liftIO $ withBinaryFile (toFilePath file) ReadMode $ \h -> do
     hSeek h AbsoluteSeek (toInteger off)
     let block 0 = return False
         block n = do

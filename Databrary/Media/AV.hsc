@@ -37,7 +37,7 @@ import Foreign.Storable
 import System.IO.Unsafe (unsafeDupablePerformIO)
 
 import Databrary.Ops
-import Databrary.Store
+import Databrary.Files
 import Databrary.Model.Offset
 
 #include <libavformat/avformat.h>

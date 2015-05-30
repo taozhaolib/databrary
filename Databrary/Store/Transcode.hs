@@ -27,7 +27,7 @@ import Databrary.Model.Audit
 import Databrary.Model.Segment
 import Databrary.Model.Asset
 import Databrary.Model.Transcode
-import Databrary.Store
+import Databrary.Files
 import Databrary.Store.Types
 import Databrary.Store.Temp
 import Databrary.Store.Asset
@@ -46,7 +46,7 @@ transcodeArgs t@Transcode{..} = do
   req <- peek
   auth <- transcodeAuth t
   return $
-    [ "-f", unRawFilePath f
+    [ "-f", toFilePath f
     , "-r", BSLC.unpack $ BSB.toLazyByteString $ routeURL (Just req) remoteTranscode (transcodeId t) <> BSB.string7 "?auth=" <> BSB.byteString auth
     , "--" ]
     ++ maybe [] (\l -> ["-ss", show l]) lb

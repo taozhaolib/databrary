@@ -14,7 +14,7 @@ import qualified Network.Wai as Wai
 
 import Databrary.Ops
 import Databrary.Has (peek)
-import Databrary.Store
+import Databrary.Files
 import Databrary.HTTP.Request
 import Databrary.HTTP
 import Databrary.Action

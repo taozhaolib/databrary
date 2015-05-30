@@ -13,9 +13,9 @@ import qualified Data.Foldable as Fold
 import System.Directory (getTemporaryDirectory)
 import System.IO.Error (mkIOError, doesNotExistErrorType, illegalOperationErrorType)
 import System.Posix.FilePath (addTrailingPathSeparator)
-import System.Posix.Files.ByteString (getFileStatus, isDirectory, deviceID)
+import System.Posix.Files.ByteString (isDirectory, deviceID)
 
-import Databrary.Store
+import Databrary.Files
 import Databrary.Store.Types
 import Databrary.Store.Transcoder
 
@@ -23,7 +23,7 @@ initStorage :: C.Config -> IO Storage
 initStorage conf = do
   master <- C.require conf "master"
   fallback <- C.lookup conf "fallback"
-  temp <- maybe (rawFilePath <$> getTemporaryDirectory) return =<< C.lookup conf "temp"
+  temp <- maybe (toRawFilePath <$> getTemporaryDirectory) return =<< C.lookup conf "temp"
   upload <- C.require conf "upload"
 
   foldM_ (\dev f -> do

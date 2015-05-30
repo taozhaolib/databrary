@@ -15,7 +15,7 @@ import System.Posix.FilePath (joinPath, splitDirectories)
 
 import Databrary.Iso.Types (invMap)
 import Databrary.Ops
-import Databrary.Store
+import Databrary.Files
 import Databrary.Model.Format
 import Databrary.Action.Route
 import Databrary.Action

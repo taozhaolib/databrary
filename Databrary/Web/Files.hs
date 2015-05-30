@@ -1,40 +1,34 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Web.Files
-  ( fileTime
-  , webFileTime
+  ( fileNewer
   , allWebFiles
   , findWebFiles
-  , WebGenerator
   , staticWebGenerate
   , webRegenerate
-  , webLinkFile
+  , webLinkDataFile
   ) where
 
-import Control.Applicative ((<$>), (<$))
 import Control.Exception (bracket)
-import Control.Monad (void, ap)
-import Control.Monad.Trans.Class (lift)
+import Control.Monad (ap, when)
+import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Maybe (MaybeT(..))
+import Control.Monad.Trans.Reader (ReaderT(..), ask, asks)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import Data.Maybe (isNothing)
-import System.Directory (createDirectoryIfMissing)
+-- import System.Directory (createDirectoryIfMissing)
 import System.Posix.Directory.ByteString (openDirStream, closeDirStream)
 import System.Posix.Directory.Foreign (dtDir, dtReg)
 import System.Posix.Directory.Traversals (readDirEnt)
-import System.Posix.FilePath ((</>), takeDirectory, takeExtensions)
-import System.Posix.Files.ByteString (createLink)
+import System.Posix.FilePath (takeExtensions)
+import System.Posix.Files (createLink)
 
 import Paths_databrary (getDataFileName)
-import Databrary.Model.Time
-import Databrary.Store
+import Databrary.Ops
+import Databrary.Files
 import Databrary.Web
-
-fileTime :: RawFilePath -> MaybeT IO Timestamp
-fileTime f = snd <$> MaybeT (fileInfo f)
-
-webFileTime :: WebFilePath -> MaybeT IO Timestamp
-webFileTime = fileTime . webFileAbsRaw
+import Databrary.Web.Types
+import {-# SOURCE #-} Databrary.Web.Rules
 
 listFiles :: RawFilePath -> IO [RawFilePath]
 listFiles dir = loop "" where
@@ -57,28 +51,40 @@ listFiles dir = loop "" where
         (ent b dh)
 
 allWebFiles :: IO [WebFilePath]
-allWebFiles = map webFilePathRaw <$> listFiles webDirRaw
+allWebFiles = map fromRawFilePath <$> listFiles webDirRaw
 
 findWebFiles :: BS.ByteString -> IO [WebFilePath]
 findWebFiles ext = filter ((ext ==) . takeExtensions . webFileRelRaw) <$> allWebFiles
 
-type WebGenerator = WebFilePath -> Maybe Timestamp -> MaybeT IO Bool
+anyM :: Monad m => [m Bool] -> m Bool
+anyM [] = return False
+anyM (a:l) = do
+  r <- a
+  if r then return True else anyM l
 
-webRegenerate :: Timestamp -> WebFilePath -> Maybe Timestamp -> IO () -> IO Bool
-webRegenerate src _ (Just dst) _ | dst >= src = return False
-webRegenerate _ f ft g = True <$ do
-  (if isNothing ft
-    then createDirectoryIfMissing True . unRawFilePath . takeDirectory
-    else void . removeFile) $ webFileAbsRaw f
-  g
+fileNewer :: IsFilePath f => f -> WebGeneratorM Bool
+fileNewer f = ReaderT $
+  maybe ((True <?) =<< liftIO (fileExist f)) (\t -> (t <) . snd <$> MaybeT (fileInfo f))
 
-staticWebGenerate :: WebFilePath -> IO () -> Maybe Timestamp -> MaybeT IO Bool
-staticWebGenerate f g = lift . maybe (webRegenerate undefined f Nothing g) (const $ return False)
+whether :: Bool -> IO () -> IO Bool
+whether g = (g <$) . when g
 
-webLinkFile :: FilePath -> WebGenerator
-webLinkFile s f t = do
-  wf <- lift $ rawFilePath <$> getDataFileName s
-  (_, wt) <- MaybeT $ fileInfo wf
-  lift $ webRegenerate wt f t $ do
-    _ <- removeFile (webFileAbsRaw f)
-    createLink wf (webFileAbsRaw f)
+webRegenerate :: IO () -> [FilePath] -> [WebFilePath] -> WebGenerator
+webRegenerate g fs ws _ = do
+  wr <- or <$> mapM generateWebFile ws
+  fr <- anyM (asks isNothing : map fileNewer fs)
+  -- when (isNothing ft) $ createDirectoryIfMissing True $ FP.takeDirectory (webFileAbs f)
+  liftIO $ whether (fr || wr) g
+
+staticWebGenerate :: IO () -> WebGenerator
+staticWebGenerate g _ = do
+  t <- ask
+  liftIO $ whether (isNothing t) g
+
+webLinkDataFile :: FilePath -> WebGenerator
+webLinkDataFile s f = do
+  wf <- liftIO $ getDataFileName s
+  webRegenerate (do
+    _ <- removeFile f
+    createLink wf (webFileAbs f))
+    [wf] [] f

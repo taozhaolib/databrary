@@ -17,12 +17,12 @@ import qualified Data.Traversable as Trav
 import Data.Word (Word64)
 import System.IO.Error (isAlreadyExistsError)
 import System.Posix.Directory.ByteString (createDirectory)
-import System.Posix.FilePath ((</>), takeDirectory)
-import System.Posix.Files.ByteString (fileExist, getFileStatus, fileSize, createLink)
+import System.Posix.FilePath (takeDirectory)
+import System.Posix.Files.ByteString (fileSize, createLink)
 
 import Databrary.Ops
 import Databrary.Has (peek, peeks)
-import Databrary.Store
+import Databrary.Files
 import Databrary.Store.Types
 import Databrary.Model.Asset.Types
 
@@ -64,7 +64,7 @@ storeAssetFile ba fp = peeks storageMaster >>= \sm -> liftIO $ do
   ase <- fileExist as
   if ase
     then do
-      sf <- sameFile fp as
+      sf <- compareFiles fp as
       unless sf $ fail "storage hash collision"
     else do
       handleJust (guard . isAlreadyExistsError) return $ createDirectory (takeDirectory as) 0o750

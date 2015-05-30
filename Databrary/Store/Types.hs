@@ -7,7 +7,7 @@ module Databrary.Store.Types
 import Control.Monad.IO.Class (MonadIO)
 
 import Databrary.Has (MonadHas)
-import Databrary.Store
+import Databrary.Files
 
 data Transcoder = Transcoder
   { transcoderCmd :: FilePath

@@ -20,7 +20,7 @@ import Databrary.Ops
 import Databrary.Has (view, peek)
 import qualified Databrary.JSON as JSON
 import Databrary.Service.DB
-import Databrary.Store
+import Databrary.Files
 import Databrary.Store.Types
 import Databrary.Store.Asset
 import Databrary.Model.SQL

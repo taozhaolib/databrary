@@ -4,7 +4,7 @@ module Databrary.Web.Templates
   ) where
 
 import Control.Monad (guard, unless, forM_)
-import Control.Monad.Trans.Class (lift)
+import Control.Monad.IO.Class (liftIO)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Char8 as BSC
@@ -13,12 +13,13 @@ import Data.Monoid ((<>))
 import System.IO (withFile, withBinaryFile, IOMode(ReadMode, WriteMode), hPutStrLn, hIsEOF, hFlush)
 
 import qualified Databrary.JSON as JSON
-import Databrary.Store
+import Databrary.Files
 import Databrary.Web
+import Databrary.Web.Types
 import Databrary.Web.Files
 
 processTemplate :: RawFilePath -> (BS.ByteString -> IO ()) -> IO ()
-processTemplate f g = withFile (unRawFilePath f) ReadMode go where
+processTemplate f g = withFile (toFilePath f) ReadMode go where
   go h = do
     e <- hIsEOF h
     unless e $ do
@@ -27,12 +28,11 @@ processTemplate f g = withFile (unRawFilePath f) ReadMode go where
       go h
 
 generateTemplatesJS :: WebGenerator
-generateTemplatesJS f t = do
-  tl <- lift $ findWebFiles ".html"
+generateTemplatesJS f = do
+  tl <- liftIO $ findWebFiles ".html"
   guard (not $ null tl)
-  tt <- mapM webFileTime tl
-  lift $ webRegenerate (maximum tt) f t $ do
-    withBinaryFile (webFileAbs f) WriteMode $ \h -> do
+  webRegenerate
+    (withBinaryFile (webFileAbs f) WriteMode $ \h -> do
       hPutStrLn h "app.run(['$templateCache',function(t){"
       forM_ tl $ \tf -> do
         BSB.hPutBuilder h $ BSB.string7 "t.put(" <> JSON.quoteByteString q (webFileRelRaw tf) <> BSB.char7 ',' <> BSB.char7 q
@@ -41,5 +41,6 @@ generateTemplatesJS f t = do
           BSB.hPutBuilder h j -- this is hanging
           hFlush h            -- without this!!!
         hPutStrLn h $ q : ");"
-      hPutStrLn h "}]);"
+      hPutStrLn h "}]);")
+    [] tl f
   where q = '\''

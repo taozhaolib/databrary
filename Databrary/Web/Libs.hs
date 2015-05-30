@@ -8,7 +8,8 @@ import Control.Monad (mzero)
 import Data.String (fromString)
 import System.FilePath ((</>), splitFileName, (<.>), splitExtensions)
 
-import Databrary.Web hiding ((<.>))
+import Databrary.Web
+import Databrary.Web.Types
 import Databrary.Web.Files
 
 jsLibs :: [(FilePath, FilePath)]
@@ -21,11 +22,11 @@ jsLibs =
   ]
 
 generateLib :: WebGenerator
-generateLib f t
+generateLib f
   | ("lib/", l) <- splitFileName (webFileRel f)
   , (b, e) <- splitExtensions l
   , e `elem` [".js", ".min.js", ".min.map", ".min.js.map"]
-  , Just p <- lookup b jsLibs = webLinkFile (p </> l) f t
+  , Just p <- lookup b jsLibs = webLinkDataFile (p </> l) f
   | otherwise = mzero
 
 allWebLibs :: Bool -> [WebFilePath]
