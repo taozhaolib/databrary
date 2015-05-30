@@ -81,6 +81,8 @@ volumeJSONField vol "containers" _ =
     [ segmentJSON s
     , Just $ "id" JSON..= r
     ]
+volumeJSONField vol "top" _ =
+  Just . JSON.toJSON . containerJSON <$> lookupVolumeTopContainer vol
 volumeJSONField vol "records" _ =
   Just . JSON.toJSON . map recordJSON <$> lookupVolumeRecords vol
 volumeJSONField o "excerpts" _ =

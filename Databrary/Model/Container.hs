@@ -5,6 +5,7 @@ module Databrary.Model.Container
   , lookupContainer
   , lookupVolumeContainer
   , lookupVolumeContainers
+  , lookupVolumeTopContainer
   , addContainer
   , changeContainer
   , removeContainer
@@ -53,6 +54,10 @@ lookupVolumeContainer vol ci =
 lookupVolumeContainers :: MonadDB m => Volume -> m [Container]
 lookupVolumeContainers vol =
   dbQuery $ fmap ($ vol) $(selectQuery selectVolumeContainer "$WHERE container.volume = ${volumeId vol}")
+
+lookupVolumeTopContainer :: MonadDB m => Volume -> m Container
+lookupVolumeTopContainer vol =
+  dbQuery1' $ fmap ($ vol) $(selectQuery selectVolumeContainer "$WHERE container.volume = ${volumeId vol} AND container.top ORDER BY container.id LIMIT 1")
 
 addContainer :: MonadAudit c m => Container -> m Container
 addContainer bc = do
