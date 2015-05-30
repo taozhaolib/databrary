@@ -342,7 +342,7 @@ app.provider('routerService', [
 
     routes.partyAvatar = makeRoute(controllers.partyAvatar, ['id']);
     routes.volumeThumb = makeRoute(controllers.thumbVolume, ['id']);
-    routes.volumeCSV = makeRoute(controllers.VolumeController.csv, ['id']);
+    routes.volumeCSV = makeRoute(controllers.csvVolume, ['id']);
     routes.volumeZip = makeRoute(controllers.zipVolume, ['id']);
     routes.slotZip = makeRoute(controllers.zipSlot, ['vid', 'id', 'segment']);
     routes.assetThumb = makeRoute(controllers.thumbAssetSegment, ['cid', 'segment', 'id', 'size']);

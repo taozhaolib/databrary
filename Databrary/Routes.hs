@@ -34,6 +34,7 @@ import Databrary.Controller.Excerpt
 import Databrary.Controller.Zip
 import Databrary.Controller.Tag
 import Databrary.Controller.Comment
+import Databrary.Controller.CSV
 import Databrary.Controller.Audit
 import Databrary.Controller.Transcode
 import Databrary.Controller.Web
@@ -79,6 +80,7 @@ routeMap = fromRouteList
   , route queryVolumes
   , route zipVolume
   , route thumbVolume
+  , route csvVolume
 
   , route createContainer
   , route viewSlot
@@ -151,6 +153,7 @@ jsRoutes = mconcat
   , jsRoute "viewVolumeEdit" viewVolumeEdit (volume)
   , jsRoute "viewVolumeSearch" queryVolumes (HTML)
   , jsRoute "thumbVolume" thumbVolume (volume)
+  , jsRoute "csvVolume" csvVolume (volume)
 
   , jsRoute "viewSlot" viewSlot (HTML, (Just volume, slot))
   , jsRoute "viewSlotEdit" viewContainerEdit (Just volume, slot)
