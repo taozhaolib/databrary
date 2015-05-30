@@ -79,7 +79,7 @@ volumeJSONField vol "containers" _ =
   where
   rjs (s, r) = JSON.object $ catMaybes
     [ segmentJSON s
-    , Just $ "record" JSON..= r
+    , Just $ "id" JSON..= r
     ]
 volumeJSONField vol "records" _ =
   Just . JSON.toJSON . map recordJSON <$> lookupVolumeRecords vol

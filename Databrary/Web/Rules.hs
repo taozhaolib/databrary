@@ -11,7 +11,6 @@ import Data.Monoid ((<>))
 import System.IO (hPutStrLn, stderr)
 
 import Databrary.Ops
-import Databrary.Store
 import Databrary.Web
 import Databrary.Web.Files
 import Databrary.Web.Constants

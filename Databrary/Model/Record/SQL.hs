@@ -22,8 +22,8 @@ import Databrary.Model.Metric
 import Databrary.Model.Record.Types
 
 parseMeasure :: Record -> BSC.ByteString -> Measure
-parseMeasure r s = (\(m, d) -> Measure r (getMetric' (Id (read (BSC.unpack m)))) (BSC.tail d))
-  $ BSC.splitAt (fromMaybe (error $ "parseMeasure: " ++ BSC.unpack s) $ BSC.elemIndex ':' s) s
+parseMeasure r s = Measure r (getMetric' (Id (read (BSC.unpack m)))) (BSC.tail d) where
+  (m, d) = BSC.splitAt (fromMaybe (error $ "parseMeasure " ++ show (recordId r) ++ ": " ++ BSC.unpack s) $ BSC.elemIndex ':' s) s
 
 makeRecord :: Id Record -> Maybe (Id RecordCategory) -> [Maybe BSC.ByteString] -> Maybe Release -> Volume -> Record
 makeRecord i c ms p v = r where
