@@ -22,11 +22,11 @@ jsLibs =
   ]
 
 generateLib :: WebGenerator
-generateLib f
+generateLib fo@(f, _)
   | ("lib/", l) <- splitFileName (webFileRel f)
   , (b, e) <- splitExtensions l
   , e `elem` [".js", ".min.js", ".min.map", ".min.js.map"]
-  , Just p <- lookup b jsLibs = webLinkDataFile (p </> l) f
+  , Just p <- lookup b jsLibs = webLinkDataFile (p </> l) fo
   | otherwise = mzero
 
 allWebLibs :: Bool -> [WebFilePath]

@@ -53,10 +53,10 @@ constantsJS :: BSB.Builder
 constantsJS = BSB.string7 "app.constant('constantData'," <> constantsJSONB <> BSB.string7 ");"
 
 regenerateConstants :: BSB.Builder -> WebGenerator
-regenerateConstants b f = staticWebGenerate
+regenerateConstants b fo@(f, _) = staticWebGenerate
   (withBinaryFile (webFileAbs f) WriteMode $ \h ->
     BSB.hPutBuilder h b)
-  f
+  fo
 
 generateConstantsJSON :: WebGenerator
 generateConstantsJSON = regenerateConstants constantsJSONB

@@ -7,7 +7,7 @@ module Databrary.Web.Uglify
 import Control.Applicative ((<$>))
 import Control.Monad (guard, liftM2)
 import Control.Monad.IO.Class (liftIO)
-import Data.List (isPrefixOf)
+import Data.List (isPrefixOf, union)
 import qualified System.FilePath as FP
 import System.Process (callProcess)
 
@@ -18,14 +18,16 @@ import Databrary.Web.Types
 import Databrary.Web.Files
 
 allWebJS :: IO [WebFilePath]
-allWebJS = ("app.js" :) . filter (not . (liftM2 (||) (isPrefixOf "lib/") (`elem` ["app.js", "debug.js"])) . webFileRel) <$> findWebFiles ".js"
+allWebJS = liftM2 union
+  (("app.js" :) . filter (not . (liftM2 (||) (isPrefixOf "lib/") (`elem` ["app.js", "debug.js"])) . webFileRel) <$> findWebFiles ".js")
+  (map (replaceWebExtension ".js") <$> findWebFiles ".coffee")
 
 generateUglifyJS :: WebGenerator
-generateUglifyJS f = do
+generateUglifyJS fo@(f, _) = do
   jl <- liftIO allWebJS
   guard (not $ null jl)
   webRegenerate (do
     let fm = f <.> ".map"
     callProcess (binDir FP.</> "uglifyjs") $ ["--output", webFileAbs f, "--source-map", webFileAbs fm, "--source-map-url", webFileRel fm, "--prefix", "relative", "--screw-ie8", "--mangle", "--compress", "--define", "DEBUG=false"]
       ++ map webFileAbs jl)
-    [] jl f
+    [] jl fo

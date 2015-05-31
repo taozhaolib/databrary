@@ -5,6 +5,7 @@ module Databrary.Files
   , catchDoesNotExist
   , modificationTimestamp
   , fileInfo
+  , setFileTimestamps
   , removeFile
   , compareFiles
   , hashFile
@@ -18,7 +19,7 @@ import qualified Data.ByteString as BS
 import Data.ByteString.Lazy.Internal (defaultChunkSize)
 import Data.Maybe (isJust)
 import Data.String (IsString(..))
-import Data.Time.Clock.POSIX (posixSecondsToUTCTime)
+import Data.Time.Clock.POSIX (POSIXTime, posixSecondsToUTCTime, utcTimeToPOSIXSeconds)
 import qualified GHC.Foreign as GHC
 import GHC.IO.Encoding (getFileSystemEncoding)
 import System.Posix.ByteString.FilePath (RawFilePath)
@@ -58,6 +59,8 @@ class IsString a => IsFilePath a where
   fileExist = RP.fileExist . toRawFilePath
   getFileStatus :: a -> IO P.FileStatus
   getFileStatus = RP.getFileStatus . toRawFilePath
+  setFileTimesHiRes :: a -> POSIXTime -> POSIXTime -> IO ()
+  setFileTimesHiRes = RP.setFileTimesHiRes . toRawFilePath
   removeLink :: a -> IO ()
   removeLink = RP.removeLink . toRawFilePath
 
@@ -72,6 +75,7 @@ instance IsFilePath F.FilePath where
 
   fileExist = P.fileExist
   getFileStatus = P.getFileStatus
+  setFileTimesHiRes = P.setFileTimesHiRes
   removeLink = P.removeLink
 
 instance IsFilePath RF.RawFilePath where
@@ -99,6 +103,9 @@ fileInfo :: IsFilePath a => a -> IO (Maybe (FileOffset, Timestamp))
 fileInfo f = 
   (=<<) (liftM2 (?>) P.isRegularFile $ P.fileSize &&& modificationTimestamp)
   <$> catchDoesNotExist (getFileStatus f)
+
+setFileTimestamps :: IsFilePath a => a -> Timestamp -> Timestamp -> IO ()
+setFileTimestamps f a m = setFileTimesHiRes f (utcTimeToPOSIXSeconds a) (utcTimeToPOSIXSeconds m)
 
 removeFile :: IsFilePath a => a -> IO Bool
 removeFile f = isJust <$> catchDoesNotExist (removeLink f)

@@ -12,7 +12,7 @@ import System.IO (withBinaryFile, IOMode(WriteMode), hPutStr, hPutStrLn)
 import Databrary.JSON (quoteByteString)
 import Databrary.HTTP.Path.JS
 import Databrary.HTTP.Route
-import Databrary.Web
+import Databrary.Files
 import Databrary.Web.Types
 import Databrary.Web.Files
 
@@ -24,9 +24,9 @@ jsRoute n r v = B.char7 '\n' <> quoteByteString '"' n
   <> B.string7 ",route:" <> jsPath (routePath r) v <> B.string7 "},"
 
 generateRoutesJS :: WebGenerator
-generateRoutesJS f = staticWebGenerate
-  (withBinaryFile (webFileAbs f) WriteMode $ \h -> do
+generateRoutesJS fo@(f, _) = staticWebGenerate
+  (withBinaryFile (toFilePath f) WriteMode $ \h -> do
     hPutStr h "app.constant('routeData',{"
     B.hPutBuilder h jsRoutes
     hPutStrLn h "});")
-  f
+  fo

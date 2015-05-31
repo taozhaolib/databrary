@@ -16,7 +16,7 @@ import Databrary.Web.Types
 import Databrary.Web.Files
 
 generateMessagesJS :: WebGenerator
-generateMessagesJS f = do
+generateMessagesJS fo@(f, _) = do
   -- it'd be nice to use Service.Messages here but there's no good way
   mf <- liftIO $ getDataFileName "messages.conf"
   webRegenerate (do
@@ -25,4 +25,4 @@ generateMessagesJS f = do
       hPutStr h "app.constant('messageData',"
       BSB.hPutBuilder h $ JSON.encodeToByteStringBuilder $ JSON.toJSON ml
       hPutStr h ");")
-    [mf] [] f
+    [mf] [] fo

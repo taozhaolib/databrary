@@ -15,13 +15,13 @@ import System.Posix.FilePath (joinPath, splitDirectories)
 
 import Databrary.Iso.Types (invMap)
 import Databrary.Ops
+import Databrary.Has (focusIO)
 import Databrary.Files
 import Databrary.Model.Format
 import Databrary.Action.Route
 import Databrary.Action
 import Databrary.HTTP.File
 import Databrary.HTTP.Path.Parser (PathParser(..), (>/>))
-import Databrary.Web
 import Databrary.Web.Types
 import Databrary.Web.Cache
 
@@ -49,6 +49,6 @@ pathStatic = invMap parseStaticPath (maybe [] $ map TE.decodeLatin1 . splitDirec
 webFile :: AppRoute (Maybe StaticPath)
 webFile = action GET ("web" >/> pathStatic) $ \sp -> do
   StaticPath p <- maybeAction sp
-  wf <- maybeAction =<< lookupWebFile p
-  let wfp = webFileAbsRaw $ webFilePath wf
-  serveFile wfp (unknownFormat{ formatMimeType = webFileFormat wf }) Nothing (digestToHexByteString $ webFileTag wf)
+  (wf, wfi) <- maybeAction =<< focusIO (lookupWebFile p)
+  let wfp = toRawFilePath wf
+  serveFile wfp (unknownFormat{ formatMimeType = webFileFormat wfi }) Nothing (digestToHexByteString $ webFileHash wfi)

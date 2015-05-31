@@ -1,43 +1,44 @@
 {-# LANGUAGE CPP #-}
 module Databrary.Web.Types
   ( WebFileInfo(..)
+  , WebFileMap
   , Web(..)
-  , MonadWeb
   , WebGeneratorM
   , WebGenerator
+  , webGeneratorFail
   ) where
 
 #ifdef DEVEL
 import Control.Concurrent.MVar (MVar)
 #endif
-import Control.Monad.IO.Class (MonadIO)
-import Control.Monad.Trans.Maybe (MaybeT(..))
-import Control.Monad.Trans.Reader (ReaderT(..))
+import Control.Monad.Trans.Class (lift)
+import Control.Monad.Trans.Except (ExceptT, throwE)
+import Control.Monad.Trans.State.Strict (StateT)
 import Crypto.Hash (Digest, MD5)
 import qualified Data.ByteString as BS
 import qualified Data.HashMap.Strict as HM
-import System.Posix.ByteString.FilePath (RawFilePath)
 
-import Databrary.Has (MonadHas)
 import Databrary.Model.Time
-import Databrary.Web (WebFilePath)
+import Databrary.Web (WebFilePath, webFileRel)
 
 data WebFileInfo = WebFileInfo
-  { webFilePath :: !WebFilePath
-  , webFileFormat :: !BS.ByteString
-  , webFileTag :: !(Digest MD5)
+  { webFileFormat :: BS.ByteString
+  , webFileHash :: !(Digest MD5)
   , webFileTimestamp :: !Timestamp
   }
+
+type WebFileMap = HM.HashMap WebFilePath WebFileInfo
 
 data Web = Web
   { webCache ::
 #ifdef DEVEL
     MVar
 #endif
-      (HM.HashMap RawFilePath WebFileInfo)
+      WebFileMap
   }
 
-type MonadWeb c m = (MonadHas Web c m, MonadIO m)
+type WebGeneratorM a = StateT WebFileMap (ExceptT String IO) a
+type WebGenerator = (WebFilePath, Maybe WebFileInfo) -> WebGeneratorM Bool
 
-type WebGeneratorM a = ReaderT (Maybe Timestamp) (MaybeT IO) a
-type WebGenerator = WebFilePath -> WebGeneratorM Bool
+webGeneratorFail :: WebGenerator
+webGeneratorFail = lift . throwE . webFileRel . fst

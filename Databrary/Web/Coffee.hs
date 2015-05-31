@@ -14,10 +14,10 @@ import Databrary.Web.Types
 import Databrary.Web.Files
 
 generateCoffeeJS :: WebGenerator
-generateCoffeeJS f
+generateCoffeeJS fo@(f, _)
   | (b, e) <- splitWebFileExtensions f, e `elem` [".js", ".js.map"] = do
     let src = b <.> ".coffee"
     webRegenerate
       (callProcess (binDir </> "coffee") ["-b", "-c", "-m", "-o", takeDirectory (webFileAbs f), webFileAbs src])
-      [] [src] f
+      [] [src] fo
   | otherwise = mzero

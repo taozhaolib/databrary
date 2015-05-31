@@ -9,13 +9,13 @@ module Databrary.Web.Files
   ) where
 
 import Control.Exception (bracket)
-import Control.Monad (ap, when)
+import Control.Monad (ap, when, unless)
+import Control.Monad.Except (throwError)
 import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Trans.Maybe (MaybeT(..))
-import Control.Monad.Trans.Reader (ReaderT(..), ask, asks)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
-import Data.Maybe (isNothing)
+import Data.Function (on)
+import Data.Maybe (isNothing, fromJust)
 -- import System.Directory (createDirectoryIfMissing)
 import System.Posix.Directory.ByteString (openDirStream, closeDirStream)
 import System.Posix.Directory.Foreign (dtDir, dtReg)
@@ -62,29 +62,36 @@ anyM (a:l) = do
   r <- a
   if r then return True else anyM l
 
-fileNewer :: IsFilePath f => f -> WebGeneratorM Bool
-fileNewer f = ReaderT $
-  maybe ((True <?) =<< liftIO (fileExist f)) (\t -> (t <) . snd <$> MaybeT (fileInfo f))
+fileNotFound :: IsFilePath f => f -> WebGeneratorM a
+fileNotFound f = throwError $ toFilePath f ++ " not found"
+
+fileNewer :: IsFilePath f => f -> WebGenerator
+fileNewer f (_, Nothing) = do
+  e <- liftIO $ fileExist f
+  unless e $ fileNotFound f
+  return True
+fileNewer f (_, Just o) =
+  maybe (fileNotFound f) (return . (webFileTimestamp o <) . snd)
+    =<< liftIO (fileInfo f)
 
 whether :: Bool -> IO () -> IO Bool
 whether g = (g <$) . when g
 
 webRegenerate :: IO () -> [FilePath] -> [WebFilePath] -> WebGenerator
-webRegenerate g fs ws _ = do
-  wr <- or <$> mapM generateWebFile ws
-  fr <- anyM (asks isNothing : map fileNewer fs)
+webRegenerate g fs ws fo@(_, o) = do
+  wr <- mapM generateWebFile ws
+  fr <- anyM (return (isNothing o) : map (`fileNewer` fo) fs)
   -- when (isNothing ft) $ createDirectoryIfMissing True $ FP.takeDirectory (webFileAbs f)
-  liftIO $ whether (fr || wr) g
+  liftIO $ whether (fr || any (on (<) webFileTimestamp (fromJust o)) wr) g
 
 staticWebGenerate :: IO () -> WebGenerator
-staticWebGenerate g _ = do
-  t <- ask
-  liftIO $ whether (isNothing t) g
+staticWebGenerate g (_, o) =
+  liftIO $ whether (isNothing o) g
 
 webLinkDataFile :: FilePath -> WebGenerator
-webLinkDataFile s f = do
+webLinkDataFile s fo@(f, _) = do
   wf <- liftIO $ getDataFileName s
   webRegenerate (do
     _ <- removeFile f
     createLink wf (webFileAbs f))
-    [wf] [] f
+    [wf] [] fo

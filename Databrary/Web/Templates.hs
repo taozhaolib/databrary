@@ -28,11 +28,11 @@ processTemplate f g = withFile (toFilePath f) ReadMode go where
       go h
 
 generateTemplatesJS :: WebGenerator
-generateTemplatesJS f = do
+generateTemplatesJS fo@(f, _) = do
   tl <- liftIO $ findWebFiles ".html"
   guard (not $ null tl)
   webRegenerate
-    (withBinaryFile (webFileAbs f) WriteMode $ \h -> do
+    (withBinaryFile (toFilePath f) WriteMode $ \h -> do
       hPutStrLn h "app.run(['$templateCache',function(t){"
       forM_ tl $ \tf -> do
         BSB.hPutBuilder h $ BSB.string7 "t.put(" <> JSON.quoteByteString q (webFileRelRaw tf) <> BSB.char7 ',' <> BSB.char7 q
@@ -42,5 +42,5 @@ generateTemplatesJS f = do
           hFlush h            -- without this!!!
         hPutStrLn h $ q : ");"
       hPutStrLn h "}]);")
-    [] tl f
+    [] tl fo
   where q = '\''

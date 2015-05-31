@@ -3,8 +3,9 @@ module Databrary.Web.Stylus
   ( generateStylusCSS
   ) where
 
-import Control.Monad (mzero)
+import Control.Monad.IO.Class (liftIO)
 import System.Process (callProcess)
+import System.FilePath (takeExtensions)
 
 import Paths_databrary.Node
 import Databrary.Files
@@ -13,10 +14,9 @@ import Databrary.Web.Types
 import Databrary.Web.Files
 
 generateStylusCSS :: WebGenerator
-generateStylusCSS f
-  | (b, e) <- splitWebFileExtensions f, e `elem` [".css", ".min.css"] = do
-    let src = b <.> ".styl"
-    webRegenerate
-      (callProcess (binDir </> "stylus") $ (if e == ".min.css" then ("-c":) else id) ["-u", "nib", "-o", webFileAbs f, webFileAbs src])
-      [] [src] f
-  | otherwise = mzero
+generateStylusCSS fo@(f, _) = do
+  let src = "app.styl"
+  sl <- liftIO $ findWebFiles ".styl"
+  webRegenerate
+    (callProcess (binDir </> "stylus") $ (if takeExtensions (webFileRel f) == ".min.css" then ("-c":) else id) ["-u", "nib", "-o", webFileAbs f, webFileAbs src])
+    [] sl fo
