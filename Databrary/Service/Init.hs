@@ -20,7 +20,7 @@ import Databrary.Service.Passwd (initPasswd)
 import Databrary.Service.Log (initLogs, finiLogs)
 import Databrary.Service.Messages (initMessages)
 import Databrary.Web.Service (initWeb)
-import Databrary.Media.AV (initAV)
+import Databrary.Store.AV (initAV)
 import Databrary.Service.Types
 
 loadConfig :: IO C.Config

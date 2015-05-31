@@ -19,6 +19,7 @@ data Storage = Storage
   , storageFallback :: Maybe RawFilePath
   , storageTemp :: !RawFilePath
   , storageUpload :: !RawFilePath
+  , storageCache :: Maybe RawFilePath
   , storageTranscoder :: Maybe Transcoder
   }
 

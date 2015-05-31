@@ -4,14 +4,21 @@ module Databrary.Has
   , MonadHas
   , peek
   , peeks
-  , focus
+  , focusReaderT
+  , focusReader
+  , focusLift
+  , focusBase
+  , focusIO
   , makeHasFor
   , makeHasRec
   ) where
 
 import Control.Applicative (Applicative)
 import Control.Monad (unless, liftM, liftM2)
-import Control.Monad.Reader (MonadReader, ReaderT, reader, withReaderT)
+import Control.Monad.Base (MonadBase(..))
+import Control.Monad.IO.Class (MonadIO(..))
+import Control.Monad.Reader (MonadReader, ReaderT(..), reader, withReaderT)
+import Control.Monad.Trans.Class (MonadTrans(..))
 import Data.List (foldl')
 import qualified Language.Haskell.TH as TH
 
@@ -31,9 +38,25 @@ peek = reader view
 peeks :: (MonadReader c m, Has a c) => (a -> b) -> m b
 peeks f = reader (f . view)
 
-{-# INLINE focus #-}
-focus :: Has a c => ReaderT a m r -> ReaderT c m r
-focus = withReaderT peek
+{-# INLINE focusReaderT #-}
+focusReaderT :: (Monad m, Has a c) => ReaderT a m r -> ReaderT c m r
+focusReaderT = withReaderT view
+
+{-# INLINE focusReader #-}
+focusReader :: (Monad m, Has a c) => (a -> m b) -> ReaderT c m b
+focusReader f = ReaderT (f . view)
+
+{-# INLINE focusLift #-}
+focusLift :: (MonadTrans t, Monad m, MonadHas a c (t m)) => (a -> m b) -> t m b
+focusLift f = lift . f =<< peek
+
+{-# INLINE focusBase #-}
+focusBase :: (MonadBase t m, MonadHas a c m) => (a -> t b) -> m b
+focusBase f = liftBase . f =<< peek
+
+{-# INLINE focusIO #-}
+focusIO :: (MonadIO m, MonadHas a c m) => (a -> IO b) -> m b
+focusIO f = liftIO . f =<< peek
 
 getFieldType :: TH.Name -> TH.Name -> TH.TypeQ
 getFieldType tn fn = do

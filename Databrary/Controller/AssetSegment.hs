@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, TupleSections #-}
 module Databrary.Controller.AssetSegment
   ( getAssetSegment
   , viewAssetSegment
@@ -7,26 +7,24 @@ module Databrary.Controller.AssetSegment
   , thumbAssetSegment
   ) where
 
-import Control.Monad (when, mfilter)
-import Control.Monad.IO.Class (liftIO)
+import Control.Monad ((<=<), join, when, mfilter)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Char8 as BSC
 import qualified Data.ByteString.Lazy as BSL
-import Data.Maybe (isNothing, isJust)
-import Data.Monoid (mempty, (<>))
+import Data.Maybe (fromJust, listToMaybe)
+import Data.Monoid ((<>))
 import qualified Data.Text as T
-import qualified Database.PostgreSQL.Typed.Range as Range
 import qualified Network.Wai as Wai
+import Text.Read (readMaybe)
 
 import Databrary.Ops
-import Databrary.Has (view, peek, peeks)
+import Databrary.Has (view, peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.Service.DB
 import Databrary.Model.Id
 import Databrary.Model.Permission
 import Databrary.Model.Identity
-import Databrary.Model.Offset
 import Databrary.Model.Volume
 import Databrary.Model.Slot
 import Databrary.Model.Format
@@ -34,11 +32,11 @@ import Databrary.Model.Asset
 import Databrary.Model.AssetSlot
 import Databrary.Model.AssetSegment
 import Databrary.Store.Asset
+import Databrary.Store.AssetSegment
 import Databrary.Store.Filename
 import Databrary.HTTP.File
 import Databrary.HTTP.Request
 import Databrary.HTTP.Path.Parser
-import Databrary.Media.AV
 import Databrary.Action
 import Databrary.Controller.Paths
 import Databrary.Controller.Angular
@@ -75,40 +73,18 @@ viewAssetSegment = action GET (pathAPI </>>> pathMaybe pathId </>> pathSlotId </
 serveAssetSegment :: Bool -> AssetSegment -> AuthAction
 serveAssetSegment dl as = do
   _ <- checkDataPermission as
-  store <- maybeAction =<< getAssetFile a
-  szs <- peeks $ lookupQueryParameters "size"
-  let sz = case szs of
-        [Just n] -> fst <$> BSC.readInt n
-        _ -> Nothing
+  sz <- peeks $ readMaybe . BSC.unpack <=< join . listToMaybe . lookupQueryParameters "size"
   when dl $ auditAssetSegmentDownload True as
   dlname <- dl ?$> makeFilename <$> assetSegmentDownloadName as
-  (hd, part) <- fileResponse store (view as) dlname etag
-  av <- peek
-  let samp p = do
-        Just s <- liftIO $ avFrame av store p sz Nothing Nothing
-        okResponse hd s
-  if full
-    then
-      if isJust sz && afmt == imageFormat
-        then samp Nothing
-        else okResponse hd (store, part)
-    else do
-      maybe
-        (fail "unimplemented")
-        (\(Offset p) -> samp (Just p))
-        point
+  store <- maybeAction =<< getAssetFile a
+  (hd, part) <- fileResponse store (view as) dlname (BSL.toStrict $ BSB.toLazyByteString $
+    BSB.byteStringHex (fromJust (assetSHA1 a)) <> BSB.string7 (assetSegmentTag as sz))
+  either
+    (okResponse hd)
+    (okResponse hd . (, part))
+    =<< getAssetSegmentStore as sz
   where
   a = slotAsset $ segmentAsset as
-  afmt = assetFormat a
-  clip = assetSegmentRange as
-  point = Range.getPoint clip
-  full = assetSegmentFull as || isNothing (assetDuration a) || isNothing (formatSample afmt)
-  Just atag = assetSHA1 a
-  etag = BSL.toStrict $ BSB.toLazyByteString $
-    BSB.byteStringHex atag
-    <> (if full then mempty else BSB.char7 ':' <> sb (Range.lowerBound clip)
-    <> (if isJust point then mempty else BSB.char7 '-' <> sb (Range.upperBound clip)))
-    where sb = maybe mempty (BSB.integerDec . offsetMillis) . Range.bound
 
 downloadAssetSegment :: AppRoute (Id Slot, Id Asset)
 downloadAssetSegment = action GET (pathSlotId </> pathId </< "download") $ \(si, ai) -> withAuth $ do

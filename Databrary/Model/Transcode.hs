@@ -21,7 +21,7 @@ import Databrary.Service.DB
 import Databrary.Service.Types
 import Databrary.Service.Crypto
 import Databrary.Store.Types
-import Databrary.Media.AV
+import Databrary.Store.AV
 import Databrary.Model.SQL
 import Databrary.Model.Audit
 import Databrary.Model.Id

@@ -1,5 +1,5 @@
 {-# LANGUAGE ForeignFunctionInterface, DeriveDataTypeable, EmptyDataDecls, OverloadedStrings, NegativeLiterals, GeneralizedNewtypeDeriving #-}
-module Databrary.Media.AV
+module Databrary.Store.AV
   ( AVError(..)
   , avErrorString
   , AV
@@ -25,7 +25,7 @@ import Data.Ratio (Ratio, (%), numerator, denominator)
 import Data.Time.Clock (DiffTime)
 import qualified Data.Traversable as Trav
 import Data.Typeable (Typeable)
-import Data.Word (Word32)
+import Data.Word (Word16, Word32)
 import Foreign.C.Error (throwErrnoIfNull)
 import Foreign.C.String (CString, CStringLen, peekCAString, withCAString)
 import Foreign.C.Types (CInt(..), CUInt(..), CSize(..))
@@ -373,8 +373,8 @@ avProbeLength AVProbe{ avProbeDuration = o } = o > 0 ?> Offset o
 avTime :: Int64 -> DiffTime
 avTime t = realToFrac $ t % #{const AV_TIME_BASE}
 
-avProbe :: AV -> RawFilePath -> IO AVProbe
-avProbe AV f = withAVInput f Nothing $ \ic -> do
+avProbe :: RawFilePath -> AV -> IO AVProbe
+avProbe f AV = withAVInput f Nothing $ \ic -> do
   findAVStreamInfo ic
   AVProbe
     <$> (BS.packCString =<< #{peek AVInputFormat, name} =<< #{peek AVFormatContext, iformat} ic)
@@ -421,8 +421,8 @@ foreign import ccall unsafe "av.h avFrame_initialize_stream"
 foreign import ccall "av.h avFrame_rescale"
   avFrameRescale :: Ptr AVCodecContext -> Ptr AVFrame -> IO CInt
 
-avFrame :: AV -> RawFilePath -> Maybe DiffTime -> Maybe Int -> Maybe Int -> Maybe RawFilePath -> IO (Maybe BS.ByteString)
-avFrame AV infile offset width height outfile =
+avFrame :: RawFilePath -> Maybe DiffTime -> Maybe Word16 -> Maybe Word16 -> Maybe RawFilePath -> AV -> IO (Maybe BS.ByteString)
+avFrame infile offset width height outfile AV =
   withAVInput infile (isimg ?> "image2") $ \inctx ->
   with nullPtr $ \icodecp ->
   withAVDictionary $ \opts -> do

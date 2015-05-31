@@ -4,8 +4,7 @@ module Databrary.HTTP.Parse
   , parseRequestContent
   ) where
 
-import Control.Applicative ((<$>), (<$))
-import Control.Exception (bracket)
+import Control.Applicative ((<$>))
 import Control.Monad (when, unless)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Reader (runReaderT)
@@ -19,7 +18,7 @@ import Data.Word (Word64)
 import Network.HTTP.Types (requestEntityTooLarge413, hContentType)
 import Network.Wai
 import Network.Wai.Parse
-import System.IO (Handle, hClose)
+import System.IO (Handle)
 
 import Databrary.Has (peek, peeks)
 import Databrary.Action.App
@@ -110,11 +109,7 @@ parseFormFileContent ff rt = do
   (p, f) <- liftIO $ do
     let be fn fi fb = case ff fi{ fileContent = fn } of
           0 -> result requestTooLarge
-          m ->
-            bracket
-              (runReaderT makeTempFile app)
-              (hClose . snd)
-              (\(t, h) -> t <$ limitChunks m (writeChunks h) fb)
+          m -> runReaderT (makeTempFile $ \h -> limitChunks m (writeChunks h) fb) app
     sinkRequestBody be rt (requestBody $ appRequest app)
   return $ ContentForm p f
 

@@ -15,7 +15,7 @@ import Databrary.Service.Passwd (Passwd)
 import Databrary.Service.Log (Logs)
 import Databrary.Service.Messages (Messages)
 import Databrary.Web.Types (Web)
-import Databrary.Media.AV (AV)
+import Databrary.Store.AV (AV)
 import Databrary.Model.Time
 
 data Service = Service

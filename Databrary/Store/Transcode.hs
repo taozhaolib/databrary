@@ -13,7 +13,6 @@ import qualified Data.ByteString.Lazy.Char8 as BSLC
 import Data.Maybe (fromMaybe, isNothing)
 import Data.Monoid ((<>))
 import System.Exit (ExitCode(..))
-import System.IO (hClose)
 import Text.Read (readMaybe)
 
 import Databrary.Ops
@@ -70,8 +69,7 @@ startTranscode tc = do
 collectTranscode :: (MonadResourceT c m, MonadStorage c m, MonadAudit c m) => Transcode -> Int -> Maybe BS.ByteString -> String -> m ()
 collectTranscode tc 0 sha1 logs = do
   tc' <- updateTranscode tc (Just (-2)) (Just logs)
-  (f, h) <- makeTempFile
-  liftIO $ hClose h
+  f <- makeTempFile (const $ return ())
   (r, out, err) <- ctlTranscode tc ["-c", BSC.unpack $ tempFilePath f]
   _ <- updateTranscode tc' Nothing (Just $ out ++ err)
   if r /= ExitSuccess

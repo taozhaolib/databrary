@@ -35,14 +35,15 @@ Flag devel
 Executable databrary
   main-is: Databrary/Warp.hs
 
-  other-modules: Databrary.Media.AV
-  c-sources: Databrary/Media/av.c
+  other-modules: Databrary.Store.AV
+  c-sources: Databrary/Store/av.c
 
   Build-depends:
     base >= 4.7 && < 5,
     bytestring,
     containers,
     transformers,
+    transformers-base,
     mtl,
     template-haskell,
     th-lift,

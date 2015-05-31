@@ -17,7 +17,7 @@ module Databrary.Controller.Asset
 import Control.Applicative ((<|>))
 import Control.Exception (try)
 import Control.Monad ((<=<), when, void)
-import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Trans.Class (lift)
 import qualified Data.ByteString as BS
 import Data.Maybe (fromMaybe, isNothing, isJust, catMaybes, maybeToList)
@@ -30,7 +30,7 @@ import qualified Network.Wai as Wai
 import Network.Wai.Parse (FileInfo(..))
 
 import Databrary.Ops
-import Databrary.Has (Has, view, peek, peeks)
+import Databrary.Has (Has, view, peeks, focusIO)
 import Databrary.Service.Types
 import Databrary.Service.ResourceT
 import qualified Databrary.JSON as JSON
@@ -54,7 +54,7 @@ import Databrary.Store.Types
 import Databrary.Store.Asset
 import Databrary.Store.Upload
 import Databrary.Store.Temp
-import Databrary.Media.AV
+import Databrary.Store.AV
 import Databrary.HTTP.Request
 import Databrary.HTTP.Form.Errors
 import Databrary.HTTP.Form.Deform
@@ -116,7 +116,7 @@ fileUploadPath (FileUploadForm f) _ = tempFilePath $ fileContent f
 fileUploadPath (FileUploadToken u) s = uploadFile u s
 
 fileUploadRemove :: (MonadResourceT c m, MonadDB m, MonadStorage c m) => FileUploadFile -> m ()
-fileUploadRemove (FileUploadForm f) = releaseTempFile $ fileContent f
+fileUploadRemove (FileUploadForm f) = focusIO $ releaseTempFile $ fileContent f
 fileUploadRemove (FileUploadToken u) = void $ removeUpload u
 
 data FileUpload = FileUpload
@@ -135,8 +135,7 @@ detectUpload f =
   fd fmt = case formatTranscodable fmt of
     Nothing -> return $ u Nothing
     Just t | t == videoFormat -> do
-      av <- lift peek
-      pr <- liftIO . try . avProbe av =<< lift (peeks (fileUploadPath f))
+      pr <- lift $ focusIO . ((try .) . avProbe) =<< peeks (fileUploadPath f)
       case pr of
         Left e -> fail $ "Could not read video file: " ++ avErrorString e
         Right p -> return $ u $ Just p

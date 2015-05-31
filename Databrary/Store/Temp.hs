@@ -1,20 +1,22 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, TupleSections #-}
 module Databrary.Store.Temp
   ( TempFile(..)
+  , makeTempFileAs
   , makeTempFile
   , releaseTempFile
   , renameTempFile
   ) where
 
+import Control.Applicative ((<$))
+import Control.Exception (bracket)
 import Control.Monad (void)
-import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Trans.Resource (ReleaseKey, allocate, release, unprotect)
-import System.IO (Handle)
+import Control.Monad.Trans.Resource (InternalState, runInternalState, ReleaseKey, allocate, release, unprotect)
+import System.IO (Handle, hClose)
 import System.Posix.FilePath (RawFilePath)
 import System.Posix.Files.ByteString (removeLink, rename)
 import System.Posix.Temp.ByteString (mkstemp)
 
-import Databrary.Has (peeks)
+import Databrary.Has (peeks, focusIO)
 import Databrary.Service.ResourceT
 import Databrary.Store.Types
 
@@ -23,16 +25,21 @@ data TempFile = TempFile
   , tempFilePath :: RawFilePath
   }
 
-makeTempFile :: (MonadResourceT c m, MonadStorage c m) => m (TempFile, Handle)
-makeTempFile = do
-  d <- peeks storageTemp
-  (k, (f, h)) <- liftResourceT $ allocate (mkstemp d) (removeLink . fst)
-  return (TempFile k f, h)
+makeTempFileAs :: RawFilePath -> (Handle -> IO ()) -> InternalState -> IO TempFile
+makeTempFileAs d g rs = bracket
+  (runInternalState (allocate (mkstemp d) (removeLink . fst)) rs)
+  (hClose . snd . snd)
+  (\(k, (f, h)) -> TempFile k f <$ g h)
 
-releaseTempFile :: MonadResourceT c m => TempFile -> m ()
-releaseTempFile = liftResourceT . release . tempFileRelease
+makeTempFile :: (MonadResourceT c m, MonadStorage c m) => (Handle -> IO ()) -> m TempFile
+makeTempFile f = do
+  tmp <- peeks storageTemp
+  focusIO $ makeTempFileAs tmp f
 
-renameTempFile :: MonadResourceT c m => TempFile -> RawFilePath -> m ()
-renameTempFile (TempFile k f) t = do
-  liftIO $ rename f t
-  void $ liftResourceT $ unprotect k
+releaseTempFile :: TempFile -> InternalState -> IO ()
+releaseTempFile = runInternalState . release . tempFileRelease
+
+renameTempFile :: TempFile -> RawFilePath -> InternalState -> IO ()
+renameTempFile (TempFile k f) t rs = do
+  rename f t
+  void $ runInternalState (unprotect k) rs

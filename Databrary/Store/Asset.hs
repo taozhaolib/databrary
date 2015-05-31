@@ -1,6 +1,7 @@
 {-# LANGUAGE ViewPatterns #-}
 module Databrary.Store.Asset
   ( maxAssetSize
+  , assetFile
   , getAssetFile
   , storeAssetFile
   ) where

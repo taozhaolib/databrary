@@ -86,8 +86,11 @@ instance IsFilePath RF.RawFilePath where
 makeRelative :: IsFilePath a => a -> a -> a
 makeRelative a b = fromFilePath $ F.makeRelative (toFilePath a) (toFilePath b)
 
+catchOnlyIO :: (IOError -> Bool) -> IO a -> IO (Maybe a)
+catchOnlyIO c f = handleJust (guard . c) (\_ -> return Nothing) $ Just <$> f
+
 catchDoesNotExist :: IO a -> IO (Maybe a)
-catchDoesNotExist f = handleJust (guard . isDoesNotExistError) (\_ -> return Nothing) $ Just <$> f
+catchDoesNotExist = catchOnlyIO isDoesNotExistError
 
 modificationTimestamp :: P.FileStatus -> Timestamp
 modificationTimestamp = posixSecondsToUTCTime . P.modificationTimeHiRes
