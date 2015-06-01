@@ -36,7 +36,7 @@ Executable databrary
   main-is: Databrary/Warp.hs
 
   other-modules: Databrary.Store.AV
-  c-sources: Databrary/Store/av.c
+  c-sources: Databrary/Store/avFrame.c
 
   Build-depends:
     base >= 4.7 && < 5,
