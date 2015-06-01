@@ -47,9 +47,9 @@ volumeKeys v =
 volumeSets :: String -- ^ @'Account'@
   -> [(String, String)]
 volumeSets v =
-  [ ("name", "${volumeName " ++ v ++ "}")
+  [ ("name",  "${volumeName "  ++ v ++ "}")
   , ("alias", "${volumeAlias " ++ v ++ "}")
-  , ("body", "${volumeBody " ++ v ++ "}")
+  , ("body",  "${volumeBody "  ++ v ++ "}")
   ]
 
 updateVolume :: TH.Name -- ^ @'AuditIdentity'

@@ -98,7 +98,11 @@ accountKeys a = partyKeys $ "(accountParty " ++ a ++ ")"
 partySets :: String -- ^ @'Party'@
   -> [(String, String)]
 partySets p =
-  (map (\c -> (map toLower c, "${party" ++ c ++ " " ++ p ++ "}")) ["Name", "PreName", "Affiliation", "URL"])
+  [ ("name",        "${partySortName "    ++ p ++ "}")
+  , ("prename",     "${partyPreName "     ++ p ++ "}")
+  , ("affiliation", "${partyAffiliation " ++ p ++ "}")
+  , ("url",         "${partyURL "         ++ p ++ "}")
+  ]
 
 accountSets :: String -- ^ @'Account'@
   -> [(String, String)]
