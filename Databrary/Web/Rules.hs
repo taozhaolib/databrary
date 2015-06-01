@@ -56,6 +56,7 @@ fixedGenerators =
   [ ("messages.js",    generateMessagesJS)
   , ("templates.js",   generateTemplatesJS)
   , ("app.min.js",     generateUglifyJS)
+  , ("app.css",        generateStylusCSS) -- not actually used in production
   , ("app.min.css",    generateStylusCSS)
   ]
 

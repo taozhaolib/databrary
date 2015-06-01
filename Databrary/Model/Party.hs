@@ -141,7 +141,7 @@ data PartyFilter = PartyFilter
   { partyFilterQuery :: Maybe String
   , partyFilterAccess :: Maybe Permission
   , partyFilterInstitution :: Maybe Bool
-  , partyFilterAuthorize :: Maybe Party
+  , partyFilterAuthorize :: Maybe (Id Party)
   , partyFilterVolume :: Maybe Volume
   }
 
@@ -157,9 +157,9 @@ partyFilter PartyFilter{..} ident = BS.concat
   , withq partyFilterQuery (\n -> " AND " <> queryVal <> " ILIKE " <> pgLiteralRep (wordPat n))
   , withq partyFilterAccess (\a -> " AND site = " <> pgSafeLiteral a)
   , withq partyFilterInstitution (\i -> if i then " AND account.id IS NULL" else " AND account.password IS NOT NULL")
-  , withq partyFilterAuthorize (\a -> let i = pgSafeLiteral (partyId a) in " AND party.id <> " <> i <> " AND id NOT IN (SELECT child FROM authorize WHERE parent = " <> i <> " UNION SELECT parent FROM authorize WHERE child = " <> i <> ")")
+  , withq partyFilterAuthorize (\a -> let i = pgSafeLiteral a in " AND party.id <> " <> i <> " AND id NOT IN (SELECT child FROM authorize WHERE parent = " <> i <> " UNION SELECT parent FROM authorize WHERE child = " <> i <> ")")
   , withq partyFilterVolume (\v -> " AND id NOT IN (SELECT party FROM volume_access WHERE volume = " <> pgSafeLiteral (volumeId v) <> ")")
-  , " ORDER BY sortname, prename"
+  , " ORDER BY name, prename"
   ]
   where
   withq v f = maybe "" f v

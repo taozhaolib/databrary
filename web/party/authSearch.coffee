@@ -35,7 +35,7 @@ app.directive 'authSearchForm', [
 
       form.search = (val) ->
         party.authorizeSearch(form.apply,
-            name: val
+            query: val
             institution: form.principal == 'principal' || (if form.principal == 'affiliate' then false else undefined)
           ).then (data) ->
               form.validator.server {}

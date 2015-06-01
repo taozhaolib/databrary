@@ -31,7 +31,8 @@ app.directive('authApplyForm', [
 
       var saveQuery = function () {
         page.messages.clear(form);
-        party.authorizeSearch(true, angular.extend({
+        /* FIXME: */
+        party.authorizeNotFound(true, angular.extend({
           notfound: true,
           name: auth.query
         }, form.data)).then(function () {

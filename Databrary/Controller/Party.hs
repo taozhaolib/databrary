@@ -153,7 +153,7 @@ partySearchForm = PartyFilter
   <$> ("query" .:> deformNonEmpty deform)
   <*> ("access" .:> optional deform)
   <*> ("institution" .:> optional deform)
-  <*> pure Nothing
+  <*> ("authorize" .:> optional deform)
   <*> pure Nothing
 
 queryParties :: AppRoute API

@@ -210,7 +210,7 @@ app.factory('modelService', [
     Party.search = function (data) {
       return router.http(router.controllers.getParties, data)
         .then(function (res) {
-          return _.map(res.data, partyMake);
+          return partyMakeArray(res.data);
         });
     };
 
@@ -243,12 +243,8 @@ app.factory('modelService', [
     };
 
     Party.prototype.authorizeSearch = function (apply, param) {
-      return router.http(router.controllers.PartyApi.authorizeSearch, this.id, apply, param)
-        .then(function (res) {
-          if (Array.isArray(res.data))
-            return partyMakeArray(res.data);
-          return res;
-        });
+      param.authorize = this.id;
+      return Party.search(param);
     };
 
     Party.prototype.authorizeApply = function (target, data) {
