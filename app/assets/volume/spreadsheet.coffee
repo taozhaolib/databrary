@@ -1102,7 +1102,7 @@ app.directive 'spreadsheet', [
         editSelect = (event) ->
           editInput.value = @text
           editScope.unedit(event)
-          @text
+          return # inputCompleter needs an undefined to do nothing
 
         editScope.identCompleter = (input) ->
           info = editScope.info
