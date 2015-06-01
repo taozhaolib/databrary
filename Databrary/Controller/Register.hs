@@ -97,7 +97,7 @@ postPasswordReset = action POST (pathAPI </< "user" </< "password") $ \api -> wi
     \account associated with this email address. If you did not request this, let us\n\
     \know (by replying to this message) or simply ignore it.\n\n" <>)
     . maybe
-      "Unfortunately, no Databrary account found for this email address. You can try\n\
-      \again with a different email address, or reply to this email for assistance.\n"
+      "Unfortunately, no Databrary account was found for this email address. You can\n\
+      \try again with a different email address, or reply to this email for assistance.\n"
       ("Otherwise, you may use this link to reset your Databrary password:\n\n" <>)
   okResponse [] $ "Your password reset information has been sent to '" <> email <> "'."
