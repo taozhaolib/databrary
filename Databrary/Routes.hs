@@ -9,6 +9,7 @@ import Data.Monoid (mconcat)
 
 import Databrary.HTTP.Route
 import Databrary.Model.Id.Types
+import Databrary.Model.Segment
 import Databrary.Model.Slot.Types
 import Databrary.Model.Tag.Types
 import Databrary.Action
@@ -156,7 +157,7 @@ jsRoutes = mconcat
   , jsRoute "csvVolume" csvVolume (volume)
 
   , jsRoute "viewSlot" viewSlot (HTML, (Just volume, slot))
-  , jsRoute "viewSlotEdit" viewContainerEdit (Just volume, slot)
+  , jsRoute "viewSlotEdit" viewContainerEdit (Just volume, container)
 
   , jsRoute "viewRecord" viewRecord (HTML, record)
 
@@ -166,7 +167,7 @@ jsRoutes = mconcat
   , jsRoute "downloadAssetSegment" downloadAssetSegment (slot, asset)
   , jsRoute "thumbAssetSegment" thumbAssetSegment (slot, asset)
 
-  , jsRoute "zipSlot" zipContainer (slot)
+  , jsRoute "zipSlot" zipContainer (container)
   , jsRoute "zipVolume" zipVolume (volume)
 
   , jsRoute "get" viewRoot (JSON)
@@ -199,7 +200,7 @@ jsRoutes = mconcat
   , jsRoute "getCitation" getCitation ()
 
   , jsRoute "getSlot" viewSlot (JSON, (Nothing, slot))
-  , jsRoute "postSlot" postContainer (JSON, slot)
+  , jsRoute "postSlot" postContainer (JSON, container)
   , jsRoute "createContainer" createContainer (JSON, volume)
 
   , jsRoute "getRecord" viewRecord (JSON, record)
@@ -224,7 +225,8 @@ jsRoutes = mconcat
   token = Id ""
   party = Id 0
   volume = Id 0
-  slot = containerSlotId (Id 0)
+  slot = Id (SlotId (Id 0) emptySegment)
+  container = containerSlotId (Id 0)
   asset = Id 0
   record = Id 0
   metric = Id 0
