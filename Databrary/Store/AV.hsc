@@ -368,7 +368,7 @@ avProbeIsVideo AVProbe{ avProbeFormat = "mov,mp4,m4a,3gp,3g2,mj2", avProbeStream
 avProbeIsVideo _ = False
 
 avProbeLength :: AVProbe -> Maybe Offset
-avProbeLength AVProbe{ avProbeDuration = o } = o > 0 ?> Offset o
+avProbeLength AVProbe{ avProbeDuration = o } = o > 0 ?> diffTimeOffset o
 
 avTime :: Int64 -> DiffTime
 avTime t = realToFrac $ t % #{const AV_TIME_BASE}

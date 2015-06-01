@@ -71,9 +71,9 @@ genVideoClip _ src (Just clip) _ dst | Nothing <- Range.getPoint clip =
   where
   lb = fromMaybe 0 $ Range.bound $ Range.lowerBound clip
   ub = Range.bound $ Range.upperBound clip
-  sb = (showFixed True :: Milli -> String) . realToFrac . offsetTime
+  sb = (showFixed True :: Milli -> String) . offsetMilli
 genVideoClip av src frame sz dst =
-  avFrame src (offsetTime <$> (Range.getPoint =<< frame)) sz Nothing (either (const Nothing) Just dst) av
+  avFrame src (offsetDiffTime <$> (Range.getPoint =<< frame)) sz Nothing (either (const Nothing) Just dst) av
     >>= Fold.mapM_ (\b -> send b >> send BS.empty) 
   where send = either id (const $ const $ return ()) dst
 

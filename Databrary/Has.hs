@@ -46,17 +46,19 @@ focusReaderT = withReaderT view
 focusReader :: (Monad m, Has a c) => (a -> m b) -> ReaderT c m b
 focusReader f = ReaderT (f . view)
 
-{-# INLINE focusLift #-}
+{-# INLINE[2] focusLift #-}
 focusLift :: (MonadTrans t, Monad m, MonadHas a c (t m)) => (a -> m b) -> t m b
 focusLift f = lift . f =<< peek
 
-{-# INLINE focusBase #-}
+{-# INLINE[2] focusBase #-}
 focusBase :: (MonadBase t m, MonadHas a c m) => (a -> t b) -> m b
 focusBase f = liftBase . f =<< peek
 
 {-# INLINE focusIO #-}
 focusIO :: (MonadIO m, MonadHas a c m) => (a -> IO b) -> m b
 focusIO f = liftIO . f =<< peek
+
+{-# RULES "focusLift/ReaderT" focusLift = focusReader #-}
 
 getFieldType :: TH.Name -> TH.Name -> TH.TypeQ
 getFieldType tn fn = do

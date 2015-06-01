@@ -2,10 +2,12 @@
 module Databrary.Model.Offset
   ( Offset(..)
   , offsetMillis
+  , diffTimeOffset
+  , offsetDiffTime
   ) where
 
 import Control.Applicative ((<$>))
-import Data.Fixed (Fixed(..), Milli)
+import Data.Fixed (Fixed(..), HasResolution(..), Milli, Pico)
 import qualified Data.Text as T
 import Data.Time (DiffTime)
 import Data.Typeable (Typeable)
@@ -17,18 +19,32 @@ import Text.Read (readMaybe, readPrec)
 
 import qualified Databrary.JSON as JSON
 
-newtype Offset = Offset { offsetTime :: DiffTime } deriving (Eq, Ord, Num, Real, Fractional, RealFrac, Typeable)
+newtype Offset = Offset { offsetMilli :: Milli } deriving (Eq, Ord, Num, Real, Fractional, RealFrac, Typeable)
+
+fixedToFixed :: (HasResolution a, HasResolution b) => Fixed a -> Fixed b
+fixedToFixed x@(MkFixed xv) = y where
+  yv = xv * yr `div` xr
+  y = MkFixed yv
+  xr = resolution x
+  yr = resolution y
+
+-- DiffTime is really Pico and has specialized realToFrac
+diffTimeOffset :: DiffTime -> Offset
+diffTimeOffset = Offset . fixedToFixed . (realToFrac :: DiffTime -> Pico)
+
+offsetDiffTime :: Offset -> DiffTime
+offsetDiffTime = (realToFrac :: Pico -> DiffTime) . fixedToFixed . offsetMilli
 
 offsetMillis :: Offset -> Integer
-offsetMillis (Offset t) = floor (1000 * t) :: Integer
+offsetMillis (Offset (MkFixed t)) = t
 
 instance PGParameter "interval" Offset where
-  pgEncode t (Offset o) = pgEncode t o
-  pgEncodeValue e t (Offset o) = pgEncodeValue e t o
-  pgLiteral t (Offset o) = pgLiteral t o
+  pgEncode t = pgEncode t . offsetDiffTime
+  pgEncodeValue e t = pgEncodeValue e t . offsetDiffTime
+  pgLiteral t = pgLiteral t . offsetDiffTime
 instance PGColumn "interval" Offset where
-  pgDecode t = Offset . pgDecode t
-  pgDecodeValue e t = Offset . pgDecodeValue e t
+  pgDecode t = diffTimeOffset . pgDecode t
+  pgDecodeValue e t = diffTimeOffset . pgDecodeValue e t
 
 instance Show Offset where
   -- showsPrec p = showsPrec p . offsetMillis
