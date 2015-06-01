@@ -14,6 +14,7 @@ import Control.Monad.Except (throwError)
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
+import qualified Data.Foldable as Fold
 import Data.Function (on)
 import Data.Maybe (isNothing, fromJust)
 -- import System.Directory (createDirectoryIfMissing)
@@ -88,8 +89,8 @@ webRegenerate g fs ws fo@(_, o) = do
 staticWebGenerate :: (FilePath -> IO ()) -> WebGenerator
 staticWebGenerate g (w, _) = liftIO $ do
   g t
-  c <- compareFiles f t
-  if c
+  c <- catchDoesNotExist $ compareFiles f t
+  if Fold.or c
     then False <$ removeLink t
     else True <$ rename t f
   where
