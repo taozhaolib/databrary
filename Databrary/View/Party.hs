@@ -19,7 +19,7 @@ import {-# SOURCE #-} Databrary.Controller.Party
 htmlPartyForm :: Maybe Party -> AuthRequest -> FormHtml
 htmlPartyForm t req = f req $ do
   field "prename" $ inputText $ partyPreName =<< t
-  field "name" $ inputText $ partySortName <$> t
+  field "sortname" $ inputText $ partySortName <$> t
   field "affiliation" $ inputText $ partyAffiliation =<< t
   field "url" $ inputText $ show <$> (partyURL =<< t)
   where

@@ -38,8 +38,8 @@ import Databrary.HTTP.Form.View (runFormView, blankFormView)
 import Databrary.HTTP.Form.Errors (FormErrors)
 import Databrary.View.Form (FormHtml)
 
-apiFormErrors :: MonadAction c m => FormErrors -> m Response
-apiFormErrors = returnResponse badRequest400 [] . JSON.toJSON
+jsonFormErrors :: MonadAction c m => FormErrors -> m Response
+jsonFormErrors = returnResponse badRequest400 [] . JSON.toJSON
 
 htmlFormErrors :: MonadAction c m => (FormErrors -> Html.Html) -> FormErrors -> m Response
 htmlFormErrors f = returnResponse badRequest400 [] . f
@@ -48,7 +48,7 @@ handleForm :: (MonadAction c m, MonadIO m) => (FormErrors -> m Response) -> Eith
 handleForm re = either (result <=< re) return
 
 handleFormErrors :: (MonadAction c m, MonadIO m) => Maybe (FormErrors -> Html.Html) -> Either FormErrors a -> m a
-handleFormErrors = handleForm . maybe apiFormErrors htmlFormErrors
+handleFormErrors = handleForm . maybe jsonFormErrors htmlFormErrors
 
 runFormWith :: (MonadAppAction q m, MonadIO m) => FormData -> Maybe (q -> FormHtml) -> DeformT m a -> m a
 runFormWith fd mf fa = do

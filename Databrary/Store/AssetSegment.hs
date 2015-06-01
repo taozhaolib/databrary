@@ -58,7 +58,8 @@ genVideoClip _ src (Just clip) _ dst | Nothing <- Range.getPoint clip =
     [ "-y", "-accurate_seek"
     , "-loglevel", "error"
     , "-threads", "1"
-    , "-ss", sb lb ]
+    , "-ss", sb lb
+    , "-i", toFilePath src ]
     ++ maybe [] (\u -> ["-t", sb $ u - lb]) ub ++
     [ "-codec", "copy"
     , "-f", "mp4"
