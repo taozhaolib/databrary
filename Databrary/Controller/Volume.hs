@@ -47,6 +47,7 @@ import Databrary.Model.RecordSlot
 import Databrary.Model.Slot
 import Databrary.Model.Asset
 import Databrary.Model.Excerpt
+import Databrary.Model.Tag
 import Databrary.HTTP.Form.Deform
 import Databrary.HTTP.Path.Parser
 import Databrary.Action.Route
@@ -87,6 +88,10 @@ volumeJSONField vol "records" _ =
   Just . JSON.toJSON . map recordJSON <$> lookupVolumeRecords vol
 volumeJSONField o "excerpts" _ =
   Just . JSON.toJSON . map excerptJSON <$> lookupVolumeExcerpts o
+volumeJSONField o "tags" n = do
+  t <- lookupVolumeTopContainer o
+  tc <- lookupSlotTagCoverage (containerSlot t) (maybe 64 fst $ BSC.readInt =<< n)
+  return $ Just $ JSON.toJSON $ map tagCoverageJSON tc
 volumeJSONField _ _ _ = return Nothing
 
 volumeJSONQuery :: (MonadDB m, MonadHasIdentity c m) => Volume -> JSON.Query -> m JSON.Object

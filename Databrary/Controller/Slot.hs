@@ -12,7 +12,7 @@ import qualified Data.Text as T
 import qualified Network.Wai as Wai
 
 import Databrary.Ops
-import Databrary.Has (view, peek, peeks)
+import Databrary.Has (view, peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.Service.DB
 import Databrary.Model.Id
@@ -43,8 +43,7 @@ slotJSONField o "assets" _ =
 slotJSONField o "records" _ =
   Just . JSON.toJSON . map recordSlotJSON <$> lookupSlotRecords o
 slotJSONField o "tags" n = do
-  ident <- peek
-  tc <- lookupSlotTagCoverage ident o (maybe 64 fst $ BSC.readInt =<< n)
+  tc <- lookupSlotTagCoverage o (maybe 64 fst $ BSC.readInt =<< n)
   return $ Just $ JSON.toJSON $ map tagCoverageJSON tc
 slotJSONField o "comments" n = do
   c <- lookupSlotComments o (maybe 64 fst $ BSC.readInt =<< n)

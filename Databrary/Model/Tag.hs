@@ -19,10 +19,12 @@ import Data.Maybe (catMaybes)
 import Database.PostgreSQL.Typed (pgSQL)
 
 import Databrary.Ops
+import Databrary.Has (peek)
 import qualified Databrary.JSON as JSON
 import Databrary.Service.DB
 import Databrary.Model.SQL
 import Databrary.Model.Party.Types
+import Databrary.Model.Identity.Types
 import Databrary.Model.Container.Types
 import Databrary.Model.Slot.Types
 import Databrary.Model.Tag.Types
@@ -60,9 +62,10 @@ lookupTopTagWeight :: MonadDB m => Int -> m [TagWeight]
 lookupTopTagWeight lim =
   dbQuery $(selectQuery (selectTagWeight "") "$!ORDER BY weight DESC LIMIT ${fromIntegral lim :: Int64}")
 
-lookupSlotTagCoverage :: MonadDB m => Party -> Slot -> Int -> m [TagCoverage]
-lookupSlotTagCoverage acct slot lim =
-  dbQuery $(selectSlotTagCoverage 'acct 'slot >>= (`selectQuery` "$!ORDER BY weight DESC LIMIT ${fromIntegral lim :: Int64}"))
+lookupSlotTagCoverage :: (MonadDB m, MonadHasIdentity c m) => Slot -> Int -> m [TagCoverage]
+lookupSlotTagCoverage slot lim = do
+  ident <- peek
+  dbQuery $(selectSlotTagCoverage 'ident 'slot >>= (`selectQuery` "$!ORDER BY weight DESC LIMIT ${fromIntegral lim :: Int64}"))
 
 tagWeightJSON :: TagWeight -> JSON.Object
 tagWeightJSON TagWeight{..} = JSON.record (tagName tagWeightTag) $
