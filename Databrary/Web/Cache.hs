@@ -25,7 +25,7 @@ lookupWebFile f (Web wc) =
 #ifdef DEVEL
   modifyMVar wc $ \wm -> do
     either (const (wm, Nothing)) (\(i, m) -> (m, Just (wf, i))) <$>
-      runExceptT (runStateT (generateWebFile wf) wm)
+      runExceptT (runStateT (generateWebFile False wf) wm)
   where wf = fromRawFilePath f
 #else
   return $ HM.lookup f wc

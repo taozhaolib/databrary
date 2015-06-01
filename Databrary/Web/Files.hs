@@ -17,11 +17,12 @@ import qualified Data.ByteString.Char8 as BSC
 import Data.Function (on)
 import Data.Maybe (isNothing, fromJust)
 -- import System.Directory (createDirectoryIfMissing)
+import System.FilePath (splitFileName)
 import System.Posix.Directory.ByteString (openDirStream, closeDirStream)
 import System.Posix.Directory.Foreign (dtDir, dtReg)
 import System.Posix.Directory.Traversals (readDirEnt)
 import System.Posix.FilePath (takeExtensions)
-import System.Posix.Files (createLink)
+import System.Posix.Files (createLink, rename)
 
 import Paths_databrary (getDataFileName)
 import Databrary.Ops
@@ -79,14 +80,22 @@ whether g = (g <$) . when g
 
 webRegenerate :: IO () -> [FilePath] -> [WebFilePath] -> WebGenerator
 webRegenerate g fs ws fo@(_, o) = do
-  wr <- mapM generateWebFile ws
+  wr <- mapM (generateWebFile False) ws
   fr <- anyM (return (isNothing o) : map (`fileNewer` fo) fs)
   -- when (isNothing ft) $ createDirectoryIfMissing True $ FP.takeDirectory (webFileAbs f)
   liftIO $ whether (fr || any (on (<) webFileTimestamp (fromJust o)) wr) g
 
-staticWebGenerate :: IO () -> WebGenerator
-staticWebGenerate g (_, o) =
-  liftIO $ whether (isNothing o) g
+staticWebGenerate :: (FilePath -> IO ()) -> WebGenerator
+staticWebGenerate g (w, _) = liftIO $ do
+  g t
+  c <- compareFiles f t
+  if c
+    then False <$ removeLink t
+    else True <$ rename t f
+  where
+  f = toFilePath w
+  (d, n) = splitFileName f
+  t = d </> ('.' : n)
 
 webLinkDataFile :: FilePath -> WebGenerator
 webLinkDataFile s fo@(f, _) = do

@@ -62,7 +62,7 @@ getAssetSegmentStore as sz
     (\f -> do
       fe <- fileExist f
       unless fe $ do
-        tf <- makeTempFileAs (maybe (storageTemp store) (</> "tmp") cache) (const $ return ()) rs
+        tf <- makeTempFileAs (maybe (storageTemp store) (</> "tmp/") cache) (const $ return ()) rs
         gen (Right (tempFilePath tf))
         renameTempFile tf f rs
       return $ Right f)

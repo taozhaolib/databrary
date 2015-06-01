@@ -5,7 +5,7 @@ module Databrary.Web.Rules
   ) where
 
 import Control.Applicative ((<*>))
-import Control.Monad (when, mzero, msum)
+import Control.Monad (mzero, msum)
 import Control.Monad.Except (runExceptT, catchError, throwError)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.State.Strict (execStateT, modify, gets)
@@ -44,60 +44,58 @@ makeWebFileInfo f = WebFileInfo
   <$> hashFile (webFileAbsRaw f)
   <*> (modificationTimestamp <$> getFileStatus f)
 
-fixedGenerators :: [(FilePath, WebGenerator)]
-fixedGenerators =
+staticGenerators :: [(FilePath, WebGenerator)]
+staticGenerators =
   [ ("constants.json", generateConstantsJSON)
   , ("constants.js",   generateConstantsJS)
   , ("routes.js",      generateRoutesJS)
-  , ("messages.js",    generateMessagesJS)
+  ]
+
+fixedGenerators :: [(FilePath, WebGenerator)]
+fixedGenerators =
+  [ ("messages.js",    generateMessagesJS)
   , ("templates.js",   generateTemplatesJS)
   , ("app.min.js",     generateUglifyJS)
   , ("app.min.css",    generateStylusCSS)
   ]
 
-generateFixed :: WebGenerator
-generateFixed fo@(f, _)
-  | Just g <- lookup (webFileRel f) fixedGenerators = g fo
+generateFixed :: Bool -> WebGenerator
+generateFixed a fo@(f, _)
+  | Just g <- lookup (webFileRel f) $ (if a then (staticGenerators ++) else id) fixedGenerators = g fo
   | otherwise = mzero
 
 generateStatic :: WebGenerator
 generateStatic fo@(f, _) = fileNewer f fo
 
-generateRules :: WebGenerator
-generateRules f = msum $ map ($ f)
-  [ generateFixed
+generateRules :: Bool -> WebGenerator
+generateRules a f = msum $ map ($ f)
+  [ generateFixed a
   , generateCoffeeJS
   , generateLib
   , generateStatic
   ]
 
-updateWebInfo :: (WebFilePath, Maybe WebFileInfo) -> WebGeneratorM WebFileInfo
-updateWebInfo (f, o) = do
+updateWebInfo :: WebFilePath -> WebGeneratorM WebFileInfo
+updateWebInfo f = do
   n <- liftIO $ makeWebFileInfo f
-  case o of
-    Just i@WebFileInfo{ webFileHash = oh, webFileTimestamp = ot } | oh == webFileHash n -> do
-      liftIO $ when (ot /= webFileTimestamp n) $
-        setFileTimestamps f ot ot
-      return i
-    _ -> do
-      modify $ HM.insert f n
-      return n
+  modify $ HM.insert f n
+  return n
 
-generateWebFile :: WebFilePath -> WebGeneratorM WebFileInfo
-generateWebFile f = do
+generateWebFile :: Bool -> WebFilePath -> WebGeneratorM WebFileInfo
+generateWebFile a f = catchError (do
   o <- gets $ HM.lookup f
-  let fo = (f, o)
-  r <- generateRules fo `catchError` (throwError . label (webFileRel f))
-  if r then updateWebInfo fo else maybe (throwError (webFileRel f)) return o
+  r <- generateRules a (f, o)
+  if r then updateWebInfo f else maybe (throwError (webFileRel f)) return o)
+  (throwError . label (webFileRel f))
   where
   label n "" = n
   label n s = n ++ ": " ++ s
 
 generateAll :: WebGeneratorM ()
 generateAll = do
-  mapM_ generateWebFile $
+  mapM_ (generateWebFile True) $
     allWebLibs False ++
-    map (fromFilePath . fst) fixedGenerators
+    map (fromFilePath . fst) (staticGenerators ++ fixedGenerators)
 
 generateWebFiles :: IO WebFileMap
 generateWebFiles = do
