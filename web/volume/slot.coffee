@@ -233,8 +233,12 @@ app.controller('volume/slot', [
       u = -Infinity
       for c in [$scope.assets, records, $scope.consents]
         for t in c
-          l = t.l if isFinite(t.l) && t.l < l
-          u = t.u if isFinite(t.u) && t.u > u
+          if isFinite(t.l)
+            l = t.l if t.l < l
+            u = t.l if t.l > u
+          if isFinite(t.u)
+            l = t.u if t.u < l
+            u = t.u if t.u > u
       fullRange.l = finite(slot.segment.l, l, 0)
       fullRange.u = finite(slot.segment.u, u, 0)
       resetRange()
