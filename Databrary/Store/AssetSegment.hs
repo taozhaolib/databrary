@@ -8,11 +8,15 @@ import Control.Monad (unless, liftM2)
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
+import Data.ByteString.Lazy.Internal (defaultChunkSize)
+import Data.Fixed (showFixed, Milli)
 import qualified Data.Foldable as Fold
-import Data.Maybe (isJust, fromJust)
+import Data.Maybe (isJust, fromMaybe, fromJust)
 import Data.Monoid ((<>))
 import Data.Word (Word16)
+import qualified Data.Streaming.Process as P
 import qualified Database.PostgreSQL.Typed.Range as Range
+import System.IO (Handle, hClose)
 import System.Posix.FilePath (takeDirectory)
 
 import Databrary.Ops
@@ -41,8 +45,33 @@ assetSegmentFile as sz = (<> BSC.pack (assetSegmentTag as sz)) <$> assetFile (sl
 
 type Stream = BS.ByteString -> IO ()
 
+stream :: Stream -> Handle -> IO ()
+stream s h = loop where
+  loop = do
+    b <- BS.hGetSome h defaultChunkSize
+    s b
+    unless (BS.null b) $ loop
+
 genVideoClip :: AV -> RawFilePath -> Maybe (Range.Range Offset) -> Maybe Word16 -> Either Stream RawFilePath -> IO ()
-genVideoClip _ src (Just clip) _ dst | Nothing <- Range.getPoint clip = fail "not implemented"
+genVideoClip _ src (Just clip) _ dst | Nothing <- Range.getPoint clip =
+  P.withCheckedProcess (P.proc "ffmpeg" $
+    [ "-y", "-accurate_seek"
+    , "-loglevel", "error"
+    , "-threads", "1"
+    , "-ss", sb lb ]
+    ++ maybe [] (\u -> ["-t", sb $ u - lb]) ub ++
+    [ "-codec", "copy"
+    , "-f", "mp4"
+    , either (const "-") toFilePath dst ])
+    { P.std_out = P.CreatePipe
+    , P.close_fds = True
+    }
+    (\P.ClosedStream h P.Inherited ->
+      either stream (const hClose) dst h)
+  where
+  lb = fromMaybe 0 $ Range.bound $ Range.lowerBound clip
+  ub = Range.bound $ Range.upperBound clip
+  sb = (showFixed True :: Milli -> String) . realToFrac . offsetTime
 genVideoClip av src frame sz dst =
   avFrame src (offsetTime <$> (Range.getPoint =<< frame)) sz Nothing (either (const Nothing) Just dst) av
     >>= Fold.mapM_ (\b -> send b >> send BS.empty) 

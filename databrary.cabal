@@ -82,6 +82,7 @@ Executable databrary
     resourcet,
     exceptions,
     monad-control >= 1,
+    streaming-commons,
     blaze-markup,
     blaze-html,
     regex-posix,
