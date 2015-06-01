@@ -7,6 +7,7 @@ module Databrary.Files
   , fileInfo
   , setFileTimestamps
   , removeFile
+  , createDir
   , compareFiles
   , hashFile
   ) where
@@ -27,9 +28,10 @@ import qualified System.FilePath as F
 import qualified System.Posix.FilePath as RF
 import qualified System.Posix as P
 import qualified System.Posix.ByteString as RP
+import System.Posix.Types (FileMode)
 import System.IO (withBinaryFile, IOMode(ReadMode))
 import System.Posix.Types (FileOffset)
-import System.IO.Error (isDoesNotExistError)
+import System.IO.Error (isDoesNotExistError, isAlreadyExistsError)
 import System.IO.Unsafe (unsafeDupablePerformIO)
 
 import Databrary.Ops
@@ -63,6 +65,8 @@ class IsString a => IsFilePath a where
   setFileTimesHiRes = RP.setFileTimesHiRes . toRawFilePath
   removeLink :: a -> IO ()
   removeLink = RP.removeLink . toRawFilePath
+  createDirectory :: a -> FileMode -> IO ()
+  createDirectory = RP.createDirectory . toRawFilePath
 
 instance IsFilePath F.FilePath where
   toFilePath = id
@@ -77,6 +81,7 @@ instance IsFilePath F.FilePath where
   getFileStatus = P.getFileStatus
   setFileTimesHiRes = P.setFileTimesHiRes
   removeLink = P.removeLink
+  createDirectory = P.createDirectory
 
 instance IsFilePath RF.RawFilePath where
   toFilePath = unRawFilePath
@@ -96,6 +101,9 @@ catchOnlyIO c f = handleJust (guard . c) (\_ -> return Nothing) $ Just <$> f
 catchDoesNotExist :: IO a -> IO (Maybe a)
 catchDoesNotExist = catchOnlyIO isDoesNotExistError
 
+catchAlreadyExists :: IO a -> IO (Maybe a)
+catchAlreadyExists = catchOnlyIO isAlreadyExistsError
+
 modificationTimestamp :: P.FileStatus -> Timestamp
 modificationTimestamp = posixSecondsToUTCTime . P.modificationTimeHiRes
 
@@ -109,6 +117,9 @@ setFileTimestamps f a m = setFileTimesHiRes f (utcTimeToPOSIXSeconds a) (utcTime
 
 removeFile :: IsFilePath a => a -> IO Bool
 removeFile f = isJust <$> catchDoesNotExist (removeLink f)
+
+createDir :: IsFilePath a => a -> FileMode -> IO Bool
+createDir f m = isJust <$> catchAlreadyExists (createDirectory f m)
 
 compareFiles :: IsFilePath a => a -> a -> IO Bool
 compareFiles f1 f2 = do

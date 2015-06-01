@@ -1,6 +1,7 @@
 /dist/
 /log/
 /store/
+/cache/
 /node_modules/
 /bower_components/
 /Setup

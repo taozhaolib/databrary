@@ -13,6 +13,7 @@ import Data.Maybe (isJust, fromJust)
 import Data.Monoid ((<>))
 import Data.Word (Word16)
 import qualified Database.PostgreSQL.Typed.Range as Range
+import System.Posix.FilePath (takeDirectory)
 
 import Databrary.Ops
 import Databrary.Has (MonadHas, peek)
@@ -64,6 +65,7 @@ getAssetSegmentStore as sz
       unless fe $ do
         tf <- makeTempFileAs (maybe (storageTemp store) (</> "tmp/") cache) (const $ return ()) rs
         gen (Right (tempFilePath tf))
+        _ <- createDir (takeDirectory f) 0o770
         renameTempFile tf f rs
       return $ Right f)
     cf

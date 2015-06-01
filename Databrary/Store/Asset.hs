@@ -6,8 +6,7 @@ module Databrary.Store.Asset
   , storeAssetFile
   ) where
 
-import Control.Exception (handleJust)
-import Control.Monad ((<=<), unless, guard)
+import Control.Monad ((<=<), unless)
 import Control.Monad.IO.Class (liftIO)
 import Crypto.Hash (Digest, SHA1)
 import Data.Byteable (toBytes)
@@ -16,8 +15,6 @@ import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.Traversable as Trav
 import Data.Word (Word64)
-import System.IO.Error (isAlreadyExistsError)
-import System.Posix.Directory.ByteString (createDirectory)
 import System.Posix.FilePath (takeDirectory)
 import System.Posix.Files.ByteString (fileSize, createLink)
 
@@ -68,6 +65,6 @@ storeAssetFile ba fp = peeks storageMaster >>= \sm -> liftIO $ do
       sf <- compareFiles fp as
       unless sf $ fail "storage hash collision"
     else do
-      handleJust (guard . isAlreadyExistsError) return $ createDirectory (takeDirectory as) 0o750
+      _ <- createDir (takeDirectory as) 0o750
       createLink fp as
   return a
