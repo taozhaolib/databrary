@@ -219,6 +219,8 @@ jsRoutes = mconcat
   , jsRoute "getTags" queryTags (tag)
   , jsRoute "postTag" postTag (JSON, slot, TagId False tag)
   , jsRoute "postKeyword" postTag (JSON, slot, TagId True tag)
+  , jsRoute "deleteTag" deleteTag (JSON, slot, TagId False tag)
+  , jsRoute "deleteKeyword" deleteTag (JSON, slot, TagId True tag)
   , jsRoute "getTopTags" viewTopTags ()
   , jsRoute "getActivity" viewActivity ()
   ] where

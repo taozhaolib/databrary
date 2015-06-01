@@ -1195,7 +1195,8 @@ app.factory('modelService', [
       if (segment === undefined)
         segment = this.segment;
       var s = this;
-      return router.http(keyword ? router.controllers.postKeyword : router.controllers.postTag, this.container.id, segment.format(), tag, {vote:vote})
+      console.log(vote);
+      return router.http(router.controllers[vote ? (keyword ? "postKeyword" : "postTag") : (keyword ? "deleteKeyword" : "deleteTag")], this.container.id, segment.format(), tag)
         .then(function (res) {
           var tag = res.data;
           s.volume.clear('tags');

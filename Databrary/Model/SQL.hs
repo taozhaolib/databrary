@@ -17,7 +17,7 @@ import Databrary.Model.SQL.Select
 
 isUniqueViolation, isExclusionViolation :: PGError -> Bool
 isUniqueViolation = ("23505" ==) . pgErrorCode
-isExclusionViolation = ("23P01" ==) . pgErrorCode
+isExclusionViolation e = pgErrorCode e `elem` ["23505","23P01"]
 
 tryUpdateOrInsert :: (MonadDB m, PGQuery q a) => (PGError -> Maybe e) -> q -> q -> m (Either e (Int, [a]))
 tryUpdateOrInsert err upd ins = dbTransaction uoi where
