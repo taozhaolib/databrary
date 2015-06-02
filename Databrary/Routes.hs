@@ -215,6 +215,8 @@ jsRoutes = mconcat
   , jsRoute "deleteAsset" deleteAsset (JSON, asset)
   , jsRoute "postExcerpt" postExcerpt (slot, asset)
   , jsRoute "deleteExcerpt" deleteExcerpt (slot, asset)
+  , jsRoute "uploadStart" uploadStart (volume)
+  , jsRoute "uploadChunk" uploadChunk ()
 
   , jsRoute "postComment" postComment (JSON, slot)
   , jsRoute "getTags" queryTags (tag)

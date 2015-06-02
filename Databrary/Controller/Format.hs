@@ -19,11 +19,11 @@ import Databrary.View.Format
 formatIcon :: AppRoute Format
 formatIcon = invMap pf fp webFile where
   fp f = Just $ staticPath
-    [ "images", "filetype"
+    [ "images", "filetype", "16px"
     , case formatExtension f of { e:_ -> e ; _ -> "_blank" } <> ".svg"
     ]
   pf (Just (StaticPath p))
-    | ("images/filetype/", i) <- splitFileName p
+    | ("images/filetype/16px/", i) <- splitFileName p
     , (e, ".svg") <- splitExtension i
     , Just f <- getFormatByExtension e = f
   pf _ = unknownFormat

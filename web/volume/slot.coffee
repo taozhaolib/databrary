@@ -637,7 +637,7 @@ app.controller('volume/slot', [
         @progress = 0
         file.store = this
 
-        router.http(router.controllers.AssetApi.uploadStart, slot.volume.id,
+        router.http(router.controllers.uploadStart, slot.volume.id,
             filename: file.name
             size: file.size
           ).then (res) =>

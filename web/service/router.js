@@ -302,7 +302,7 @@ app.provider('routerService', [
             var r = page.models.Volume.get(page.$route.current.params.vid, edit ? ['containers', 'records'] : []);
             return (edit ? checkPermission(page.$q, r, page.permission.EDIT) : r)
               .then(function (volume) {
-                return volume.getSlot(page.$route.current.params.id, page.$route.current.params.segment,
+                return volume.getSlot(page.$route.current.params.id, edit ? '-' : page.$route.current.params.segment,
                   ['releases', 'records', 'assets', 'excerpts', 'tags', 'comments']);
               });
           },
@@ -313,8 +313,8 @@ app.provider('routerService', [
       },
       reloadOnSearch: false,
     }; }
+    routes.slotEdit = makeRoute(controllers.viewSlotEdit, ['vid', 'id'], slotRoute(true));
     routes.slot = makeRoute(controllers.viewSlot, ['vid', 'id', 'segment'], slotRoute(false));
-    routes.slotEdit = makeRoute(controllers.viewSlotEdit, ['id', 'segment'], slotRoute(true));
 
     //
 
