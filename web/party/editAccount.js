@@ -20,7 +20,7 @@ app.directive('partyEditAccountForm', [
       form.save = function () {
         form.$setSubmitted();
         page.messages.clear(form);
-        party.save(form.data).then(
+        party.saveAccount(form.data).then(
           function () {
             form.validator.server({});
 

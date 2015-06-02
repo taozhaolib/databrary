@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Login
-  ( loginAccount
+  ( checkPassword
+  , loginAccount
   , viewLogin
   , postLogin
   , postLogout
@@ -92,15 +93,15 @@ postUser :: AppRoute API
 postUser = action POST (pathAPI </< "user") $ \api -> withAuth $ do
   acct <- authAccount
   acct' <- runForm (api == HTML ?> htmlUserForm acct) $ do
-    "auth" .:> do
-      p <- deform
-      deformGuard "Incorrect password." (checkPassword p acct)
-    email <- "email" .:> deformNonEmpty deform
+    "auth" .:> (deformGuard "Incorrect password." . (`checkPassword` acct) =<< deform)
+    email <- "email" .:> deform
     passwd <- "password" .:> deformNonEmpty (passwordForm acct)
-    return acct
-      { accountEmail = fromMaybe (accountEmail acct) email
-      , accountPasswd = passwd <|> accountPasswd acct
-      }
+    let acct' = acct
+          { accountEmail = email
+          , accountPasswd = passwd <|> accountPasswd acct
+          , accountParty = (accountParty acct){ partyAccount = Just acct' }
+          }
+    return acct'
   changeAccount acct'
   case api of
     JSON -> okResponse [] $ partyJSON $ accountParty acct'

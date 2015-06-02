@@ -172,6 +172,7 @@ jsRoutes = mconcat
 
   , jsRoute "get" viewRoot (JSON)
   , jsRoute "getUser" viewUser ()
+  , jsRoute "postUser" postUser (JSON)
   , jsRoute "postLogin" postLogin (JSON)
   , jsRoute "postLogout" postLogout (JSON)
   , jsRoute "postRegister" postRegister (JSON)

@@ -339,6 +339,14 @@ app.factory('modelService', [
       };
     });
 
+    Login.prototype.saveAccount = function (data) {
+      var p = this;
+      return router.http(router.controllers.postUser, data)
+        .then(function (res) {
+          return p.update(res.data);
+        });
+    };
+
     Login.register = function (data) {
       return router.http(router.controllers.postRegister, data);
     };

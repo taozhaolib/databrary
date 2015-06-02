@@ -17,18 +17,16 @@ import Databrary.View.Form
 import {-# SOURCE #-} Databrary.Controller.Party
 
 htmlPartyForm :: Maybe Party -> AuthRequest -> FormHtml
-htmlPartyForm t req = f req $ do
+htmlPartyForm t req = maybe
+  (htmlForm "Create party" createParty HTML)
+  (\p -> htmlForm
+    ("Edit " <> partyName p)
+    postParty (HTML, TargetParty (partyId p)))
+  t req $ do
   field "prename" $ inputText $ partyPreName =<< t
   field "sortname" $ inputText $ partySortName <$> t
   field "affiliation" $ inputText $ partyAffiliation =<< t
   field "url" $ inputText $ show <$> (partyURL =<< t)
-  where
-  f = maybe
-    (htmlForm "Create party" createParty HTML)
-    (\p -> htmlForm
-      ("Edit " <> partyName p)
-      postParty (HTML, TargetParty (partyId p)))
-    t
 
 htmlPartySearchForm :: PartyFilter -> AuthRequest -> FormHtml
 htmlPartySearchForm pf req = htmlForm "Search users" queryParties HTML req $ do

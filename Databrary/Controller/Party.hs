@@ -21,7 +21,7 @@ import qualified Network.Wai as Wai
 import Network.Wai.Parse (FileInfo(..))
 
 import Databrary.Ops
-import Databrary.Has (view, peek, peeks, focusIO)
+import Databrary.Has (view, peeks, focusIO)
 import qualified Databrary.JSON as JSON
 import Databrary.Service.DB
 import Databrary.Model.Enum
@@ -55,7 +55,7 @@ getParty :: Maybe Permission -> PartyTarget -> AuthActionM Party
 getParty (Just p) (TargetParty i) =
   checkPermission p =<< maybeAction =<< lookupAuthParty i
 getParty _ mi = do
-  u <- peek
+  u <- accountParty <$> authAccount
   let isme TargetProfile = True
       isme (TargetParty i) = partyId u == i
   unless (isme mi) $ result =<< forbiddenResponse
