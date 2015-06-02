@@ -25,7 +25,7 @@ import qualified Data.ByteString.Char8 as BSC
 import Data.Char (toLower)
 import qualified Data.IntMap.Strict as IntMap
 import qualified Data.Map.Strict as Map
-import Data.Maybe (catMaybes)
+import Data.Maybe (catMaybes, listToMaybe)
 import Data.Monoid ((<>))
 import System.Posix.FilePath (RawFilePath, splitExtension, takeExtension, addExtension)
 
@@ -120,7 +120,7 @@ formatSample f
 formatJSON :: Format -> JSON.Object
 formatJSON Format{..} = JSON.record formatId $ catMaybes
   [ Just $ "mimetype" JSON..= formatMimeType
-  , null formatExtension ?!> "extension" JSON..= formatExtension
+  , ("extension" JSON..=) <$> listToMaybe formatExtension
   , Just $ "name" JSON..= formatName
   -- TODO: description, transcodable
   ]
