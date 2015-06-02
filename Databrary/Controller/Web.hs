@@ -5,12 +5,14 @@ module Databrary.Controller.Web
   , webFile
   ) where
 
+import Control.Monad ((<=<))
 import Crypto.Hash (digestToHexByteString)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import Data.Char (isAscii, isAlphaNum)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
+import Network.HTTP.Types (notFound404)
 import System.Posix.FilePath (joinPath, splitDirectories)
 
 import Databrary.Iso.Types (invMap)
@@ -49,6 +51,6 @@ pathStatic = invMap parseStaticPath (maybe [] $ map TE.decodeLatin1 . splitDirec
 webFile :: AppRoute (Maybe StaticPath)
 webFile = action GET ("web" >/> pathStatic) $ \sp -> do
   StaticPath p <- maybeAction sp
-  (wf, wfi) <- maybeAction =<< focusIO (lookupWebFile p)
+  (wf, wfi) <- either (result <=< returnResponse notFound404 [] . T.pack) return =<< focusIO (lookupWebFile p)
   let wfp = toRawFilePath wf
   serveFile wfp (unknownFormat{ formatMimeType = webFileFormat wfi }) Nothing (digestToHexByteString $ webFileHash wfi)

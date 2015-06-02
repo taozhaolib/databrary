@@ -6,9 +6,9 @@ module Databrary.Web.Rules
 
 import Control.Applicative ((<*>))
 import Control.Monad (mzero, msum)
-import Control.Monad.Except (runExceptT, catchError, throwError)
 import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Trans.State.Strict (execStateT, modify, gets)
+import Control.Monad.State.Strict (execStateT, modify, gets)
+import Control.Monad.Trans.Except (runExceptT, withExceptT)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import qualified Data.HashMap.Strict as HM
@@ -83,11 +83,10 @@ updateWebInfo f = do
   return n
 
 generateWebFile :: Bool -> WebFilePath -> WebGeneratorM WebFileInfo
-generateWebFile a f = catchError (do
+generateWebFile a f = withExceptT (label (webFileRel f)) $ do
   o <- gets $ HM.lookup f
   r <- generateRules a (f, o)
-  if r then updateWebInfo f else maybe (throwError (webFileRel f)) return o)
-  (throwError . label (webFileRel f))
+  if r then updateWebInfo f else maybeA o
   where
   label n "" = n
   label n s = n ++ ": " ++ s
@@ -100,6 +99,5 @@ generateAll = do
 
 generateWebFiles :: IO WebFileMap
 generateWebFiles = do
-  either fail return
-    =<< runExceptT . execStateT generateAll . HM.fromList 
+  execStateT (either fail return =<< runExceptT generateAll) . HM.fromList 
     =<< mapM (\f -> (f, ) <$> makeWebFileInfo f) =<< allWebFiles

@@ -5,21 +5,19 @@ module Databrary.Web.Types
   , Web(..)
   , WebGeneratorM
   , WebGenerator
-  , webGeneratorFail
   ) where
 
 #ifdef DEVEL
 import Control.Concurrent.MVar (MVar)
 #endif
-import Control.Monad.Trans.Class (lift)
-import Control.Monad.Trans.Except (ExceptT, throwE)
+import Control.Monad.Trans.Except (ExceptT)
 import Control.Monad.Trans.State.Strict (StateT)
 import Crypto.Hash (Digest, MD5)
 import qualified Data.ByteString as BS
 import qualified Data.HashMap.Strict as HM
 
 import Databrary.Model.Time
-import Databrary.Web (WebFilePath, webFileRel)
+import Databrary.Web (WebFilePath)
 
 data WebFileInfo = WebFileInfo
   { webFileFormat :: BS.ByteString
@@ -37,8 +35,5 @@ data Web = Web
       WebFileMap
   }
 
-type WebGeneratorM a = StateT WebFileMap (ExceptT String IO) a
+type WebGeneratorM a = ExceptT String (StateT WebFileMap IO) a
 type WebGenerator = (WebFilePath, Maybe WebFileInfo) -> WebGeneratorM Bool
-
-webGeneratorFail :: WebGenerator
-webGeneratorFail = lift . throwE . webFileRel . fst
