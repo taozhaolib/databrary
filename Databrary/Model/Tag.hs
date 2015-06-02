@@ -7,6 +7,7 @@ module Databrary.Model.Tag
   , addTagUse
   , removeTagUse
   , lookupTopTagWeight
+  , lookupTagCoverage
   , lookupSlotTagCoverage
   , tagWeightJSON
   , tagCoverageJSON
@@ -15,7 +16,7 @@ module Databrary.Model.Tag
 import Control.Monad (guard)
 import qualified Data.ByteString.Char8 as BSC
 import Data.Int (Int64)
-import Data.Maybe (catMaybes)
+import Data.Maybe (fromMaybe, catMaybes)
 import Database.PostgreSQL.Typed (pgSQL)
 
 import Databrary.Ops
@@ -62,10 +63,18 @@ lookupTopTagWeight :: MonadDB m => Int -> m [TagWeight]
 lookupTopTagWeight lim =
   dbQuery $(selectQuery (selectTagWeight "") "$!ORDER BY weight DESC LIMIT ${fromIntegral lim :: Int64}")
 
+emptyTagCoverage :: Tag -> Container -> TagCoverage
+emptyTagCoverage t c = TagCoverage (TagWeight t 0) c [] [] []
+
+lookupTagCoverage :: (MonadDB m, MonadHasIdentity c m) => Tag -> Slot -> m TagCoverage
+lookupTagCoverage t (Slot c s) = do
+  ident <- peek
+  fromMaybe (emptyTagCoverage t c) <$> dbQuery1 (($ c) . ($ t) <$> $(selectQuery (selectTagCoverage 'ident "WHERE container = ${containerId c} AND segment && ${s} AND tag = ${tagId t}") "$!"))
+
 lookupSlotTagCoverage :: (MonadDB m, MonadHasIdentity c m) => Slot -> Int -> m [TagCoverage]
 lookupSlotTagCoverage slot lim = do
   ident <- peek
-  dbQuery $(selectSlotTagCoverage 'ident 'slot >>= (`selectQuery` "$!ORDER BY weight DESC LIMIT ${fromIntegral lim :: Int64}"))
+  dbQuery $(selectQuery (selectSlotTagCoverage 'ident 'slot) "$!ORDER BY weight DESC LIMIT ${fromIntegral lim :: Int64}")
 
 tagWeightJSON :: TagWeight -> JSON.Object
 tagWeightJSON TagWeight{..} = JSON.record (tagName tagWeightTag) $

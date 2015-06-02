@@ -12,7 +12,6 @@ module Databrary.Model.Party.SQL
   ) where
 
 import Control.Applicative ((<|>))
-import Data.Char (toLower)
 import qualified Data.Foldable as Fold
 import qualified Language.Haskell.TH as TH
 

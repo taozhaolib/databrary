@@ -1,6 +1,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Databrary.Ops
-  ( (<$>)
+  ( (<$>) ,  (<$-)
   , (<$)  ,   ($>)
   , (<?)  ,   (?>)
   , (<!?) ,  (?!>)
@@ -23,6 +23,10 @@ import Control.Arrow
 import Data.Functor
 import Data.Maybe (catMaybes)
 import Data.Monoid
+
+infixl 4 <$-
+(<$-) :: Applicative f => f (a -> b) -> a -> f b
+f <$- a = f <*> pure a
 
 infixl 1 <?, <!?
 infixr 1 ?>, ?!>

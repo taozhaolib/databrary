@@ -4,19 +4,17 @@ module Databrary.Model.Tag.SQL
   , insertTagUse
   , deleteTagUse
   , selectTagWeight
+  , selectTagCoverage
   , selectSlotTagCoverage
   ) where
 
-import Control.Applicative ((<$>))
 import Data.Int (Int32)
 import Data.List (intercalate)
 import Data.Maybe (fromMaybe)
 import Database.PostgreSQL.Typed.Query (makePGQuery, simpleQueryFlags)
-import Database.PostgreSQL.Typed.Dynamic (pgLiteralString)
 import qualified Language.Haskell.TH as TH
 
 import Databrary.Model.SQL.Select
-import Databrary.Model.SQL.Info
 import Databrary.Model.Tag.Types
 import Databrary.Model.Container.Types
 import Databrary.Model.Segment
@@ -76,31 +74,23 @@ makeTagCoverage w s k v t c = TagCoverage (TagWeight t w) c (segs s) (segs k) (s
   segs = map $ fromMaybe (error "NULL tag segment")
 
 tagCoverageColumns :: TH.Name -- ^ @'Party'@
-  -> TH.Q [(String, String)]
-tagCoverageColumns acct = do
-  tagUseOID <- lookupTableOID "tag_use"
-  keywordUseOID <- lookupTableOID "keyword_use"
-  return $ tagWeightColumns ++
-    [ ("coverage", "segments_union(segment)")
-    , ("keywords", "segments_union(CASE WHEN tableoid = " ++ pgLiteralString keywordUseOID ++ " THEN segment ELSE 'empty' END)")
-    , ("votes", "segments_union(CASE WHEN tableoid = " ++ pgLiteralString tagUseOID ++ " AND who = ${partyId " ++ nameRef acct ++ "} THEN segment ELSE 'empty' END)")
-    ]
+  -> [(String, String)]
+tagCoverageColumns acct = tagWeightColumns ++
+  [ ("coverage", "segments_union(segment)")
+  , ("keywords", "segments_union(CASE WHEN tableoid = 'keyword_use'::regclass::oid THEN segment ELSE 'empty' END)")
+  , ("votes", "segments_union(CASE WHEN tableoid = 'tag_use'::regclass::oid AND who = ${partyId " ++ nameRef acct ++ "} THEN segment ELSE 'empty' END)")
+  ]
 
 selectTagCoverage :: TH.Name -- ^ @'Party'@
   -> String -- ^ query
-  -> TH.Q Selector -- ^ @'Tag' -> 'Container' -> 'TagCoverage'@
+  -> Selector -- ^ @'Tag' -> 'Container' -> 'TagCoverage'@
 selectTagCoverage acct q =
-  selectTagGroup "tag_coverage" q 'makeTagCoverage
-    <$> tagCoverageColumns acct
+  selectTagGroup "tag_coverage" q 'makeTagCoverage $ tagCoverageColumns acct
 
 selectSlotTagCoverage :: TH.Name -- ^ @'Party'@
   -> TH.Name -- ^ @'Slot'
-  -> TH.Q Selector -- ^ @'TagCoverage'@
-selectSlotTagCoverage acct slot = do
-  tagCoverage <- selectTagCoverage acct $ "WHERE container = ${containerId $ slotContainer " ++ ss ++ "} AND segment && ${slotSegment " ++ ss ++ "}"
-  return $ selectMap
-    (`TH.AppE` (TH.VarE 'slotContainer `TH.AppE` TH.VarE slot)) $ selectJoin '($)
-    [ tagCoverage
-    , joinOn "tag_coverage.tag = tag.id" selectTag 
-    ]
-  where ss = nameRef slot
+  -> Selector -- ^ @'TagCoverage'@
+selectSlotTagCoverage acct slot = selectMap (`TH.AppE` (TH.VarE 'slotContainer `TH.AppE` TH.VarE slot)) $ selectJoin '($)
+  [ selectTagCoverage acct $ "WHERE container = ${containerId $ slotContainer " ++ ss ++ "} AND segment && ${slotSegment " ++ ss ++ "}"
+  , joinOn "tag_coverage.tag = tag.id" selectTag 
+  ] where ss = nameRef slot
