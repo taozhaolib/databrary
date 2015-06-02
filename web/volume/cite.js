@@ -1,8 +1,8 @@
 'use strict';
 
 app.directive('citeVolume', [
-  'constantService', 'routerService',
-  function (constants, router) {
+  'constantService', 'routerService', '$location',
+  function (constants, router, $location) {
     var link = function ($scope) {
       var authors = '';
       var ai = 0;
@@ -37,7 +37,7 @@ app.directive('citeVolume', [
 
       $scope.authors = authors;
       $scope.today = new Date();
-      $scope.permalink = router.permalink($scope.volume.route());
+      $scope.permalink = $location.absUrl();
     };
 
     return {

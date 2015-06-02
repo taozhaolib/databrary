@@ -415,10 +415,6 @@ app.provider('routerService', [
           return $http(r);
         };
 
-        router.permalink = function (url) {
-          return constants.url + url;
-        };
-
         var prev;
         $rootScope.$on('$locationChangeStart', function (event, to, from) {
           router.prev = prev;
