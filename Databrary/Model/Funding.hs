@@ -3,6 +3,7 @@ module Databrary.Model.Funding
   ( module Databrary.Model.Funding.Types
   , lookupFunder
   , findFunders
+  , addFunder
   , lookupVolumeFunding
   , changeVolumeFunding
   , removeVolumeFunder
@@ -31,6 +32,10 @@ lookupFunder fi =
 findFunders :: MonadDB m => T.Text -> m [Funder]
 findFunders q =
   dbQuery $(selectQuery selectFunder "$WHERE funder.name ILIKE '%' || ${q} || '%'")
+
+addFunder :: MonadDB m => Funder -> m ()
+addFunder f =
+  dbExecute1' [pgSQL|INSERT INTO funder (fundref_id, name) VALUES (${funderId f}, ${funderName f})|]
 
 lookupVolumeFunding :: (MonadDB m) => Volume -> m [Funding]
 lookupVolumeFunding vol =

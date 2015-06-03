@@ -7,6 +7,7 @@ module Databrary.Model.Funding.FundRef
 import Control.Monad ((<=<), (>=>), guard, mfilter)
 import Control.Monad.Catch (MonadThrow)
 import Control.Monad.Trans.Maybe (MaybeT(..), runMaybeT)
+import qualified Data.Foldable as Fold
 import qualified Data.HashMap.Strict as HM
 import Data.List (stripPrefix, sortBy, nubBy)
 import Data.Maybe (fromMaybe, mapMaybe)
@@ -94,8 +95,12 @@ lookupFundRef fi = runMaybeT $ do
   return $ annotateFunder f [] (geoName <$> g)
 
 lookupFunderRef :: (MonadDB m, HTTPClientM c m, MonadThrow m) => Id Funder -> m (Maybe Funder)
-lookupFunderRef fi =
-  (`orElseM` lookupFundRef fi) =<< lookupFunder fi
+lookupFunderRef fi = do
+  f <- lookupFunder fi
+  f `orElseM` do
+    r <- lookupFundRef fi
+    Fold.mapM_ addFunder r
+    return r
 
 parseFundRefs :: JSON.Value -> JSON.Parser [Funder]
 parseFundRefs = JSON.withArray "fundrefs" $
