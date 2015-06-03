@@ -289,7 +289,7 @@ instance Deform Int16 where
 
 instance Deform Date where
   deform = maybe (deformErrorWith (Just (fromGregorian 1900 1 1)) "Invalid date (please use YYYY-MM-DD)") return . pd =<< deform where
-    pd t = pf "%F" t <|> pf "%D" t
+    pd t = pf "%Y-%-m-%-d" t <|> pf "%-m/%-d/%y" t
     pf = parseTime defaultTimeLocale
 
 instance Deform Offset where

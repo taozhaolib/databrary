@@ -54,7 +54,7 @@ insertContainer :: TH.Name -- ^ @'AuditIdentity'@
   -> TH.Name -- ^ @'Container'@
   -> TH.ExpQ -- ^ @'Container'@
 insertContainer ident o = auditInsert ident "container"
-  (containerKeys (nameRef o) ++ containerSets (nameRef o))
+  (containerSets (nameRef o))
   (Just $ selectOutput $ selectMap ((TH.VarE 'setContainerId `TH.AppE` TH.VarE o) `TH.AppE`) $ selector "container" "id")
 
 updateContainer :: TH.Name -- ^ @'AuditIdentity'@

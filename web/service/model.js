@@ -33,7 +33,7 @@ app.factory('modelService', [
     Model.prototype.update = function (init) {
       if (typeof init !== 'object')
         return this;
-      if ('id' in init && init.id !== this.id)
+      if (init.id !== this.id)
         throw new Error("update id mismatch");
       this.init(init);
       return this;
@@ -522,8 +522,9 @@ app.factory('modelService', [
       var v = this;
       return router.http(router.controllers.postVolumeAccess, this.id, target, data)
         .then(function (res) {
+          // could update v.access with res.data
           v.clear('access');
-          return v.update(res.data);
+          return v;
         });
     };
 
