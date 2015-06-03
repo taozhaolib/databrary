@@ -2,6 +2,8 @@
 /log/
 /store/
 /cache/
+/tmp/
+/upload/
 /node_modules/
 /bower_components/
 /Setup

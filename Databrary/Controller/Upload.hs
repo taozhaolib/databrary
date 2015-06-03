@@ -52,7 +52,7 @@ uploadStart = action POST (pathJSON >/> pathId </< "upload") $ \vi -> withAuth $
   tok <- createUpload vol filename size
   file <- peeks $ uploadFile tok
   liftIO $ bracket
-    (openFd file WriteOnly (Just 0600) defaultFileFlags{ exclusive = True })
+    (openFd file WriteOnly (Just 0o600) defaultFileFlags{ exclusive = True })
     closeFd
     (`setFdSize` COff size)
   okResponse [] $ unId (view tok :: Id Token)
@@ -60,12 +60,14 @@ uploadStart = action POST (pathJSON >/> pathId </< "upload") $ \vi -> withAuth $
 chunkForm :: DeformT (ReaderT AuthRequest IO) (Upload, Int64, Word64)
 chunkForm = do
   up <- "flowIdentifier" .:> (lift . (maybeAction <=< lookupUpload) =<< deform)
+  let z = uploadSize up
   "flowFilename" .:> (deformGuard "Filename mismatch." . (uploadFilename up ==) =<< deform)
-  "flowTotalSize" .:> (deformGuard "File size mismatch." . (uploadSize up ==) =<< fileSizeForm)
+  "flowTotalSize" .:> (deformGuard "File size mismatch." . (z ==) =<< fileSizeForm)
   c <- "flowChunkSize" .:> (deformCheck "Chunk size too small." (1024 <=) =<< deform)
-  i <- "flowChunkNumber" .:> (deformCheck "Chunk number out of range." (\i -> 0 <= i && c * i < uploadSize up) . pred =<< deform)
+  n <- "flowTotalChunks" .:> (deformCheck "Chunk count mismatch." ((1 >=) . abs . (pred z `div` c -)) =<< deform)
+  i <- "flowChunkNumber" .:> (deformCheck "Chunk number out of range." (\i -> 0 <= i && i < n) =<< pred <$> deform)
   let o = c * i
-  l <- "flowCurrentChunkSize" .:> (deformCheck "Current chunk size out of range." (\l -> c <= l && o + l <= uploadSize up) =<< deform)
+  l <- "flowCurrentChunkSize" .:> (deformCheck "Current chunk size out of range." (\l -> (c == l || i == pred n) && o + l <= z) =<< deform)
   return (up, o, fromIntegral l)
 
 uploadChunk :: AppRoute ()

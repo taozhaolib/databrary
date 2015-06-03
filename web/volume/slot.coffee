@@ -656,8 +656,17 @@ app.controller('volume/slot', [
             file.cancel()
             delete @file
             delete @progress
-            @removed()
             false
+        return
+
+      error: (message) ->
+        messages.addError
+          type: 'red'
+          body: 'Error during ' + @name + ' upload: ' + message
+          owner: this
+        @file.cancel()
+        delete @file
+        delete @progress
         return
 
       rePosition: () ->
@@ -828,6 +837,8 @@ app.controller('volume/slot', [
 
     $scope.fileSuccess = uploads.fileSuccess
     $scope.fileProgress = uploads.fileProgress
+    $scope.fileError = (file, message) ->
+      file.store.error(message)
 
     class Record extends TimeBar
       constructor: (r) ->
