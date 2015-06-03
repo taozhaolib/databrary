@@ -9,7 +9,7 @@ module Databrary.Controller.Container
   ) where
 
 import Control.Monad (mfilter)
-import Data.Maybe (maybeToList)
+import Data.Maybe (fromMaybe, maybeToList)
 import qualified Data.Text as T
 
 import Databrary.Ops
@@ -45,13 +45,13 @@ viewContainer = I.second (I.second $ slotContainerId . unId I.:<->: containerSlo
 
 containerForm :: (Functor m, Monad m) => Container -> DeformT m Container
 containerForm c = do
-  name <- "name" .:> deformNonEmpty deform
-  date <- "date" .:> deformNonEmpty deform
-  release <- "release" .:> deformNonEmpty deform
+  name <- "name" .:> deformOptional (deformNonEmpty deform)
+  date <- "date" .:> deformOptional (deformNonEmpty deform)
+  release <- "release" .:> deformOptional (deformNonEmpty deform)
   return c
-    { containerName = name
-    , containerDate = date
-    , containerRelease = release
+    { containerName = fromMaybe (containerName c) name
+    , containerDate = fromMaybe (containerDate c) date
+    , containerRelease = fromMaybe (containerRelease c) release
     }
 
 viewContainerEdit :: AppRoute (Maybe (Id Volume), Id Slot)
