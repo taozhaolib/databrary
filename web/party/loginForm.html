@@ -1,24 +1,13 @@
 <ng-form name="loginForm">
-  <div ng-switch="loginForm.method">
-    <div ng-switch-default>
-      <validator name="email" label="email">
-        <input id="loginEmail" name="email" ng-model="loginForm.data.email" required>
-      </validator>
+  <validator name="email" label="email">
+    <input id="loginEmail" name="email" ng-model="loginForm.data.email" required>
+  </validator>
 
-      <validator name="password" label="password">
-        <input id="loginPassword" name="password" type="password" ng-model="loginForm.data.password" required key-enter="loginForm.submit()">
-      </validator>
-    </div>
-
-    <div ng-switch-when="openid">
-      <input id="loginOpenid" type="text" ng-model="loginForm.data.openid" placeholder="{{::'openid' | message}}" required key-enter="loginForm.submit()">
-    </div>
-  </div>
+  <validator name="password" label="password">
+    <input id="loginPassword" name="password" type="password" ng-model="loginForm.data.password" required key-enter="loginForm.submit()">
+  </validator>
 
   <button id="loginSubmit" type="submit" class="green" ng-click="loginForm.submit()" ng-disabled="loginForm.$pristine || loginForm.$invalid || loginForm.$submitted" message="login.login"></button>
-
-  <a ng-click="loginForm.switchMethod('openid')" ng-hide="true || loginForm.method === 'openid'" message="login.method.openid"></a>
-  <a ng-click="loginForm.switchMethod('databrary')" ng-hide="loginForm.method === 'databrary'" message="login.method.password"></a>
 
   <a ng-href="{{::page.router.password()}}" message="login.forgot"></a>
 </ng-form>

@@ -17,9 +17,7 @@ app.directive 'accessSearchForm', [
         ''
 
       form.search = (val) ->
-        volume.accessSearch(
-            name: val
-          ).then (data) ->
+        volume.accessSearch(val).then (data) ->
               form.validator.server {}
               for found in data
                 text: found.name

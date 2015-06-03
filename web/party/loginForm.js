@@ -8,12 +8,7 @@ app.directive('loginForm', [
     link: function ($scope) {
       var form = $scope.loginForm;
 
-      form.method = 'databrary';
       form.data = {};
-
-      form.switchMethod = function (method) {
-        $scope.method = method;
-      };
 
       form.submit = function () {
         form.$setSubmitted();

@@ -66,33 +66,33 @@ app.provider('routerService', [
         params = data;
       } else
         args = [data];
-      var r = {
-        method: route.method,
-        url: route.route.apply(null, args)
-      };
+      var url = route.route.apply(null, args);
+      if (ph)
+        return url;
       for (var i = route.route.length; i < argNames.length && i < args.length; i++) {
         params[argNames[i]] = args[i];
       }
       var q;
       for (var p in params) {
         if (!q) {
-          r.url += '?';
+          url += '?';
           q = true;
         }
-        r.url += p;
+        url += p;
         if (params[p] != null)
-          r.url += '=' + (ph ? params[p] : encodeUri(params[p]));
+          url += '=' + encodeUri(params[p]);
       }
-      return r;
+      return url;
     }
 
     /* Add a route to $routeProvider and return a function to get a url given parameters. */
     function makeRoute(route, argNames, handler) {
-      if (handler)
-        $routeProvider.when(getRoute(route, argNames).url, handler);
+      if (handler) {
+        $routeProvider.when(getRoute(route, argNames), handler);
+      }
 
       return function (data, params) {
-        return urlParams(getRoute(route, argNames, data).url, params);
+        return urlParams(getRoute(route, argNames, data), params);
       };
     }
 
@@ -212,7 +212,7 @@ app.provider('routerService', [
       resolve: {
         party: [
           'pageService', function (page) {
-            var req = ['access', 'openid', 'parents', 'children', 'volumes'];
+            var req = ['access', 'parents', 'children', 'volumes'];
             if ('id' in page.$route.current.params)
               return page.models.Party.get(page.$route.current.params.id, req);
             else

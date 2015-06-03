@@ -142,7 +142,6 @@ app.factory('modelService', [
       institution: true,
       url: true,
       access: false,
-      openid: false,
     };
 
     Party.prototype.init = function (init) {
@@ -515,11 +514,8 @@ app.factory('modelService', [
       return router.volumeCSV([this.id]);
     };
 
-    Volume.prototype.accessSearch = function (param) {
-      return router.http(router.controllers.VolumeApi.accessSearch, this.id, param)
-        .then(function (res) {
-          return partyMakeArray(res.data);
-        });
+    Volume.prototype.accessSearch = function (name) {
+      return Party.search({volume:this.id,query:name});
     };
 
     Volume.prototype.accessSave = function (target, data) {
@@ -539,8 +535,9 @@ app.factory('modelService', [
       var v = this;
       return router.http(router.controllers.postVolumeFunding, this.id, funder, data)
         .then(function (res) {
+          // res.data could replace/add v.funding[X]
           v.clear('funding');
-          return v.update(res.data);
+          return v;
         });
     };
 
@@ -548,6 +545,7 @@ app.factory('modelService', [
       var v = this;
       return router.http(router.controllers.deleteVolumeFunder, this.id, funder)
         .then(function (res) {
+          // could just remove v.funding[X]
           v.clear('funding');
           return v.update(res.data);
         });
@@ -1223,7 +1221,7 @@ app.factory('modelService', [
       Tag: Tag,
 
       funder: function (query, all) {
-        return router.http(router.controllers.getFunders, query, all)
+        return router.http(router.controllers.getFunders, {query:query,all:all})
           .then(resData);
       },
       cite: function (url) {
