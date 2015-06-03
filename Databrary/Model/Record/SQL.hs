@@ -62,7 +62,7 @@ insertRecord :: TH.Name -- ^ @'AuditIdentity'@
   -> TH.Name -- ^ @'Record'@
   -> TH.ExpQ -- ^ @'Record'@
 insertRecord ident r = auditInsert ident "record"
-  (recordKeys (nameRef r) ++ recordSets (nameRef r))
+  (recordSets (nameRef r))
   (Just $ selectOutput $ selectMap ((TH.VarE 'setRecordId `TH.AppE` TH.VarE r) `TH.AppE`) $ selector "record" "id")
 
 updateRecord :: TH.Name -- ^ @'AuditIdentity'@

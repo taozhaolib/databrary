@@ -729,27 +729,23 @@ app.factory('modelService', [
         });
     };
 
-    function recordAdd(slot, record, seg) {
-      var r = {
-        id: record.id,
-        segment: seg || slot.segment,
-        record: record,
-      };
-      if ('records' in slot)
-        slot.records.push(r);
-      if (slot.container !== slot && 'records' in slot.container)
-        slot.container.records.push(r);
-      return r;
-    }
-
     Slot.prototype.addRecord = function (r, seg) {
       if (!seg)
         seg = this.segment;
       var s = this;
-      return router.http(router.controllers.RecordApi.add, this.container.id, seg.format(), {record:r.id})
+      return router.http(router.controllers.postRecordSlot, this.container.id, seg.format(), r.id)
         .then(function (res) {
-          r.update(res.data);
-          return recordAdd(s, r, seg);
+          if (res.data.measures) {
+            r.update(res.data);
+            return;
+          }
+          var d = res.data;
+          d.record = r;
+          if ('records' in s)
+            s.records.push(d);
+          if (s.container !== s && 'records' in s.container)
+            s.container.records.push(d);
+          return d;
         });
     };
 
@@ -757,10 +753,10 @@ app.factory('modelService', [
       var s = this;
       if (c && typeof c === 'object')
         c = c.id;
-      return router.http(router.controllers.RecordApi.add, this.container.id, this.segment.format(), {category:c})
+      return router.http(router.controllers.createRecord, this.volume.id, {category:c})
         .then(function (res) {
           var r = new Record(s.volume, res.data);
-          return recordAdd(s, r);
+          return s.addRecord(r);
         });
     };
 
@@ -771,9 +767,11 @@ app.factory('modelService', [
           src = this.segment;
       }
       var s = this;
-      return router.http(router.controllers.RecordApi.move, r.id, this.container.id, {src: Segment.data(src), dst: Segment.data(dst)})
+      return router.http(router.controllers.postRecordSlot, this.container.id, Segment.format(dst), r.id, {src: Segment.data(src)})
         .then(function (res) {
-          if ('measures' in res.data) {
+          if (!res.data)
+            return;
+          if (res.data.measures) {
             r.update(res.data);
             return null;
           }
@@ -869,7 +867,7 @@ app.factory('modelService', [
 
     Record.prototype.remove = function () {
       var r = this;
-      return router.http(router.controllers.RecordApi.remove, this.id)
+      return router.http(router.controllers.deleteRecord, this.id)
         .then(function () {
           delete r.volume.records[r.id];
           return true;
@@ -1196,7 +1194,6 @@ app.factory('modelService', [
       if (segment === undefined)
         segment = this.segment;
       var s = this;
-      console.log(vote);
       return router.http(router.controllers[vote ? (keyword ? "postKeyword" : "postTag") : (keyword ? "deleteKeyword" : "deleteTag")], this.container.id, segment.format(), tag)
         .then(function (res) {
           var tag = res.data;

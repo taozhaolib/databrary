@@ -111,6 +111,9 @@ routeMap = fromRouteList
   , route createRecord
   , route viewRecord
   , route postRecordMeasure
+  , route deleteRecord
+  , route postRecordSlot
+  , route deleteRecordSlot
 
   , route queryTags
   , route postTag
@@ -208,7 +211,9 @@ jsRoutes = mconcat
 
   , jsRoute "getRecord" viewRecord (JSON, record)
   , jsRoute "createRecord" createRecord (JSON, volume)
+  , jsRoute "deleteRecord" deleteRecord (JSON, record)
   , jsRoute "postRecordMeasure" postRecordMeasure (JSON, record, metric)
+  , jsRoute "postRecordSlot" postRecordSlot (JSON, slot, record)
 
   , jsRoute "getAsset" viewAsset (JSON, asset)
   , jsRoute "getAssetSegment" viewAssetSegment (JSON, Nothing, slot, asset)

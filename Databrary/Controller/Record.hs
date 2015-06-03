@@ -4,14 +4,19 @@ module Databrary.Controller.Record
   , viewRecord
   , createRecord
   , postRecordMeasure
+  , deleteRecord
+  , postRecordSlot
+  , deleteRecordSlot
   ) where
 
 import Control.Monad (when)
 import Control.Monad.Trans.Class (lift)
 import Data.Maybe (isNothing, fromMaybe)
 import qualified Data.Text as T
+import Network.HTTP.Types (StdMethod(DELETE), noContent204, conflict409)
 
 import Databrary.Ops
+import Databrary.Has (view)
 import Databrary.Action.Route
 import Databrary.Action
 import Databrary.Model.Id
@@ -19,13 +24,17 @@ import Databrary.Model.Volume
 import Databrary.Model.Permission
 import Databrary.Model.Record
 import Databrary.Model.RecordCategory
+import Databrary.Model.RecordSlot
 import Databrary.Model.Metric
 import Databrary.Model.Measure
+import Databrary.Model.Segment
+import Databrary.Model.Slot
 import Databrary.HTTP.Form.Deform
 import Databrary.HTTP.Path.Parser
 import Databrary.Controller.Paths
 import Databrary.Controller.Form
 import Databrary.Controller.Volume
+import Databrary.Controller.Slot
 import Databrary.Controller.Permission
 import Databrary.Controller.Angular
 import Databrary.View.Record
@@ -71,3 +80,36 @@ postRecordMeasure = action POST (pathAPI </>> pathId </> pathId) $ \(api, ri, mi
   case api of
     JSON -> okResponse [] $ recordJSON rec'
     HTML -> redirectRouteResponse [] viewRecord (api, recordId rec') []
+
+deleteRecord :: AppRoute (API, Id Record)
+deleteRecord = action DELETE (pathAPI </> pathId) $ \(api, ri) -> withAuth $ do
+  rec <- getRecord PermissionEDIT ri
+  r <- removeRecord rec
+  guardAction r $ case api of
+    JSON -> returnResponse conflict409 [] (recordJSON rec)
+    HTML -> returnResponse conflict409 [] ("This record is still used." :: T.Text)
+  case api of
+    JSON -> emptyResponse noContent204 []
+    HTML -> redirectRouteResponse [] viewVolume (api, view rec) []
+
+postRecordSlot :: AppRoute (API, Id Slot, Id Record)
+postRecordSlot = action POST (pathAPI </>> pathSlotId </> pathId) $ \(api, si, ri) -> withAuth $ do
+  slot <- getSlot PermissionEDIT Nothing si
+  rec <- getRecord PermissionEDIT ri
+  src <- runForm Nothing $ "src" .:> deformNonEmpty deform
+  r <- moveRecordSlot (RecordSlot rec slot{ slotSegment = fromMaybe emptySegment src }) (slotSegment slot)
+  case api of
+    HTML | r      -> redirectRouteResponse [] viewSlot (api, (Just (view slot), slotId slot)) []
+      | otherwise -> redirectRouteResponse [] viewRecord (api, recordId rec) []
+    JSON | r      -> okResponse [] $ recordSlotJSON (RecordSlot rec slot)
+      | otherwise -> okResponse [] $ recordJSON rec
+
+deleteRecordSlot :: AppRoute (API, Id Slot, Id Record)
+deleteRecordSlot = action DELETE (pathAPI </>> pathSlotId </> pathId) $ \(api, si, ri) -> withAuth $ do
+  slot <- getSlot PermissionEDIT Nothing si
+  rec <- getRecord PermissionEDIT ri
+  r <- moveRecordSlot (RecordSlot rec slot) emptySegment
+  case api of
+    HTML | r -> redirectRouteResponse [] viewRecord (api, recordId rec) []
+    JSON | r -> okResponse [] $ recordJSON rec
+    _ -> emptyResponse noContent204 []

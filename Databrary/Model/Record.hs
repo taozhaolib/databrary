@@ -11,6 +11,8 @@ module Databrary.Model.Record
   ) where
 
 import Control.Applicative ((<$>))
+import Control.Monad (guard)
+import Data.Either (isRight)
 import Data.Maybe (catMaybes)
 
 import Databrary.Has (peek, view)
@@ -57,10 +59,10 @@ changeRecord r = do
   ident <- getAuditIdentity
   dbExecute1' $(updateRecord 'ident 'r)
 
-removeRecord :: MonadAudit c m => Record -> m ()
+removeRecord :: MonadAudit c m => Record -> m Bool
 removeRecord r = do
   ident <- getAuditIdentity
-  dbExecute1' $(deleteRecord 'ident 'r)
+  isRight <$> dbTryQuery (guard . isForeignKeyViolation) $(deleteRecord 'ident 'r)
 
 recordJSON :: Record -> JSON.Object
 recordJSON r@Record{..} = JSON.record recordId $ catMaybes
