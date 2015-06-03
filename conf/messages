@@ -117,7 +117,7 @@ login.noCookie=You must be logged in to perform that action. Please make sure yo
 login.expired=Your session has expired. Please login again.
 login.error=Unable to log in with those credentials.
 
-login.email.help=Enter the email address you used to register.
+login.email.help=Enter the email address you used to register
 login.email.error=This email address is invalid
 login.password.help=Enter your password.
 
