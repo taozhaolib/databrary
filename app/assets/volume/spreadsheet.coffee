@@ -1175,8 +1175,9 @@ app.directive 'spreadsheet', [
 
         $scope.clickCategoryAdd = ($event, col) ->
           unselect()
-          edit({cell:$event.target.parentNode, t:'category', c:col.category.id})
+          edit({cell:$event.target.parentNode.parentNode, t:'category', c:col.category.id})
           $event.stopPropagation()
+          $scope.tabOptionsClick = undefined
           false
 
         $scope.clickMetric = (col) ->
@@ -1210,15 +1211,25 @@ app.directive 'spreadsheet', [
             return
 
         ################################# main
+        $scope.tabOptionsToggle = ($event, categoryId) ->
+          if $event
+            $event.stopPropagation()
+          if $scope.tabOptionsClick == categoryId
+            $scope.tabOptionsClick = undefined
+          else $scope.tabOptionsClick = categoryId
+          false
 
         $scope.setKey = (key) ->
           Key = $scope.key = key? && getCategory(key) || pseudoCategory.slot
           unedit()
           collapse()
           populate()
+          $scope.tabOptionsClick = undefined
 
         $scope.setKey($attrs.key)
         return
+
+
     ]
     }
 ]
