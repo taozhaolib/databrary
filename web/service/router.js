@@ -44,6 +44,7 @@ app.provider('routerService', [
     /* Apply a jsroute (from play's routeData) given the names of its arguments and optional data (or placeholders). */
     function getRoute(route, argNames, data) {
       var args;
+      var params = {};
       if (!argNames)
         argNames = [];
       var ph = arguments.length < 3;
@@ -55,22 +56,33 @@ app.provider('routerService', [
         args = data;
       else if (typeof data === 'object') {
         args = argNames.map(function (k) {
-          return k in data ? data[k] : null;
+          if (k in data) {
+            var r = data[k];
+            delete data[k];
+            return r;
+          }
+          return null;
         });
+        params = data;
       } else
         args = [data];
       var r = {
         method: route.method,
         url: route.route.apply(null, args)
       };
-      /*
-      if (ph) {
-        var q = r.url.indexOf('?');
-        if (q !== -1)
-          r.url = r.url.substr(0, q);
-        r.url = r.url.replace(/%3A/gi, ':');
+      for (var i = route.route.length; i < argNames.length && i < args.length; i++) {
+        params[argNames[i]] = args[i];
       }
-      */
+      var q;
+      for (var p in params) {
+        if (!q) {
+          r.url += '?';
+          q = true;
+        }
+        r.url += p;
+        if (params[p] != null)
+          r.url += '=' + (ph ? params[p] : encodeUri(params[p]));
+      }
       return r;
     }
 
@@ -340,8 +352,8 @@ app.provider('routerService', [
       reloadOnSearch: false,
     });
 
-    routes.partyAvatar = makeRoute(controllers.partyAvatar, ['id']);
-    routes.volumeThumb = makeRoute(controllers.thumbVolume, ['id']);
+    routes.partyAvatar = makeRoute(controllers.partyAvatar, ['id', 'size']);
+    routes.volumeThumb = makeRoute(controllers.thumbVolume, ['id', 'size']);
     routes.volumeCSV = makeRoute(controllers.csvVolume, ['id']);
     routes.volumeZip = makeRoute(controllers.zipVolume, ['id']);
     routes.slotZip = makeRoute(controllers.zipSlot, ['vid', 'id', 'segment']);

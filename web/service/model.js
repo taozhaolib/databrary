@@ -233,13 +233,11 @@ app.factory('modelService', [
     };
 
     Party.prototype.avatarRoute = function (size, nonce) {
-      var params = {
-        size: size || 56
-      };
+      var params = {};
       if (nonce)
         params.nonce = nonce;
 
-      return router.partyAvatar([this.id], params);
+      return router.partyAvatar([this.id, size || 56], params);
     };
 
     Party.prototype.authorizeSearch = function (apply, param) {
@@ -506,11 +504,7 @@ app.factory('modelService', [
     };
 
     Volume.prototype.thumbRoute = function (size) {
-      var params = {};
-      if (size)
-        params.size = size;
-
-      return router.volumeThumb([this.id], params);
+      return router.volumeThumb([this.id, size]);
     };
 
     Volume.prototype.zipRoute = function () {
