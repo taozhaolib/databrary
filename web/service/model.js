@@ -659,7 +659,7 @@ app.factory('modelService', [
 
     Container.prototype.remove = function () {
       var c = this;
-      return router.http(router.controllers.SlotApi.remove, this.id)
+      return router.http(router.controllers.deleteContainer, this.id)
         .then(function () {
           delete c.volume.containers[c.id];
           return true;
@@ -711,7 +711,7 @@ app.factory('modelService', [
 
     Slot.prototype.save = function (data) {
       var s = this;
-      return router.http(router.controllers.postSlot, this.container.id, this.segment.format(), data)
+      return router.http(router.controllers.postContainer, this.container.id, this.segment.format(), data)
         .then(function (res) {
           if ('release' in data) {
             s.clear('releases');

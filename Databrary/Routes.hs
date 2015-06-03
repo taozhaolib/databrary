@@ -87,6 +87,7 @@ routeMap = fromRouteList
   , route viewSlot
   , route viewContainerEdit
   , route postContainer
+  , route deleteContainer
   , route zipContainer
 
   , route viewFormats
@@ -201,7 +202,8 @@ jsRoutes = mconcat
   , jsRoute "getCitation" getCitation ()
 
   , jsRoute "getSlot" viewSlot (JSON, (Nothing, slot))
-  , jsRoute "postSlot" postContainer (JSON, container)
+  , jsRoute "postContainer" postContainer (JSON, container)
+  , jsRoute "deleteContainer" deleteContainer (JSON, container)
   , jsRoute "createContainer" createContainer (JSON, volume)
 
   , jsRoute "getRecord" viewRecord (JSON, record)

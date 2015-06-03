@@ -12,15 +12,18 @@ module Databrary.Model.Container
   , containerJSON
   ) where
 
+import Control.Monad (guard)
+import Data.Either (isRight)
 import Data.Maybe (catMaybes)
 import Data.Time.Format (formatTime)
+import Database.PostgreSQL.Typed.Query (pgSQL)
 import System.Locale (defaultTimeLocale)
 
 import Databrary.Ops
 import Databrary.Has (view, peek)
 import Databrary.Service.DB
 import qualified Databrary.JSON as JSON
-import Databrary.Model.SQL (selectQuery)
+import Databrary.Model.SQL (selectQuery, isForeignKeyViolation)
 import Databrary.Model.Permission
 import Databrary.Model.Id.Types
 import Databrary.Model.Party.Types
@@ -69,10 +72,13 @@ changeContainer c = do
   ident <- getAuditIdentity
   dbExecute1' $(updateContainer 'ident 'c)
 
-removeContainer :: MonadAudit c m => Container -> m ()
+removeContainer :: MonadAudit c m => Container -> m Bool
 removeContainer c = do
   ident <- getAuditIdentity
-  dbExecute1' $(deleteContainer 'ident 'c)
+  top <- dbQuery1' [pgSQL|SELECT id FROM container WHERE volume = ${volumeId $ containerVolume c} AND top ORDER BY id LIMIT 1|]
+  if top == containerId c
+    then return False
+    else isRight <$> dbTryQuery (guard . isForeignKeyViolation) $(deleteContainer 'ident 'c)
 
 formatContainerDate :: Container -> Maybe String
 formatContainerDate c = formatTime defaultTimeLocale fmt <$> containerDate c where

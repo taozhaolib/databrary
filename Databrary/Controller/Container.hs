@@ -5,12 +5,14 @@ module Databrary.Controller.Container
   , viewContainerEdit
   , createContainer
   , postContainer
+  , deleteContainer
   , containerDownloadName
   ) where
 
-import Control.Monad (mfilter)
+import Control.Monad (when, mfilter)
 import Data.Maybe (fromMaybe, maybeToList)
 import qualified Data.Text as T
+import Network.HTTP.Types (StdMethod(DELETE), noContent204, conflict409)
 
 import Databrary.Ops
 import qualified Databrary.Iso as I
@@ -21,6 +23,7 @@ import Databrary.Model.Volume
 import Databrary.Model.Container
 import Databrary.Model.Segment
 import Databrary.Model.Slot
+import Databrary.Model.Release
 import Databrary.Action
 import Databrary.HTTP.Form.Deform
 import Databrary.HTTP.Path.Parser
@@ -77,7 +80,21 @@ postContainer = action POST (pathAPI </> pathSlotId) $ \(api, ci) -> withAuth $ 
   c <- getContainer PermissionEDIT Nothing ci
   c' <- runForm (api == HTML ?> htmlContainerForm (Right c)) $ containerForm c
   changeContainer c'
+  when (containerRelease c' /= containerRelease c) $ do
+    r <- changeRelease (containerSlot c') (containerRelease c')
+    guardAction r $
+      emptyResponse conflict409 []
   case api of
     JSON -> okResponse [] $ containerJSON c'
     HTML -> redirectRouteResponse [] viewSlot (api, (Just (view c'), ci)) []
 
+deleteContainer :: AppRoute (API, Id Slot)
+deleteContainer = action DELETE (pathAPI </> pathSlotId) $ \(api, ci) -> withAuth $ do
+  c <- getContainer PermissionEDIT Nothing ci
+  r <- removeContainer c
+  guardAction r $ case api of
+    JSON -> returnResponse conflict409 [] (containerJSON c)
+    HTML -> returnResponse conflict409 [] ("This container is not empty." :: T.Text)
+  case api of
+    JSON -> emptyResponse noContent204 []
+    HTML -> redirectRouteResponse [] viewVolume (api, view c) []
