@@ -9,15 +9,18 @@ app.directive 'volumeEditLinksForm', [
       volume = $scope.volume
       form = $scope.volumeEditLinksForm
 
-      form.data = _.map volume.links, (ref) ->
-        head: ref.head
-        url: ref.url
-
       blank = () ->
         form.data.push
           head: ''
           url: ''
-      blank()
+
+      update = ->
+        form.data = _.map volume.links, (ref) ->
+          head: ref.head
+          url: ref.url
+        blank()
+
+      update()
 
       form.change = () -> blank() unless form.data[form.data.length-1].url == ''
 
@@ -29,11 +32,10 @@ app.directive 'volumeEditLinksForm', [
 
       form.save = () ->
         page.messages.clear(form)
-        data = _.filter form.data, (ref) -> !ref.removed
-        volume.save({links: data}).then(() ->
+        data = _.filter form.data, (ref) -> !ref.removed && (ref.head || ref.url)
+        volume.saveLinks(data).then(() ->
             form.validator.server {}
-            form.data = data.filter (ref) -> ref.head != '' || ref.url != ''
-            blank()
+            update()
 
             page.messages.add
               type: 'green'
@@ -41,8 +43,15 @@ app.directive 'volumeEditLinksForm', [
               owner: form
 
             form.$setPristine()
+            return
           , (res) ->
             form.validator.server res
+
+            page.messages.addError
+              body: page.constants.message('volume.edit.error')
+              report: res
+              owner: form
+            return
           )
 
       return

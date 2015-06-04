@@ -14,7 +14,7 @@ module Databrary.Controller.Volume
   , volumeJSONQuery
   ) where
 
-import Control.Applicative (Applicative, (<*>), pure, optional)
+import Control.Applicative (Applicative, (<*>), optional)
 import Control.Monad (mfilter, guard, void, when, liftM2)
 import Control.Monad.Trans.Class (lift)
 import qualified Data.ByteString as BS
@@ -112,13 +112,6 @@ viewVolume = action GET (pathAPI </> pathId) $ \(api, vi) -> withAuth $ do
     JSON -> okResponse [] =<< volumeJSONQuery v =<< peeks Wai.queryString
     HTML -> okResponse [] $ volumeName v -- TODO
 
-citationForm :: (Functor m, Applicative m, Monad m) => DeformT m Citation
-citationForm = Citation
-  <$> ("head" .:> deform)
-  <*> ("url" .:> deformNonEmpty deform)
-  <*> ("year" .:> deformNonEmpty deform)
-  <*> pure Nothing
-
 volumeForm :: (Functor m, Monad m) => Volume -> DeformT m Volume
 volumeForm v = do
   name <- "name" .:> deform
@@ -133,7 +126,11 @@ volumeForm v = do
 volumeCitationForm :: HTTPClientM c m => Volume -> DeformT m (Volume, Maybe Citation)
 volumeCitationForm v = do
   vol <- volumeForm v
-  cite <- "citation" .:> citationForm
+  cite <- "citation" .:> Citation
+    <$> ("head" .:> deform)
+    <*> ("url" .:> deformNonEmpty deform)
+    <*> ("year" .:> deformNonEmpty deform)
+    <$- Nothing
   look <- flatMapM (lift . lookupCitation) $
     guard (T.null (volumeName vol) || T.null (citationHead cite) || isNothing (citationYear cite)) >> citationURL cite
   let fill = maybe cite (cite <>) look
@@ -200,7 +197,11 @@ postVolumeLinks = action POST (pathAPI </> pathId </< "link") $ \arg@(api, vi) -
   v <- getVolume PermissionEDIT vi
   links <- lookupVolumeLinks v
   links' <- runForm (api == HTML ?> htmlVolumeLinksForm v links) $
-    withSubDeforms citationForm
+    withSubDeforms $ Citation
+      <$> ("head" .:> deform)
+      <*> ("url" .:> (Just <$> deform))
+      <$- Nothing
+      <$- Nothing
   changeVolumeLinks v links'
   case api of
     JSON -> okResponse [] $ volumeJSON v JSON..+ ("links" JSON..= links')

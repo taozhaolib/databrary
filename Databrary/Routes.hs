@@ -193,6 +193,7 @@ jsRoutes = mconcat
   , jsRoute "getVolumes" queryVolumes (JSON)
   , jsRoute "postVolumeAccess" postVolumeAccess (JSON, (volume, VolumeAccessTarget party))
   , jsRoute "postVolumeFunding" postVolumeFunding (volume, funder)
+  , jsRoute "postVolumeLinks" postVolumeLinks (JSON, volume)
   , jsRoute "deleteVolumeFunder" deleteVolumeFunder (volume, funder)
 
   , jsRoute "getFunders" queryFunder ()

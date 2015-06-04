@@ -461,8 +461,15 @@ app.factory('modelService', [
         .then(function (res) {
           if ('citation' in data)
             v.clear('citation');
-          if ('links' in data)
-            v.clear('links');
+          return v.update(res.data);
+        });
+    };
+
+    Volume.prototype.saveLinks = function (data) {
+      var v = this;
+      return router.http(router.controllers.postVolumeLinks, this.id, data)
+        .then(function (res) {
+          v.clear('links');
           return v.update(res.data);
         });
     };
