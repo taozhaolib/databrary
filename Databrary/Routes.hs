@@ -133,12 +133,6 @@ routeMap = fromRouteList
   , route webFile
   ]
 
-{-
-    if actionMethod ra == methodGet && Wai.rawPathInfo req /= actionRoute ra
-      then emptyResponse movedPermanently301 [(hLocation, actionURL ra (Just req) `BS.append` Wai.rawQueryString req)]
-      else routeAction ra
--}
-
 jsRoutes :: B.Builder
 jsRoutes = mconcat
   [ jsRoute "viewRoot" viewRoot (HTML)

@@ -268,7 +268,7 @@ app.directive 'spreadsheet', [
           if !slot.top || slot.date
             populateDatum(i, 'slot', n, 'date', slot.date)
           if !slot.top || slot.release
-            populateDatum(i, 'slot', n, 'release', slot.release)
+            populateDatum(i, 'slot', n, 'release', slot.release+'')
           return
 
         populateRecordData = (i, n, record) ->
@@ -458,7 +458,7 @@ app.directive 'spreadsheet', [
               else
                 v ?= ''
             when 'release', 'classification'
-              cn = constants.release[v || 0]
+              cn = constants.release[v]
               cell.className = cn + ' release icon hint-release-' + cn
               v = ''
             when 'excerpt'
@@ -796,7 +796,7 @@ app.directive 'spreadsheet', [
           if info.c == 'slot'
             data = {}
             data[info.metric.id] = v ? ''
-            return if info.slot[info.metric.id] == v
+            return if info.slot[info.metric.id]+'' == v
             saveRun info.cell, info.slot.save(data).then () ->
               updateDatum(info, v)
               return
@@ -876,8 +876,6 @@ app.directive 'spreadsheet', [
           if value == ''
             value = undefined
           else switch type
-            when 'release'
-              value = parseInt(value, 10)
             when 'record'
               if value == 'new'
                 setRecord(info)
@@ -963,10 +961,7 @@ app.directive 'spreadsheet', [
               editScope.type = info.metric.type
               if info.c == 'slot'
                 v = info.slot?[m]
-                if m == 'release'
-                  ### jshint ignore:start ###
-                  v ||= 0
-                  ### jshint ignore:end ###
+                v += '' if m == 'release'
               else if info.c == 'asset' # not reached
                 v = info.asset[m]
               else

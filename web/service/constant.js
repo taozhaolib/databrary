@@ -26,6 +26,8 @@ app.factory('constantService', [
       return r;
     };
 
+    constants.release['undefined'] = 'DEFAULT';
+    constants.releases = Object.keys(constants.release);
     invertArray(constants.permission);
     invertArray(constants.release);
     constants.categoryName = invertBy(constants.category, "name");

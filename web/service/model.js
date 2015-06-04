@@ -711,6 +711,8 @@ app.factory('modelService', [
 
     Slot.prototype.save = function (data) {
       var s = this;
+      if (data.release === 'undefined')
+        data.release = '';
       return router.http(router.controllers.postContainer, this.container.id, this.segment.format(), data)
         .then(function (res) {
           if ('release' in data) {
