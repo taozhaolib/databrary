@@ -249,7 +249,7 @@ app.factory('modelService', [
       return router.http(router.controllers.postAuthorizeApply, this.id, target, data)
         .then(function (res) {
           p.clear('parents');
-          return p.update(res.data);
+          return p;
         });
     };
 
@@ -258,7 +258,7 @@ app.factory('modelService', [
       return router.http(router.controllers.postAuthorize, this.id, target, data)
         .then(function (res) {
           p.clear('children');
-          return p.update(res.data);
+          return p;
         });
     };
 
@@ -267,7 +267,7 @@ app.factory('modelService', [
       return router.http(router.controllers.deleteAuthorize, this.id, target)
         .then(function (res) {
           p.clear('children');
-          return p.update(res.data);
+          return p;
         });
     };
 
