@@ -151,7 +151,7 @@ BEGIN
 	IF type_name IS NULL THEN
 		RETURN NULL;
 	END IF;
-	EXECUTE $$DELETE FROM measure_$$ || type_name || $$ WHERE record = $1 AND metric = $2$$ INTO NEW.datum USING OLD.record, OLD.metric;
+	EXECUTE $$DELETE FROM measure_$$ || type_name || $$ WHERE record = $1 AND metric = $2 RETURNING text(datum)$$ INTO OLD.datum USING OLD.record, OLD.metric;
 	RETURN OLD;
 END; $delete$;
 CREATE TRIGGER "measure_delete" INSTEAD OF DELETE ON "measure" FOR EACH ROW EXECUTE PROCEDURE "measure_delete" ();
