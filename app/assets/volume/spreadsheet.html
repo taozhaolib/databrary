@@ -33,10 +33,13 @@
           <span class="icon settings spreadsheet-tab-options-icon" ng-click="tabOptionsToggle($event,col.category.id)" ng-if="key != col.category || editing && !col.category.fixed"></span>
           <ul class="flat spreadsheet-tab-options" click-elsewhere="tabOptionsToggle($event,'huh')" ng-if="tabOptionsClick === col.category.id">
             <li class="spreadsheet-tab-option" ng-click="setKey(col.category.id)" ng-if="key!=col.category">
-              <span>List by </span>
-              <span ng-bind="::col.category.name"></span>
+              <span class="icon list"></span>
+              <span ng-bind="::col.category.name+' view'"></span>
             </li>
-            <li class="spreadsheet-tab-option" ng-if="::editing && !col.category.fixed" ng-click="clickCategoryAdd($event, col)" tooltip="'spreadsheet.add.metric' | message:col.category.name">Add new column</li>
+            <li class="spreadsheet-tab-option" ng-if="::editing && !col.category.fixed" ng-click="clickCategoryAdd($event, col)" tooltip="'spreadsheet.add.metric' | message:col.category.name">
+              <span class="icon add"></span>
+              <span>add new column</span>
+            </li>
           </ul>
         </th>
         <th ng-if="categories.length" id="{{::id}}-add" class="add" ng-click="clickAdd($event)" tooltip="'spreadsheet.add.category' | message"></th>

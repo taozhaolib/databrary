@@ -1175,7 +1175,7 @@ app.directive 'spreadsheet', [
 
         $scope.clickCategoryAdd = ($event, col) ->
           unselect()
-          edit({cell:$event.target.parentNode.parentNode, t:'category', c:col.category.id})
+          edit({cell:document.getElementById(ID+'-category_'+col.category.id), t:'category', c:col.category.id})
           $event.stopPropagation()
           $scope.tabOptionsClick = undefined
           false
