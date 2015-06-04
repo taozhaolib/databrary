@@ -32,6 +32,10 @@ Flag devel
   default: True
   manual: True
 
+Flag tls
+  description: Enable TLS/SSL https connections
+  default: True
+
 Executable databrary
   main-is: Databrary/Warp.hs
 
@@ -91,6 +95,9 @@ Executable databrary
     mime-mail,
     fast-logger,
     digest
+
+  if flag(tls)
+    Build-depends: warp-tls
 
   Extensions: MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, ScopedTypeVariables, ConstraintKinds, PatternGuards
 
