@@ -33,7 +33,7 @@ app.factory('modelService', [
     Model.prototype.update = function (init) {
       if (typeof init !== 'object')
         return this;
-      if (init.id !== this.id)
+      if (this.hasOwnProperty('id') && init.id !== this.id)
         throw new Error("update id mismatch");
       this.init(init);
       return this;
