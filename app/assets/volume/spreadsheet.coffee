@@ -780,7 +780,7 @@ app.directive 'spreadsheet', [
           info.v = v
           rcm = Data[info.c][info.metric.id]
           if info.c == Key.id || info.c == 'asset'
-            rcm[info.n][info.i] = v
+            arr(rcm, info.n)[info.i] = v
             generateText(info)
           else
             for i, n of Depends[info.d]
