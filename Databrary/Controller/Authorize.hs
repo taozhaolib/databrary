@@ -8,12 +8,13 @@ module Databrary.Controller.Authorize
 import Control.Applicative ((<|>))
 import Control.Monad (when)
 import qualified Data.ByteString.Builder as BSB
+import qualified Data.ByteString.Lazy as BSL
+import qualified Data.ByteString.Lazy.Char8 as BSLC
 import qualified Data.Foldable as Fold
 import Data.Maybe (fromMaybe, isNothing, mapMaybe)
 import Data.Monoid (mempty, (<>))
 import qualified Data.Text as T
-import qualified Data.Text.Lazy as TL
-import qualified Data.Text.Lazy.Encoding as TLE
+import qualified Data.Text.Encoding as TE
 import Data.Time (UTCTime(..), fromGregorian, addGregorianYearsRollOver)
 import Network.HTTP.Types (noContent204, StdMethod(DELETE))
 
@@ -76,9 +77,9 @@ postAuthorize = action POST (pathAPI </>> pathPartyTarget </> pathAuthorizeTarge
         req <- peek
         sendMail (map Right dl ++ authorizeAddr)
           ("Databrary authorization request from " <> partyName child)
-          $ TL.fromStrict (partyName child) <> " <" <> maybe "" TL.fromStrict agent <> "> has requested to be authorized by " <> TL.fromStrict (partyName parent) <> ".\n\n\
-            \To approve or reject this authorization request, go to:\n" <>
-            TLE.decodeLatin1 (BSB.toLazyByteString $ actionURL (Just req) viewPartyEdit (TargetParty $ partyId parent) [("page", Just "grant")]) <> "#auth-" <> TL.pack (show $ partyId child) <> "\n\n\
+          $ BSL.fromChunks [TE.encodeUtf8 (partyName child), " <", maybe "" TE.encodeUtf8 agent, "> has requested to be authorized by ", TE.encodeUtf8 (partyName parent), ".\n\n\
+            \To approve or reject this authorization request, go to:\n" ] <>
+            BSB.toLazyByteString (actionURL (Just req) viewPartyEdit (TargetParty $ partyId parent) [("page", Just "grant")]) <> "#auth-" <> BSLC.pack (show $ partyId child) <> "\n\n\
             \Find more information about authorizing and managing affiliates here:\n\n\
             \http://databrary.org/access/guide/investigators/authorization/affiliates.html\n"
       return $ Just $ fromMaybe c' c
@@ -99,7 +100,7 @@ postAuthorize = action POST (pathAPI </>> pathPartyTarget </> pathAuthorizeTarge
       when (Fold.any ((PermissionPUBLIC <) . accessSite) a && Fold.all ((PermissionPUBLIC >=) . accessSite) c) $
         sendMail (maybe id (:) (Right <$> partyAccount child) authorizeAddr)
           "Databrary authorization approved"
-          $ "You have been authorized for Databrary access by " <> TL.fromStrict (partyName parent) <> ".\n"
+          $ BSL.fromChunks ["You have been authorized for Databrary access by ", TE.encodeUtf8 (partyName parent), ".\n"]
       return a
   case api of
     JSON -> maybe (emptyResponse noContent204 []) (okResponse [] . JSON.Object . authorizeJSON) a

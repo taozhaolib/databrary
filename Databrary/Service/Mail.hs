@@ -4,8 +4,8 @@ module Databrary.Service.Mail
   ) where
 
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import qualified Data.ByteString.Lazy as BSL
 import qualified Data.Text as T
-import qualified Data.Text.Lazy as TL
 import Network.Mail.Mime
 
 import Databrary.Model.Party
@@ -13,9 +13,9 @@ import Databrary.Model.Party
 baseMail :: Mail
 baseMail = emptyMail (Address (Just "Databrary") "help@databrary.org")
 
-sendMail :: MonadIO m => [Either T.Text Account] -> T.Text -> TL.Text -> m ()
+sendMail :: MonadIO m => [Either T.Text Account] -> T.Text -> BSL.ByteString -> m ()
 sendMail to subj body =
-  liftIO $ renderSendMail $ addPart [plainPart body] $ baseMail
+  liftIO $ renderSendMail $ addPart [Part "text/plain; charset=utf-8" None Nothing [] body] $ baseMail
     { mailTo = map addr to
     , mailHeaders = [("Subject", subj)]
     }

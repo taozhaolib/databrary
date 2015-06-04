@@ -8,10 +8,9 @@ module Databrary.Controller.Register
 
 import Control.Monad (mfilter)
 import qualified Data.ByteString.Builder as BSB
+import qualified Data.ByteString.Lazy as BSL
 import Data.Monoid ((<>), mempty)
 import qualified Data.Text as T
-import qualified Data.Text.Lazy as TL
-import qualified Data.Text.Lazy.Encoding as TLE
 
 import Databrary.Ops
 import Databrary.Has (view, peek)
@@ -31,14 +30,14 @@ import Databrary.Controller.Token
 import Databrary.Controller.Angular
 import Databrary.View.Register
 
-resetPasswordMail :: Either T.Text SiteAuth -> T.Text -> (Maybe TL.Text -> TL.Text) -> AuthActionM ()
+resetPasswordMail :: Either T.Text SiteAuth -> T.Text -> (Maybe BSL.ByteString -> BSL.ByteString) -> AuthActionM ()
 resetPasswordMail (Left email) subj body =
   sendMail [Left email] subj (body Nothing)
 resetPasswordMail (Right auth) subj body = do
   tok <- loginTokenId =<< createLoginToken auth True
   req <- peek
   sendMail [Right $ view auth] subj
-    (body $ Just $ TLE.decodeLatin1 $ BSB.toLazyByteString $ actionURL (Just req) viewLoginToken (HTML, tok) [])
+    (body $ Just $ BSB.toLazyByteString $ actionURL (Just req) viewLoginToken (HTML, tok) [])
 
 viewRegister :: AppRoute ()
 viewRegister = action GET (pathHTML </< "user" </< "register") $ \() -> withAuth $ do
@@ -50,7 +49,7 @@ viewRegister = action GET (pathHTML </< "user" </< "register") $ \() -> withAuth
 postRegister :: AppRoute API
 postRegister = action POST (pathAPI </< "user" </< "register") $ \api -> withoutAuth $ do
   reg <- runForm (api == HTML ?> htmlRegister) $ do
-    name <- "name" .:> (deformRequired =<< deform)
+    name <- "sortname" .:> (deformRequired =<< deform)
     prename <- "prename" .:> deformNonEmpty deform
     email <- "email" .:> emailTextForm
     affiliation <- "affiliation" .:> deformNonEmpty deform

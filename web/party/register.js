@@ -49,16 +49,12 @@ app.controller('party/register', [
       password: function (step) {
         var form = $scope.passwordForm = step.$scope.passwordForm;
         form.sent = false;
-        if (token)
-          form.data = {
-            token: token.id,
-            auth: token.auth
-          };
+        form.data = {};
 
         form.save = function () {
           form.$setSubmitted();
           page.messages.clear(form);
-          page.models.Login.passwordToken(token.party, form.data)
+          page.models.Login.passwordToken(token.id, form.data)
             .then(function () {
               form.$setUnsubmitted();
               form.validator.server({});
@@ -77,10 +73,10 @@ app.controller('party/register', [
         };
 
         form.validator.client({
-          'password.once': {
+          'once': {
             tips: page.constants.message('reset.once.help'),
           },
-          'password.again': {
+          'again': {
             tips: page.constants.message('reset.again.help'),
           },
         }, true);
