@@ -22,7 +22,7 @@
               <dd ng-if="::party.orcid"><a ng-href="http://orcid.org/{{::party.orcid}}" ng-bind="::party.orcid"></a></dd>
 
               <dt ng-if="::party.url" message="party.view.url"/>
-              <dd ng-if="::party.url"><a ng-href="{{::party.url}}" ng-bind="::party.url"></a></dd>
+              <dd class="party-url" ng-if="::party.url"><a ng-href="{{::party.url}}" ng-bind="::party.url"></a></dd>
             </dl>
           </div>
         </div>

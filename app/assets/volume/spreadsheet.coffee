@@ -133,6 +133,7 @@ app.directive 'spreadsheet', [
             not: 'No ' + (if Top then 'materials' else 'sessions')
             template: if Top then ['name'] else ['name', 'date', 'release']
             sort: -10000
+            fixed: true
           0:
             id: 0
             name: 'record'
@@ -144,6 +145,7 @@ app.directive 'spreadsheet', [
             not: 'No files'
             template: ['name', 'classification', 'excerpt']
             sort: 10000
+            fixed: true
         constants.deepFreeze(pseudoCategory)
         getCategory = (c) ->
           pseudoCategory[c || 0] || constants.category[c]
@@ -393,12 +395,14 @@ app.directive 'spreadsheet', [
               start: si
             }
           $scope.cols = Cols
-          if Editing
+          if Editing && Key.id == 'slot'
             ### jshint ignore:start #### fixed in jshint 2.5.7
             $scope.categories = (c for ci, c of constants.category when ci not of Data)
             ### jshint ignore:end ###
             $scope.categories.sort(bySortId)
             $scope.categories.push(pseudoCategory[0]) unless 0 of Data
+          else
+            $scope.categories = []
           return
 
         # Call all populate functions
@@ -775,8 +779,8 @@ app.directive 'spreadsheet', [
         updateDatum = (info, v) ->
           info.v = v
           rcm = Data[info.c][info.metric.id]
-          if info.c == Key.c || info.c == 'asset'
-            rcm[info.n][info.i] = v
+          if info.c == Key.id || info.c == 'asset'
+            arr(rcm, info.n)[info.i] = v
             generateText(info)
           else
             for i, n of Depends[info.d]
@@ -1098,7 +1102,7 @@ app.directive 'spreadsheet', [
         editSelect = (event) ->
           editInput.value = @text
           editScope.unedit(event)
-          @text
+          return # inputCompleter needs an undefined to do nothing
 
         editScope.identCompleter = (input) ->
           info = editScope.info
@@ -1171,8 +1175,9 @@ app.directive 'spreadsheet', [
 
         $scope.clickCategoryAdd = ($event, col) ->
           unselect()
-          edit({cell:$event.target.parentNode, t:'category', c:col.category.id})
+          edit({cell:document.getElementById(ID+'-category_'+col.category.id), t:'category', c:col.category.id})
           $event.stopPropagation()
+          $scope.tabOptionsClick = undefined
           false
 
         $scope.clickMetric = (col) ->
@@ -1206,15 +1211,25 @@ app.directive 'spreadsheet', [
             return
 
         ################################# main
+        $scope.tabOptionsToggle = ($event, categoryId) ->
+          if $event
+            $event.stopPropagation()
+          if $scope.tabOptionsClick == categoryId
+            $scope.tabOptionsClick = undefined
+          else $scope.tabOptionsClick = categoryId
+          false
 
         $scope.setKey = (key) ->
           Key = $scope.key = key? && getCategory(key) || pseudoCategory.slot
           unedit()
           collapse()
           populate()
+          $scope.tabOptionsClick = undefined
 
         $scope.setKey($attrs.key)
         return
+
+
     ]
     }
 ]
