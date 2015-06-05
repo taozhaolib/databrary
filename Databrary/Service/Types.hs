@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell, RecordWildCards #-}
+{-# OPTIONS_GHC -ddump-splices #-}
 module Databrary.Service.Types
-  ( Service(..)
+  ( Secret(..)
+  , Service(..)
   , MonadHasService
   ) where
 
@@ -18,18 +20,20 @@ import Databrary.Web.Types (Web)
 import Databrary.Store.AV (AV)
 import Databrary.Model.Time
 
+newtype Secret = Secret BS.ByteString
+
 data Service = Service
   { serviceStartTime :: !Timestamp
-  , serviceLogs :: !Logs
-  , serviceSecret :: !BS.ByteString
-  , serviceMessages :: !Messages
+  , serviceSecret :: !Secret
   , serviceEntropy :: !Entropy
   , servicePasswd :: !Passwd
+  , serviceLogs :: !Logs
+  , serviceMessages :: !Messages
   , serviceDB :: !DBConn
   , serviceStorage :: !Storage
   , serviceWeb :: !Web
-  , serviceAV :: !AV
   , serviceHTTPClient :: !HTTPClient
+  , serviceAV :: !AV
   }
 
-makeHasRec ''Service ['serviceDB, 'serviceMessages, 'serviceEntropy, 'serviceHTTPClient, 'serviceStorage, 'serviceWeb, 'servicePasswd, 'serviceAV]
+makeHasRec ''Service ['serviceDB, 'serviceMessages, 'serviceEntropy, 'serviceSecret, 'serviceHTTPClient, 'serviceStorage, 'serviceWeb, 'servicePasswd, 'serviceAV]

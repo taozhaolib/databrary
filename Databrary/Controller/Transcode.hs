@@ -11,6 +11,7 @@ import Data.Char (isHexDigit, digitToInt)
 import Data.Word (Word8)
 
 import Databrary.Ops
+import Databrary.Has (peeks)
 import Databrary.Service.Crypto
 import Databrary.HTTP.Form.Deform
 import Databrary.HTTP.Path.Parser
@@ -41,7 +42,7 @@ remoteTranscode :: AppRoute (Id Transcode)
 remoteTranscode = action POST (pathJSON >/> pathId) $ \ti -> do
   t <- maybeAction =<< lookupTranscode ti
   withReAuth (transcodeOwner t) $ do
-    auth <- transcodeAuth t
+    auth <- peeks $ transcodeAuth t
     (res, sha1, logs) <- runForm Nothing $ do
       _ <- "auth" .:> (deformCheck "Invalid authentication" (constEqBytes auth) =<< deform)
       _ <- "pid" .:> (deformCheck "PID mismatch" (transcodeProcess t ==) =<< deformNonEmpty deform)

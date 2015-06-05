@@ -35,7 +35,7 @@ import Databrary.Model.Transcode.SQL
 defaultTranscodeOptions :: TranscodeArgs
 defaultTranscodeOptions = ["-vf", "pad=iw+mod(iw\\,2):ih+mod(ih\\,2)"]
 
-transcodeAuth :: MonadHasService c m => Transcode -> m BS.ByteString
+transcodeAuth :: Transcode -> Secret -> BS.ByteString
 transcodeAuth t = signature $ BSL.toStrict $ BSB.toLazyByteString
   $ maybe id ((<>) . BSB.byteString) (assetSHA1 $ transcodeOrig t)
   $ BSB.int32LE (unId $ transcodeId t)

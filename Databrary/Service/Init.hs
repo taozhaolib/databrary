@@ -4,7 +4,6 @@ module Databrary.Service.Init
   , withService
   ) where
 
-import Control.Applicative ((<$>), (<*>))
 import Control.Exception (bracket)
 import qualified Data.Configurator as C
 import qualified Data.Configurator.Types as C
@@ -30,18 +29,31 @@ loadConfig = do
   C.loadGroups [("message.", C.Optional msg), ("", C.Required (etc </> "databrary.conf")), ("", C.Optional (etc </> "local.conf"))]
 
 initService :: C.Config -> IO Service
-initService conf = Service
-  <$> getCurrentTime
-  <*> initLogs (C.subconfig "log" conf)
-  <*> C.require conf "secret"
-  <*> initMessages (C.subconfig "message" conf)
-  <*> initEntropy
-  <*> initPasswd
-  <*> initDB (C.subconfig "db" conf)
-  <*> initStorage (C.subconfig "store" conf)
-  <*> initWeb
-  <*> initAV
-  <*> initHTTPClient
+initService conf = do
+  time <- getCurrentTime
+  logs <- initLogs (C.subconfig "log" conf)
+  secret <- C.require conf "secret"
+  entropy <- initEntropy
+  passwd <- initPasswd
+  messages <- initMessages (C.subconfig "message" conf)
+  db <- initDB (C.subconfig "db" conf)
+  storage <- initStorage (C.subconfig "store" conf)
+  web <- initWeb
+  httpc <- initHTTPClient
+  av <- initAV
+  return $ Service
+    { serviceStartTime = time
+    , serviceSecret = Secret secret
+    , serviceEntropy = entropy
+    , servicePasswd = passwd
+    , serviceLogs = logs
+    , serviceMessages = messages
+    , serviceDB = db
+    , serviceStorage = storage
+    , serviceWeb = web
+    , serviceHTTPClient = httpc
+    , serviceAV = av
+    }
 
 finiService :: Service -> IO ()
 finiService Service{..} = do

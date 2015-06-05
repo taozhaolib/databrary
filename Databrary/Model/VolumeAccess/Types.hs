@@ -19,6 +19,6 @@ data VolumeAccess = VolumeAccess
   }
 
 makeHasFor ''VolumeAccess
-  [ ('volumeAccessVolume, [TH.ConT ''Id `TH.AppT` TH.ConT ''Volume])
-  , ('volumeAccessParty, [TH.ConT ''Id `TH.AppT` TH.ConT ''Party])
+  [ ('volumeAccessVolume, TH.ConT ''Volume, [TH.ConT ''Id `TH.AppT` TH.ConT ''Volume])
+  , ('volumeAccessParty, TH.ConT ''Party, [TH.ConT ''Id `TH.AppT` TH.ConT ''Party])
   ]

@@ -5,6 +5,7 @@ module Databrary.HTTP.Cookie
   , clearCookie
   ) where
 
+import Control.Monad.IO.Class (MonadIO)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Lazy as BSL
@@ -14,7 +15,6 @@ import qualified Web.Cookie as Cook
 
 import Databrary.Ops
 import Databrary.Has (peeks)
-import Databrary.Service.Entropy
 import Databrary.Service.Crypto
 import Databrary.Service.Types
 import Databrary.Model.Time
@@ -26,7 +26,7 @@ getCookies = maybe [] Cook.parseCookies . lookupRequestHeader hCookie
 getSignedCookie :: (MonadHasService c m, MonadHasRequest c m) => BS.ByteString -> m (Maybe BS.ByteString)
 getSignedCookie c = flatMapM unSign . lookup c =<< peeks getCookies
 
-setSignedCookie :: (MonadHasService c m, MonadHasRequest c m, EntropyM c m) => BS.ByteString -> BS.ByteString -> Timestamp -> m Header
+setSignedCookie :: (MonadHasService c m, MonadHasRequest c m, MonadIO m) => BS.ByteString -> BS.ByteString -> Timestamp -> m Header
 setSignedCookie c val ex = do
   val' <- sign val
   sec <- peeks Wai.isSecure
@@ -36,6 +36,7 @@ setSignedCookie c val ex = do
     , Cook.setCookiePath = Just "/"
     , Cook.setCookieExpires = Just ex
     , Cook.setCookieSecure = sec
+    , Cook.setCookieHttpOnly = True
     })
 
 clearCookie :: BS.ByteString -> Header

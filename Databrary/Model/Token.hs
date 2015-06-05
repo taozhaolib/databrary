@@ -14,7 +14,7 @@ module Databrary.Model.Token
   ) where
 
 import Control.Monad (when, void, (<=<))
-import Control.Monad.IO.Class (liftIO)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Base64.URL as Base64
 import Data.Int (Int64)
@@ -40,7 +40,7 @@ import Databrary.Model.Token.SQL
 
 useTPG
 
-loginTokenId :: (MonadHasService c m, EntropyM c m) => LoginToken -> m (Id LoginToken)
+loginTokenId :: (MonadHasService c m, MonadIO m) => LoginToken -> m (Id LoginToken)
 loginTokenId tok = Id <$> sign (unId (view tok :: Id Token))
 
 lookupLoginToken :: (MonadDB m, MonadHasService c m) => Id LoginToken -> m (Maybe LoginToken)
@@ -57,11 +57,11 @@ lookupUpload tok = do
   auth <- peek
   dbQuery1 $ fmap ($ auth) $(selectQuery selectUpload "$!WHERE upload.token = ${tok} AND expires > CURRENT_TIMESTAMP AND upload.account = ${view auth :: Id Party}")
 
-createToken :: (MonadDB m, EntropyM c m) => (Id Token -> DBTransaction a) -> m a
+createToken :: (MonadHasService c m, MonadDB m) => (Id Token -> DBTransaction a) -> m a
 createToken insert = do
-  gen <- fmap (Id . Base64.encode) <$> entropyBytesGenerator 24
+  e <- peek
   let loop = do
-        tok <- liftIO gen
+        tok <- liftIO $ Id . Base64.encode <$> entropyBytes 24 e
         r <- dbQuery1 [pgSQL|SELECT token FROM token WHERE token = ${tok}|]
         case r `asTypeOf` Just tok of
           Nothing -> insert tok
@@ -70,7 +70,7 @@ createToken insert = do
     _ <- dbExecuteSimple "LOCK TABLE token IN SHARE ROW EXCLUSIVE MODE"
     loop
 
-createLoginToken :: (MonadDB m, EntropyM c m) => SiteAuth -> Bool -> m LoginToken
+createLoginToken :: (MonadHasService c m, MonadDB m) => SiteAuth -> Bool -> m LoginToken
 createLoginToken auth passwd = do
   when passwd $ void $ dbExecute [pgSQL|DELETE FROM login_token WHERE account = ${view auth :: Id Party} AND password|]
   (tok, ex) <- createToken $ \tok ->
@@ -87,7 +87,7 @@ sessionDuration :: Bool -> Offset
 sessionDuration False = 7*24*60*60
 sessionDuration True = 30*60
 
-createSession :: (MonadDB m, EntropyM c m) => SiteAuth -> Bool -> m Session
+createSession :: (MonadHasService c m, MonadDB m) => SiteAuth -> Bool -> m Session
 createSession auth su = do
   (tok, ex) <- createToken $ \tok ->
     dbQuery1' [pgSQL|INSERT INTO session (token, expires, account, superuser) VALUES (${tok}, CURRENT_TIMESTAMP + ${sessionDuration su}::interval, ${view auth :: Id Party}, ${su}) RETURNING token, expires|]
@@ -99,7 +99,7 @@ createSession auth su = do
     , sessionSuperuser = su
     }
 
-createUpload :: (MonadDB m, EntropyM c m, MonadHasIdentity c m) => Volume -> BS.ByteString -> Int64 -> m Upload
+createUpload :: (MonadHasService c m, MonadDB m, MonadHasIdentity c m) => Volume -> BS.ByteString -> Int64 -> m Upload
 createUpload vol name size = do
   auth <- peek
   (tok, ex) <- createToken $ \tok ->

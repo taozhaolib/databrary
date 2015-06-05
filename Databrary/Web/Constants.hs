@@ -39,7 +39,7 @@ constantsJSON = JSON.Object $ JSON.object
 #ifdef DEVEL
   , "devel" JSON..= True
 #endif
-  -- TODO: mode? url? version?
+  -- TODO: url?
   ]
   where
   enumValues :: forall a . DBEnum a => a -> [String]

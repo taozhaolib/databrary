@@ -43,7 +43,7 @@ transcodeArgs :: (MonadStorage c m, MonadHasRequest c m, MonadHasService c m) =>
 transcodeArgs t@Transcode{..} = do
   Just f <- getAssetFile transcodeOrig
   req <- peek
-  auth <- transcodeAuth t
+  auth <- peeks $ transcodeAuth t
   return $
     [ "-f", toFilePath f
     , "-r", BSLC.unpack $ BSB.toLazyByteString $ routeURL (Just req) remoteTranscode (transcodeId t) <> BSB.string7 "?auth=" <> BSB.byteString auth
