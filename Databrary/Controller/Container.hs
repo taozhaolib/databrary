@@ -46,8 +46,9 @@ containerDownloadName c = maybeToList $ containerName c
 viewContainer :: AppRoute (API, (Maybe (Id Volume), Id Container))
 viewContainer = I.second (I.second $ slotContainerId . unId I.:<->: containerSlotId) I.<$> viewSlot
 
-containerForm :: (Functor m, Monad m) => Container -> DeformT m Container
+containerForm :: Container -> DeformActionM AuthRequest Container
 containerForm c = do
+  csrfForm
   name <- "name" .:> deformOptional (deformNonEmpty deform)
   date <- "date" .:> deformOptional (deformNonEmpty deform)
   release <- "release" .:> deformOptional (deformNonEmpty deform)
@@ -90,6 +91,7 @@ postContainer = action POST (pathAPI </> pathSlotId) $ \(api, ci) -> withAuth $ 
 
 deleteContainer :: AppRoute (API, Id Slot)
 deleteContainer = action DELETE (pathAPI </> pathSlotId) $ \(api, ci) -> withAuth $ do
+  guardVerfHeader
   c <- getContainer PermissionEDIT Nothing ci
   r <- removeContainer c
   guardAction r $ case api of

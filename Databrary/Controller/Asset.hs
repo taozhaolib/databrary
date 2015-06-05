@@ -149,6 +149,7 @@ processAsset api target = do
         AssetTargetSlot t -> AssetSlot (blankAsset (view t)) (Just t)
         AssetTargetAsset t -> t
   (as', up') <- runFormFiles [("file", maxAssetSize)] (api == HTML ?> htmlAssetForm target) $ do
+    csrfForm
     file <- "file" .:> deform
     upload <- "upload" .:> deformLookup "Uploaded file not found." lookupUpload
     upfile <- case (file, upload) of
@@ -241,6 +242,7 @@ viewSlotAssetCreate = action GET (pathHTML >/> pathSlotId </< "asset") $ \si -> 
 
 deleteAsset :: AppRoute (API, Id Asset)
 deleteAsset = action DELETE (pathAPI </> pathId) $ \(api, ai) -> withAuth $ do
+  guardVerfHeader
   asset <- getAsset PermissionEDIT ai
   let asset' = asset{ assetSlot = Nothing }
   _ <- changeAssetSlot asset'

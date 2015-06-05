@@ -62,6 +62,7 @@ uploadStart = action POST (pathJSON >/> pathId </< "upload") $ \vi -> withAuth $
 
 chunkForm :: DeformT (ReaderT AuthRequest IO) (Upload, Int64, Word64)
 chunkForm = do
+  csrfForm
   up <- "flowIdentifier" .:> (lift . (maybeAction <=< lookupUpload) =<< deform)
   let z = uploadSize up
   "flowFilename" .:> (deformGuard "Filename mismatch." . (uploadFilename up ==) =<< deform)

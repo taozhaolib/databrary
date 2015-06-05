@@ -40,6 +40,7 @@ postVolumeFunding = action POST (pathJSON >/> pathId </> pathId) $ \(vi, fi) -> 
   v <- getVolume PermissionEDIT vi
   f <- maybeAction =<< lookupFunderRef fi
   a <- runForm Nothing $ do
+    csrfForm
     "awards" .:> filter (not . T.null) <$> withSubDeforms deform
   let fa = Funding f a
   _ <- changeVolumeFunding v fa
@@ -47,6 +48,7 @@ postVolumeFunding = action POST (pathJSON >/> pathId </> pathId) $ \(vi, fi) -> 
 
 deleteVolumeFunder :: AppRoute (Id Volume, Id Funder)
 deleteVolumeFunder = action DELETE (pathJSON >/> pathId </> pathId) $ \(vi, fi) -> withAuth $ do
+  guardVerfHeader
   v <- getVolume PermissionEDIT vi
   _ <- removeVolumeFunder v fi
   okResponse [] $ volumeJSON v

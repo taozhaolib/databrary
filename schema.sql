@@ -908,6 +908,7 @@ CREATE TABLE "session" (
 	"token" char(32) NOT NULL Primary Key,
 	"expires" timestamptz NOT NULL,
 	"account" integer NOT NULL References "account" ON DELETE CASCADE,
+	"verf" char(16) NOT NULL,
 	"superuser" boolean NOT NULL DEFAULT false
 ) INHERITS ("account_token");
 COMMENT ON TABLE "session" IS 'Tokens associated with currently logged-in sessions.';

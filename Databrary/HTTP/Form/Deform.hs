@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings, TypeFamilies #-}
 module Databrary.HTTP.Form.Deform
   ( DeformT
+  , DeformActionM
   , runDeform
   , deformSync'
   , (.:>)
@@ -22,7 +23,7 @@ module Databrary.HTTP.Form.Deform
 import Control.Applicative (Applicative(..), Alternative(..), liftA2)
 import Control.Arrow (first, second, (***), (+++), left)
 import Control.Monad (MonadPlus(..), liftM, mapAndUnzipM, guard)
-import Control.Monad.Reader (MonadReader(..))
+import Control.Monad.Reader (MonadReader(..), ReaderT)
 import Control.Monad.IO.Class (MonadIO(..))
 import Control.Monad.Trans.Class (MonadTrans(..))
 import Control.Monad.Trans.Control (MonadTransControl(..))
@@ -115,6 +116,8 @@ instance Monad m => MonadWriter FormErrors (DeformT m) where
     case mrf of
       Just (r, f) -> return (f e, Just r)
       Nothing -> return (e, Nothing)
+
+type DeformActionM q a = DeformT (ReaderT q IO) a
 
 runDeform :: Functor m => DeformT m a -> FormData -> m (Either FormErrors a)
 runDeform (DeformT fa) = fmap fr . fa . initForm where

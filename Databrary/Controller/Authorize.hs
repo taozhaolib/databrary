@@ -30,6 +30,7 @@ import Databrary.Model.Authorize
 import Databrary.HTTP.Path.Parser
 import Databrary.HTTP.Form.Deform
 import Databrary.Action
+import Databrary.Controller.Permission
 import Databrary.Controller.Paths
 import Databrary.Controller.Form
 import Databrary.Controller.Party
@@ -89,6 +90,7 @@ postAuthorize = action POST (pathAPI </>> pathPartyTarget </> pathAuthorizeTarge
       let maxexp = addGregorianYearsRollOver 2 $ utctDay now
           minexp = fromGregorian 2000 1 1
       a <- runForm (api == HTML ?> htmlAuthorizeForm c') $ do
+        csrfForm
         delete <- "delete" .:> deform
         delete ?!$> do
           site <- "site" .:> deform
@@ -108,6 +110,7 @@ postAuthorize = action POST (pathAPI </>> pathPartyTarget </> pathAuthorizeTarge
 
 deleteAuthorize :: AppRoute (API, PartyTarget, AuthorizeTarget)
 deleteAuthorize = action DELETE (pathAPI </>> pathPartyTarget </> pathAuthorizeTarget) $ \arg@(api, i, AuthorizeTarget app oi) -> withAuth $ do
+  guardVerfHeader
   p <- getParty (Just PermissionADMIN) i
   o <- maybeAction =<< lookupParty oi
   let (child, parent) = if app then (p, o) else (o, p)

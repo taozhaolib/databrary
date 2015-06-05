@@ -52,6 +52,7 @@ makeHasRec ''LoginToken ['loginAccountToken]
 
 data Session = Session
   { sessionAccountToken :: !AccountToken
+  , sessionVerf :: !BS.ByteString
   , sessionSuperuser :: Bool
   }
 

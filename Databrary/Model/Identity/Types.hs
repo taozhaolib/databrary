@@ -1,12 +1,15 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Model.Identity.Types
   ( Identity(..)
-  , identitySuperuser
   , MonadHasIdentity
+  , foldIdentity
+  , identityVerf
+  , identitySuperuser
   ) where
 
 import Control.Applicative (Applicative)
 import Control.Monad.Reader (MonadReader)
+import qualified Data.ByteString as BS
 
 import Databrary.Has (Has(..))
 import Databrary.Model.Id.Types
@@ -33,9 +36,17 @@ instance Has (Id Party) Identity where
 instance Has Access Identity where
   view = view . (view :: Identity -> SiteAuth)
 
+type MonadHasIdentity c m = (Functor m, Applicative m, MonadReader c m, Has Identity c, Has SiteAuth c, Has Party c, Has (Id Party) c, Has Access c)
+
+foldIdentity :: a -> (Session -> a) -> Identity -> a
+foldIdentity _ i (Identified s) = i s
+foldIdentity u _ _ = u
+
+identityVerf :: Identity -> Maybe BS.ByteString
+identityVerf = foldIdentity Nothing (Just . sessionVerf)
+
 identitySuperuser :: Identity -> Bool
 identitySuperuser UnIdentified = False
 identitySuperuser (Identified t) = sessionSuperuser t
 identitySuperuser (ReIdentified _) = True
 
-type MonadHasIdentity c m = (Functor m, Applicative m, MonadReader c m, Has Identity c, Has SiteAuth c, Has Party c, Has (Id Party) c, Has Access c)

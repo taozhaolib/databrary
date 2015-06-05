@@ -53,4 +53,3 @@ withoutAuth f =
 withReAuth :: SiteAuth -> AuthAction -> AppAction
 withReAuth u =
   withReaderT (\a -> AuthRequest a (ReIdentified u))
-

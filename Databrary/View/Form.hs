@@ -11,6 +11,7 @@ module Databrary.View.Form
   , inputDate
   , inputFile
   , inputHidden
+  , csrfForm
   , htmlForm
   ) where
 
@@ -30,9 +31,11 @@ import qualified Text.Blaze.Html5.Attributes as HA
 import System.Locale (defaultTimeLocale)
 
 import Databrary.Ops
-import Databrary.Has (peek, peeks)
+import Databrary.Has (view, peek, peeks)
 import Databrary.Model.Enum
 import Databrary.Model.Time
+import Databrary.Model.Token
+import Databrary.Model.Identity
 import Databrary.Action
 import Databrary.HTTP.Form
 import Databrary.HTTP.Form.Errors
@@ -146,6 +149,9 @@ inputHidden val ref dat = H.input
   H.! HA.id    ref
   H.! HA.name  ref
   H.! HA.value (maybe (H.toValue val) byteStringValue dat)
+
+csrfForm :: AuthRequest -> FormHtml
+csrfForm = lift . foldIdentity mempty (\s -> inputHidden (byteStringValue $ sessionVerf s) "csverf" Nothing) . view
 
 htmlForm :: T.Text -> AppRoute a -> a -> AuthRequest -> FormHtml -> FormHtml
 htmlForm title act arg req = liftFormHtml $ \form ->

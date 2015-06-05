@@ -27,7 +27,7 @@ import Databrary.Model.SQL (selectQuery, isForeignKeyViolation)
 import Databrary.Model.Permission
 import Databrary.Model.Id.Types
 import Databrary.Model.Party.Types
-import Databrary.Model.Identity.Types
+import Databrary.Model.Identity
 import Databrary.Model.Audit
 import Databrary.Model.Volume.Types
 import Databrary.Model.Container.Types

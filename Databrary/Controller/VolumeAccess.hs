@@ -36,6 +36,7 @@ postVolumeAccess = action POST (pathAPI </> pathId </> pathVolumeAccessTarget) $
   let su = identitySuperuser u
       restr = unId ap <= 0
   a' <- runForm (api == HTML ?> htmlVolumeAccessForm a) $ do
+    csrfForm
     delete <- "delete" .:> deform
     let del
           | delete = return PermissionNONE

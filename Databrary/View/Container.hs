@@ -17,6 +17,7 @@ import {-# SOURCE #-} Databrary.Controller.Container
 
 htmlContainerForm :: Either Volume Container -> AuthRequest -> FormHtml
 htmlContainerForm targ req = f req $ do
+  csrfForm req
   field "name" $ inputText (containerName =<< cont)
   field "date" $ inputDate (containerDate =<< cont)
   field "release" $ inputEnum (containerRelease =<< cont)

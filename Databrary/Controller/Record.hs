@@ -55,6 +55,7 @@ createRecord :: AppRoute (API, Id Volume)
 createRecord = action POST (pathAPI </> pathId </< "record") $ \(api, vi) -> withAuth $ do
   vol <- getVolume PermissionEDIT vi
   br <- runForm (api == HTML ?> htmlRecordForm vol) $ do
+    csrfForm
     cat <- "category" .:> (flatMapM ((`orElseM` Nothing <$ deformError "No such record category.") . getRecordCategory) =<< deformNonEmpty deform)
     return (blankRecord vol)
       { recordCategory = cat
@@ -69,7 +70,8 @@ postRecordMeasure = action POST (pathAPI </>> pathId </> pathId) $ \(api, ri, mi
   rec <- getRecord PermissionEDIT ri
   met <- maybeAction $ getMetric mi
   let meas = Measure rec met
-  rec' <- runForm (api == HTML ?> htmlRecordMeasureForm rec met) $
+  rec' <- runForm (api == HTML ?> htmlRecordMeasureForm rec met) $ do
+    csrfForm
     deformSync' ("datum" .:> deformNonEmpty deform)
     >>= maybe
       (lift $ removeRecordMeasure $ meas "")
@@ -83,6 +85,7 @@ postRecordMeasure = action POST (pathAPI </>> pathId </> pathId) $ \(api, ri, mi
 
 deleteRecord :: AppRoute (API, Id Record)
 deleteRecord = action DELETE (pathAPI </> pathId) $ \(api, ri) -> withAuth $ do
+  guardVerfHeader
   rec <- getRecord PermissionEDIT ri
   r <- removeRecord rec
   guardAction r $ case api of
@@ -96,7 +99,9 @@ postRecordSlot :: AppRoute (API, Id Slot, Id Record)
 postRecordSlot = action POST (pathAPI </>> pathSlotId </> pathId) $ \(api, si, ri) -> withAuth $ do
   slot <- getSlot PermissionEDIT Nothing si
   rec <- getRecord PermissionEDIT ri
-  src <- runForm Nothing $ "src" .:> deformNonEmpty deform
+  src <- runForm Nothing $ do
+    csrfForm
+    "src" .:> deformNonEmpty deform
   r <- moveRecordSlot (RecordSlot rec slot{ slotSegment = fromMaybe emptySegment src }) (slotSegment slot)
   case api of
     HTML | r      -> redirectRouteResponse [] viewSlot (api, (Just (view slot), slotId slot)) []
@@ -106,6 +111,7 @@ postRecordSlot = action POST (pathAPI </>> pathSlotId </> pathId) $ \(api, si, r
 
 deleteRecordSlot :: AppRoute (API, Id Slot, Id Record)
 deleteRecordSlot = action DELETE (pathAPI </>> pathSlotId </> pathId) $ \(api, si, ri) -> withAuth $ do
+  guardVerfHeader
   slot <- getSlot PermissionEDIT Nothing si
   rec <- getRecord PermissionEDIT ri
   r <- moveRecordSlot (RecordSlot rec slot) emptySegment

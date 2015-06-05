@@ -19,6 +19,7 @@ import {-# SOURCE #-} Databrary.Controller.Asset
 
 htmlAssetForm :: AssetTarget -> AuthRequest -> FormHtml
 htmlAssetForm targ req = f req $ do
+  csrfForm req
   field "name" $ inputText (assetName =<< asset)
   field "classification" $ inputEnum (assetRelease =<< asset)
   field "file" inputFile

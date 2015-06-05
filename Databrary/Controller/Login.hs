@@ -93,6 +93,7 @@ postUser :: AppRoute API
 postUser = action POST (pathAPI </< "user") $ \api -> withAuth $ do
   acct <- authAccount
   acct' <- runForm (api == HTML ?> htmlUserForm acct) $ do
+    csrfForm
     "auth" .:> (deformGuard "Incorrect password." . (`checkPassword` acct) =<< deform)
     email <- "email" .:> deform
     passwd <- "password" .:> deformNonEmpty (passwordForm acct)

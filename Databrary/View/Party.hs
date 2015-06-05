@@ -23,6 +23,7 @@ htmlPartyForm t req = maybe
     ("Edit " <> partyName p)
     postParty (HTML, TargetParty (partyId p)))
   t req $ do
+  csrfForm req
   field "prename" $ inputText $ partyPreName =<< t
   field "sortname" $ inputText $ partySortName <$> t
   field "affiliation" $ inputText $ partyAffiliation =<< t

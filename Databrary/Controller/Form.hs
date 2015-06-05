@@ -8,10 +8,11 @@ module Databrary.Controller.Form
   , emailTextForm
   , passwordForm
   , paginationForm
+  , csrfForm
   ) where
 
 import Control.Applicative (Applicative, (<$>), (<*>), (<|>))
-import Control.Monad ((<=<))
+import Control.Monad ((<=<), unless)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Reader (ask)
 import Control.Monad.Trans.Class (lift)
@@ -28,7 +29,9 @@ import Network.HTTP.Types (badRequest400)
 import qualified Text.Blaze.Html5 as Html
 import qualified Text.Regex.Posix as Regex
 
+import Databrary.Has (peeks)
 import Databrary.Model.Party
+import Databrary.Model.Identity
 import Databrary.Service.Passwd
 import Databrary.Action
 import Databrary.Action.Types
@@ -36,6 +39,7 @@ import Databrary.HTTP.Form (getFormData, FormData)
 import Databrary.HTTP.Form.Deform
 import Databrary.HTTP.Form.View (runFormView, blankFormView)
 import Databrary.HTTP.Form.Errors (FormErrors)
+import Databrary.Controller.Permission (checkVerfHeader)
 import Databrary.View.Form (FormHtml)
 
 jsonFormErrors :: MonadAction c m => FormErrors -> m Response
@@ -94,3 +98,12 @@ paginationForm = (,)
   <$> ("limit" .:> (deformCheck "Invalid limit" (\l -> l > 0 && l <= 129) =<< deform) <|> return 32)
   <*> ("offset" .:> (deformCheck "Invalid offset" (>= 0) =<< deform) <|> return 0)
 
+csrfForm :: (MonadAuthAction q m) => DeformT m ()
+csrfForm = do
+  r <- lift checkVerfHeader
+  unless r $ do
+    verf <- lift $ peeks identityVerf
+    "csverf" .:> maybe
+      (deformError "You must be logged in to perform this request.")
+      (\v -> deformGuard "Invalid form verifier. Please reload and try again." . (v ==) =<< deform)
+      verf

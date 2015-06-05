@@ -389,7 +389,8 @@ app.provider('routerService', [
           }
           var r = {
             method: route.method,
-            url: route.route.apply(null, args)
+            url: route.route.apply(null, args),
+            headers: {}
           };
           if (i < arguments.length) {
             if (r.method === 'POST' || r.method === 'PUT')
@@ -402,8 +403,6 @@ app.provider('routerService', [
           if (r.data instanceof FormData) {
             if (!('transformRequest' in r))
               r.transformRequest = angular.identity;
-            if (!('headers' in r))
-              r.headers = {};
             // Not sure why we do this but it seems to be necessary:
             if (!('Content-Type' in r.headers))
               r.headers['Content-Type'] = undefined;
@@ -414,15 +413,12 @@ app.provider('routerService', [
             cache = r.cache || $http.defaults.cache && $cacheFactory('$http');
             if (cache && !r.params)
               cache = cache.get(r.url);
-          }
+          } else if (router.http.csverf)
+            r.headers['x-csverf'] = router.http.csverf;
           if (!cache) {
             var a = analytics.dump();
-            if (a) {
-              if (!('headers' in r))
-                r.headers = {Analytics: a};
-              else
+            if (a)
                 r.headers.Analytics = a;
-            }
           }
           return $http(r);
         };

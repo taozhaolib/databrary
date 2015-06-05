@@ -30,7 +30,7 @@ selectLoginToken =
 
 selectSession :: Selector -- @'Session'@
 selectSession =
-  addSelects 'Session (accountTokenRow "session") ["session.superuser"]
+  addSelects 'Session (accountTokenRow "session") ["session.verf", "session.superuser"]
 
 makeUpload :: Token -> BS.ByteString -> Int64 -> SiteAuth -> Upload
 makeUpload t n z u = Upload (AccountToken t u) n z

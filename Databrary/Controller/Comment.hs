@@ -25,6 +25,7 @@ postComment = action POST (pathAPI </> pathSlotId </< "comment") $ \(api, si) ->
   u <- authAccount
   s <- getSlot PermissionSHARED Nothing si
   c <- runForm (api == HTML ?> htmlCommentForm s) $ do
+    csrfForm
     text <- "text" .:> (deformRequired =<< deform)
     parent <- "parent" .:> deformNonEmpty deform
     return (blankComment u s)

@@ -280,6 +280,7 @@ app.factory('modelService', [
     Login.prototype = Object.create(Party.prototype);
     Login.prototype.constructor = Login;
     Login.prototype.fields = angular.extend({
+      csverf: false,
       superuser: false,
     }, Login.prototype.fields);
 
@@ -290,12 +291,14 @@ app.factory('modelService', [
     }
 
     loginPoke($play.user);
+    router.http.csverf = $play.user.csverf;
 
     function loginRes(res) {
       var l = res.data;
       if (Login.user.id === l.id && Login.user.superuser === l.superuser)
         return Login.user.update(l);
       $cacheFactory.removeAll();
+      router.http.csverf = l.csverf;
       return loginPoke(l);
     }
 

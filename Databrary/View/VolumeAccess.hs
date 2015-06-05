@@ -19,6 +19,7 @@ htmlVolumeAccessForm a@VolumeAccess{ volumeAccessVolume = vol, volumeAccessParty
   ("Access to " <> volumeName vol <> " for " <> partyName p)
   postVolumeAccess (HTML, (volumeId vol, VolumeAccessTarget (partyId p)))
   req $ do
+  csrfForm req
   field "individual" $ inputEnum $ Just $ volumeAccessIndividual a
   field "children" $ inputEnum $ Just $ volumeAccessChildren a
   field "delete" $ inputCheckbox False

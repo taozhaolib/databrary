@@ -2,7 +2,6 @@
 module Databrary.Model.Identity
   ( module Databrary.Model.Identity.Types
   , determineIdentity
-  , foldIdentity
   , maybeIdentity
   , identityJSON
   ) where
@@ -27,15 +26,12 @@ determineIdentity = do
   s <- flatMapM lookupSession c
   return $ maybe UnIdentified Identified s
 
-foldIdentity :: a -> (Session -> a) -> Identity -> a
-foldIdentity _ i (Identified s) = i s
-foldIdentity u _ _ = u
-
 maybeIdentity :: (MonadHasIdentity c m) => m a -> (Session -> m a) -> m a
 maybeIdentity u i = foldIdentity u i =<< peek
 
 identityJSON :: Identity -> JSON.Object
 identityJSON i = partyJSON (view i) JSON..++ catMaybes
   [ Just $ "access" JSON..= accessSite i
+  , ("csverf" JSON..=) <$> identityVerf i
   , identitySuperuser i ?> ("superuser" JSON..= True)
   ]

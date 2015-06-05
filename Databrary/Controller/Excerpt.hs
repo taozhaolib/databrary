@@ -16,6 +16,7 @@ import Databrary.Model.Excerpt
 import Databrary.HTTP.Form.Deform
 import Databrary.HTTP.Path.Parser
 import Databrary.Action
+import Databrary.Controller.Permission
 import Databrary.Controller.Paths
 import Databrary.Controller.Form
 import Databrary.Controller.AssetSegment
@@ -26,7 +27,8 @@ pathExcerpt = pathJSON >/> pathSlotId </> pathId </< "excerpt"
 postExcerpt :: AppRoute (Id Slot, Id Asset)
 postExcerpt = action POST pathExcerpt $ \(si, ai) -> withAuth $ do
   as <- getAssetSegment PermissionEDIT Nothing si ai
-  c <- runForm Nothing $ 
+  c <- runForm Nothing $ do
+    csrfForm
     "release" .:> deformNonEmpty deform
   let e = Excerpt as c
   r <- changeExcerpt e
@@ -36,6 +38,7 @@ postExcerpt = action POST pathExcerpt $ \(si, ai) -> withAuth $ do
 
 deleteExcerpt :: AppRoute (Id Slot, Id Asset)
 deleteExcerpt = action DELETE pathExcerpt $ \(si, ai) -> withAuth $ do
+  guardVerfHeader
   as <- getAssetSegment PermissionEDIT Nothing si ai
   r <- removeExcerpt as
   okResponse [] $ assetSegmentJSON (if r then as{ assetExcerpt = Nothing } else as)

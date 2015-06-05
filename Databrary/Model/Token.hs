@@ -89,14 +89,17 @@ sessionDuration True = 30*60
 
 createSession :: (MonadHasService c m, MonadDB m) => SiteAuth -> Bool -> m Session
 createSession auth su = do
-  (tok, ex) <- createToken $ \tok ->
-    dbQuery1' [pgSQL|INSERT INTO session (token, expires, account, superuser) VALUES (${tok}, CURRENT_TIMESTAMP + ${sessionDuration su}::interval, ${view auth :: Id Party}, ${su}) RETURNING token, expires|]
+  e <- peek
+  (tok, ex, verf) <- createToken $ \tok -> do
+    verf <- liftIO $ Base64.encode <$> entropyBytes 12 e
+    dbQuery1' [pgSQL|INSERT INTO session (token, expires, account, superuser, verf) VALUES (${tok}, CURRENT_TIMESTAMP + ${sessionDuration su}::interval, ${view auth :: Id Party}, ${su}, ${verf}) RETURNING token, expires, verf|]
   return $ Session
     { sessionAccountToken = AccountToken
       { accountToken = Token tok ex
       , tokenAccount = auth
       }
     , sessionSuperuser = su
+    , sessionVerf = verf
     }
 
 createUpload :: (MonadHasService c m, MonadDB m, MonadHasIdentity c m) => Volume -> BS.ByteString -> Int64 -> m Upload

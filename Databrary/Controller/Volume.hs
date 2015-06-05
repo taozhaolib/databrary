@@ -28,7 +28,6 @@ import Databrary.Ops
 import Databrary.Has (view, peeks, peek)
 import qualified Databrary.JSON as JSON
 import Databrary.Service.DB
-import Databrary.HTTP.Client (HTTPClientM)
 import Databrary.Model.Enum
 import Databrary.Model.Id
 import Databrary.Model.Permission
@@ -123,8 +122,9 @@ volumeForm v = do
     , volumeBody = body
     }
 
-volumeCitationForm :: HTTPClientM c m => Volume -> DeformT m (Volume, Maybe Citation)
+volumeCitationForm :: Volume -> DeformActionM AuthRequest (Volume, Maybe Citation)
 volumeCitationForm v = do
+  csrfForm
   vol <- volumeForm v
   cite <- "citation" .:> Citation
     <$> ("head" .:> deform)
@@ -170,6 +170,7 @@ createVolume :: AppRoute API
 createVolume = action POST (pathAPI </< "volume") $ \api -> withAuth $ do
   u <- peek
   (bv, cite, owner) <- runForm (api == HTML ?> htmlVolumeForm Nothing Nothing) $ do
+    csrfForm
     (bv, cite) <- volumeCitationForm blankVolume
     own <- "owner" .:> do
       oi <- deformOptional deform
@@ -196,7 +197,8 @@ postVolumeLinks :: AppRoute (API, Id Volume)
 postVolumeLinks = action POST (pathAPI </> pathId </< "link") $ \arg@(api, vi) -> withAuth $ do
   v <- getVolume PermissionEDIT vi
   links <- lookupVolumeLinks v
-  links' <- runForm (api == HTML ?> htmlVolumeLinksForm v links) $
+  links' <- runForm (api == HTML ?> htmlVolumeLinksForm v links) $ do
+    csrfForm
     withSubDeforms $ Citation
       <$> ("head" .:> deform)
       <*> ("url" .:> (Just <$> deform))

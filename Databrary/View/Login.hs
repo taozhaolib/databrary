@@ -19,6 +19,7 @@ htmlLogin req = htmlForm "Login" postLogin HTML req $ do
 
 htmlUserForm :: Account -> AuthRequest -> FormHtml
 htmlUserForm a req = htmlForm "Edit account" postUser HTML req $ do
+  csrfForm req
   field "auth" $ inputPassword
   field "email" $ inputText $ Just $ accountEmail a
   "password" .:> do

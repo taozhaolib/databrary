@@ -162,9 +162,10 @@ COMMENT ON VIEW "measures" IS 'All measures for each record aggregated into a si
 
 ALTER TABLE "token" ALTER "expires" TYPE timestamptz;
 
-ALTER TABLE "session" ADD "superuser" boolean DEFAULT false;
-UPDATE session SET superuser = false WHERE superuser IS NULL;
-ALTER TABLE "session" ALTER "superuser" SET NOT NULL;
+TRUNCATE "session";
+ALTER TABLE "session"
+	ADD "verf" char(16) NOT NULL,
+	ADD "superuser" boolean NOT NULL DEFAULT false;
 
 -- don't care about data here:
 DROP TABLE "upload";

@@ -19,6 +19,7 @@ htmlAuthorizeForm a req = htmlForm
   ("Authorize " `T.append` partyName child)
   postAuthorize (HTML, TargetParty (partyId parent), AuthorizeTarget False (partyId child))
   req $ do
+  csrfForm req
   field "site" $ inputEnum $ Just $ accessSite a
   field "member" $ inputEnum $ Just $ accessMember a
   field "expires" $ inputText $ Just $ show $ authorizeExpires a

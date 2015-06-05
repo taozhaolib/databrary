@@ -35,6 +35,7 @@ tagResponse HTML t = redirectRouteResponse [] viewSlot (HTML, (Just (view t), sl
 
 postTag :: AppRoute (API, Id Slot, TagId)
 postTag = action POST (pathAPI </>> pathSlotId </> pathTagId) $ \(api, si, TagId kw tn) -> withAuth $ do
+  guardVerfHeader
   u <- authAccount
   s <- getSlot (if kw then PermissionEDIT else PermissionSHARED) Nothing si
   t <- addTag tn
@@ -46,6 +47,7 @@ postTag = action POST (pathAPI </>> pathSlotId </> pathTagId) $ \(api, si, TagId
 
 deleteTag :: AppRoute (API, Id Slot, TagId)
 deleteTag = action DELETE (pathAPI </>> pathSlotId </> pathTagId) $ \(api, si, TagId kw tn) -> withAuth $ do
+  guardVerfHeader
   u <- authAccount
   s <- getSlot (if kw then PermissionEDIT else PermissionSHARED) Nothing si
   t <- maybeAction =<< lookupTag tn

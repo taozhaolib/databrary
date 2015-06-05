@@ -19,6 +19,7 @@ import {-# SOURCE #-} Databrary.Controller.Volume
 
 htmlVolumeForm :: Maybe Volume -> Maybe Citation -> AuthRequest -> FormHtml
 htmlVolumeForm vol cite req = f req $ do
+  csrfForm req
   field "name" $ inputText $ volumeName <$> vol
   field "alias" $ inputText $ volumeAlias =<< vol
   field "body" $ inputTextarea $ volumeBody =<< vol
@@ -35,11 +36,13 @@ htmlVolumeForm vol cite req = f req $ do
     vol
 
 htmlVolumeLinksForm :: Volume -> [Citation] -> AuthRequest -> FormHtml
-htmlVolumeLinksForm vol links req = htmlForm "Edit volume links" postVolumeLinks (HTML, volumeId vol) req $
+htmlVolumeLinksForm vol links req = htmlForm "Edit volume links" postVolumeLinks (HTML, volumeId vol) req $ do
+  csrfForm req
   withSubFormsViews links $ \link -> do
     field "head" $ inputText $ citationHead <$> link
     field "url" $ inputText $ fmap show $ citationURL =<< link
 
 htmlVolumeSearchForm :: VolumeFilter -> AuthRequest -> FormHtml
 htmlVolumeSearchForm vf req = htmlForm "Search volumes" queryVolumes HTML req $ do
+  csrfForm req
   field "query" $ inputText $ volumeFilterQuery vf
