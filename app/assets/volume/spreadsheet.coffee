@@ -953,6 +953,7 @@ app.directive 'spreadsheet', [
             r = editScope.identCompleter(value)
             r.find((o) -> o.default)?.run(info) if Array.isArray(r)
           else if info.i == -1
+            return unless value
             createNew(info).then (info) ->
               info.cell = info.row.firstChild
               saveDatum(info, value)
