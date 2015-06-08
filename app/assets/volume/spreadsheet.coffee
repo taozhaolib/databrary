@@ -194,7 +194,6 @@ app.directive 'spreadsheet', [
                 @m = parseInt(s[1], 10)
                 if 2 of s
                   @n = parseInt(s[2], 10)
-                else
             true
 
           properties =
@@ -255,7 +254,7 @@ app.directive 'spreadsheet', [
         parseId = (el) ->
           return unless el.tagName == 'TD'
           info = new Info(el)
-          info if info.c
+          info if info.c?
 
         ################################# Populate data structures
 
