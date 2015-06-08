@@ -29,17 +29,10 @@
     <thead>
       <tr class="spreadsheet-head-groups">
         <th class="metric-col" ng-repeat="col in groups track by col.category.id" id="{{::id}}-category_{{::col.category.id}}" colspan="{{col.metrics.length}}" ng-class="::'col'+col.category.id">
-<<<<<<< HEAD
           <span class="spreadsheet-tab-name" ng-bind="::col.category.name"></span>
           <span class="icon settings spreadsheet-tab-options-icon" ng-click="tabOptionsToggle($event,col.category.id)" ng-if="key != col.category || editing && !col.category.fixed"></span>
-          <ul class="flat spreadsheet-tab-options" click-elsewhere="tabOptionsToggle($event,'huh')" ng-if="tabOptionsClick === col.category.id">
-            <li class="spreadsheet-tab-option" ng-click="setKey(col.category.id)" ng-if="key!=col.category">
-=======
-          <span ng-bind="::col.category.name"></span>
-          <span class="icon settings spreadsheet-tab-options-icon" ng-click="tabOptionsToggle($event,col.category.id)" ng-if="key !== col.category || editing && !col.category.fixed"></span>
           <ul class="flat spreadsheet-tab-options" click-elsewhere="tabOptionsToggle($event)" ng-if="tabOptionsClick === col.category.id">
-            <li class="spreadsheet-tab-option" ng-click="setKey(col.category.id)" ng-if="::key !== col.category && col.category.id !== 'asset'">
->>>>>>> 54150a51c20272b8022c3aad4c6c78fb0e62b5da
+            <li class="spreadsheet-tab-option" ng-click="setKey(col.category.id)" ng-if="::key != col.category && col.category.id !== 'asset'">
               <span class="icon list"></span>
               <span ng-bind="::col.category.name+' view'"></span>
             </li>
