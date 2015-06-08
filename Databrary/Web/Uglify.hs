@@ -16,6 +16,7 @@ import Databrary.Files
 import Databrary.Web
 import Databrary.Web.Types
 import Databrary.Web.Files
+import Databrary.Web.Generate
 
 allWebJS :: IO [WebFilePath]
 allWebJS = liftM2 union

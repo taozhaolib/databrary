@@ -4,23 +4,18 @@ module Databrary.Web.Rules
   , generateWebFiles
   ) where
 
-import Control.Applicative ((<*>))
 import Control.Monad (mzero, msum)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.State.Strict (execStateT, modify, gets)
 import Control.Monad.Trans.Except (runExceptT, withExceptT)
-import qualified Data.ByteString as BS
-import qualified Data.ByteString.Char8 as BSC
 import qualified Data.HashMap.Strict as HM
-import Data.Maybe (fromMaybe)
-import System.FilePath (takeExtension)
 
 import Databrary.Ops
 import Databrary.Files
-import Databrary.Model.Format
 import Databrary.Web
 import Databrary.Web.Types
-import Databrary.Web.Files
+import Databrary.Web.Info
+import Databrary.Web.Generate
 import Databrary.Web.Constants
 import Databrary.Web.Routes
 import Databrary.Web.Templates
@@ -29,20 +24,6 @@ import Databrary.Web.Coffee
 import Databrary.Web.Uglify
 import Databrary.Web.Stylus
 import Databrary.Web.Libs
-
-staticFormats :: [(String, BS.ByteString)]
-staticFormats = concatMap (\f -> map (\e -> ('.':BSC.unpack e, formatMimeType f)) $ formatExtension f) allFormats ++
-  [ (".html", "text/html")
-  , (".js", "application/javascript")
-  , (".css", "text/css")
-  , (".svg", "image/svg+xml")
-  ]
-
-makeWebFileInfo :: WebFilePath -> IO WebFileInfo
-makeWebFileInfo f = WebFileInfo
-  (fromMaybe "application/octet-stream" $ lookup (takeExtension $ webFileRel f) staticFormats)
-  <$> hashFile (webFileAbsRaw f)
-  <*> (modificationTimestamp <$> getFileStatus f)
 
 staticGenerators :: [(FilePath, WebGenerator)]
 staticGenerators =
@@ -99,5 +80,5 @@ generateAll = do
 
 generateWebFiles :: IO WebFileMap
 generateWebFiles = do
-  execStateT (either fail return =<< runExceptT generateAll) . HM.fromList 
-    =<< mapM (\f -> (f, ) <$> makeWebFileInfo f) =<< allWebFiles
+  execStateT (either fail return =<< runExceptT generateAll)
+    =<< loadWebFileMap

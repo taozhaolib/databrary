@@ -13,7 +13,7 @@ import Paths_databrary (getDataFileName)
 import qualified Databrary.JSON as JSON
 import Databrary.Web
 import Databrary.Web.Types
-import Databrary.Web.Files
+import Databrary.Web.Generate
 
 generateMessagesJS :: WebGenerator
 generateMessagesJS fo@(f, _) = do

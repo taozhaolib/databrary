@@ -17,7 +17,7 @@ import qualified Data.ByteString as BS
 import qualified Data.HashMap.Strict as HM
 
 import Databrary.Model.Time
-import Databrary.Web (WebFilePath)
+import Databrary.Web
 
 data WebFileInfo = WebFileInfo
   { webFileFormat :: BS.ByteString
@@ -37,3 +37,4 @@ data Web = Web
 
 type WebGeneratorM a = ExceptT String (StateT WebFileMap IO) a
 type WebGenerator = (WebFilePath, Maybe WebFileInfo) -> WebGeneratorM Bool
+

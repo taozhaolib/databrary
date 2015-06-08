@@ -3,9 +3,10 @@ declare -A opt
 while getopts 'fnp' o ; do
 	opt[$o]=$OPTARG
 done
+shift $[OPTIND-1]
 ghc -Wall -fwarn-tabs --make Setup.hs
 [[ -z ${opt[f]+set} && -f dist/setup-config ]] || ./Setup configure --user -f ${opt[p]+-}devel
 ./Setup build
-[[ -z ${opt[n]+set} ]] || exit 0
+[[ -z ${opt[n]+set}${opt[p]+set} ]] || exit 0
 echo "Starting databrary..."
 databrary_datadir=. databrary_sysconfdir=. dist/build/databrary/databrary "$@"

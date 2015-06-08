@@ -10,15 +10,17 @@ import Control.Concurrent.MVar (newMVar)
 #endif
 
 import Databrary.Web.Types
+#ifdef DEVEL
 import Databrary.Web.Rules
+#else
+import Databrary.Web.Info
+#endif
 
 initWeb :: IO Web
-initWeb = do
-  m <- generateWebFiles
+initWeb =
   Web <$>
 #ifdef DEVEL
-    newMVar
+    (newMVar =<< generateWebFiles)
 #else
-    return
+    loadWebFileMap
 #endif
-    m

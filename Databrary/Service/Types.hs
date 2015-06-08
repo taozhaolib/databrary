@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell, RecordWildCards #-}
-{-# OPTIONS_GHC -ddump-splices #-}
 module Databrary.Service.Types
   ( Secret(..)
   , Service(..)

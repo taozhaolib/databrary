@@ -13,7 +13,7 @@ import Databrary.JSON (quoteByteString)
 import Databrary.HTTP.Path.JS
 import Databrary.HTTP.Route
 import Databrary.Web.Types
-import Databrary.Web.Files
+import Databrary.Web.Generate
 
 import {-# SOURCE #-} Databrary.Routes
 

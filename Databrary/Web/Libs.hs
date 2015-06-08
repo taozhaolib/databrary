@@ -10,7 +10,7 @@ import System.FilePath ((</>), splitFileName, (<.>), splitExtensions)
 
 import Databrary.Web
 import Databrary.Web.Types
-import Databrary.Web.Files
+import Databrary.Web.Generate
 
 jsLibs :: [(FilePath, FilePath)]
 jsLibs =

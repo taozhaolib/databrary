@@ -11,7 +11,7 @@ import Paths_databrary.Node
 import Databrary.Files
 import Databrary.Web
 import Databrary.Web.Types
-import Databrary.Web.Files
+import Databrary.Web.Generate
 
 generateCoffeeJS :: WebGenerator
 generateCoffeeJS fo@(f, _)

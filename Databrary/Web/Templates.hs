@@ -17,6 +17,7 @@ import Databrary.Files
 import Databrary.Web
 import Databrary.Web.Types
 import Databrary.Web.Files
+import Databrary.Web.Generate
 
 processTemplate :: RawFilePath -> (BS.ByteString -> IO ()) -> IO ()
 processTemplate f g = withFile (toFilePath f) ReadMode go where

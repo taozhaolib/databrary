@@ -12,6 +12,7 @@ import Databrary.Files
 import Databrary.Web
 import Databrary.Web.Types
 import Databrary.Web.Files
+import Databrary.Web.Generate
 
 generateStylusCSS :: WebGenerator
 generateStylusCSS fo@(f, _) = do

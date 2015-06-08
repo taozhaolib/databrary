@@ -28,7 +28,7 @@ lookupWebFile f (Web wc) =
   modifyMVar wc $ \wm -> do
     swap . first (right (wf, )) <$>
       runStateT (runExceptT $ generateWebFile False wf) wm
-  where wf = fromRawFilePath f
 #else
-  return $ HM.lookup f wc
+  return $ maybe (Left "") (Right . (wf, )) $ HM.lookup wf wc
 #endif
+  where wf = fromRawFilePath f

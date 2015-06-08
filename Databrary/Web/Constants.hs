@@ -22,7 +22,7 @@ import Databrary.Model.RecordCategory
 import Databrary.Model.Format
 import Databrary.Model.Party
 import Databrary.Web.Types
-import Databrary.Web.Files
+import Databrary.Web.Generate
 
 constantsJSON :: JSON.Value
 constantsJSON = JSON.Object $ JSON.object

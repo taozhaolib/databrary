@@ -10,18 +10,10 @@ Category:            Web
 Build-type:          Custom
 Cabal-version:       >=1.6
 
-data-files: messages.conf,
-  schema/*.sql,
-  bower_components/jquery/dist/jquery.js,
-  bower_components/jquery/dist/jquery.min.js,
-  bower_components/angular/angular.js,
-  bower_components/angular/angular.min.js
-  bower_components/angular-route/angular-route.js,
-  bower_components/angular-route/angular-route.min.js,
-  bower_components/ng-flow/dist/ng-flow-standalone.js,
-  bower_components/ng-flow/dist/ng-flow-standalone.min.js,
-  bower_components/lodash/lodash.js,
-  bower_components/lodash/lodash.min.js
+data-files:
+  databrary.conf,
+  messages.conf,
+  schema/*.sql
 
 Source-Repository head
   Type:	git
@@ -38,10 +30,10 @@ Flag tls
 
 Executable schemabrary
   main-is: Databrary/Setup/DB.hs
+  Extensions: MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, ScopedTypeVariables, ConstraintKinds, PatternGuards
 
 Executable databrary
   main-is: Databrary/Warp.hs
-
   other-modules: Databrary.Store.AV
   c-sources: Databrary/Store/avFrame.c
 
