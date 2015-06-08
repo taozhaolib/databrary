@@ -5,7 +5,9 @@ module Main (main) where
 import Control.Applicative ((<$>), (<*>))
 #endif
 import Control.Exception (evaluate)
+#ifndef DEVEL
 import Control.Monad.Reader (runReaderT)
+#endif
 import qualified Data.ByteString.Char8 as BSC
 import qualified Data.Configurator as C
 import Data.Version (showVersion)
@@ -14,10 +16,15 @@ import qualified Network.Wai.Handler.Warp as Warp
 import qualified Network.Wai.Handler.WarpTLS as WarpTLS
 #endif
 
-import Paths_databrary (version, getDataFileName)
+import Paths_databrary (version
+#ifndef DEVEL
+  , getDataFileName)
 import Databrary.Service.Types (serviceDB)
-import Databrary.Service.Init (loadConfig, withService)
 import Databrary.Service.DB.Schema (updateDBSchema)
+#else
+  )
+#endif
+import Databrary.Service.Init (loadConfig, withService)
 import Databrary.Action (runAppRoute)
 import Databrary.Routes (routeMap)
 
@@ -31,8 +38,10 @@ main = do
 #endif
   routes <- evaluate routeMap
   withService conf $ \rc -> do
+#ifndef DEVEL
     schema <- getDataFileName "schema"
     runReaderT (updateDBSchema schema) (serviceDB rc)
+#endif
 #ifdef VERSION_warp_tls
     maybe
       Warp.runSettings

@@ -36,6 +36,9 @@ Flag tls
   description: Enable TLS/SSL https connections
   default: True
 
+Executable schemabrary
+  main-is: Databrary/Setup/DB.hs
+
 Executable databrary
   main-is: Databrary/Warp.hs
 
