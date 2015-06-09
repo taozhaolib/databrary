@@ -1140,7 +1140,7 @@ app.directive 'spreadsheet', [
 
         editScope.unedit = (event) ->
           doneEdit(event, unedit(event))
-          event.preventDefault()
+          event.preventDefault() if event
           false
 
         editSelect = (event) ->
