@@ -1246,11 +1246,10 @@ app.directive 'spreadsheet', [
               $scope.$applyAsync(unedit)
             return
 
-        $scope.tabOptionsToggle = ($event, categoryId) ->
-          if $scope.tabOptionsClick == categoryId
-            $scope.tabOptionsClick = undefined
-          else
-            $scope.tabOptionsClick = categoryId
+        $scope.tabOptionsClick = false
+        
+        $scope.tabOptionsToggle = ($event) ->
+          $scope.tabOptionsClick = !$scope.tabOptionsClick
           $event.stopPropagation()
           false
 
