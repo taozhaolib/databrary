@@ -8,6 +8,7 @@ module Databrary.Model.Offset
 
 import Control.Applicative ((<$>))
 import Data.Fixed (Fixed(..), HasResolution(..), Milli, Pico)
+import qualified Data.Scientific as Sci
 import qualified Data.Text as T
 import Data.Time (DiffTime)
 import Data.Typeable (Typeable)
@@ -72,23 +73,23 @@ instance Read Offset where
       r <- RP.look
       case r of
         (':':_) -> RP.pfail
-        _ -> return $ realToFrac (MkFixed m :: Milli)
+        _ -> return $ Offset (MkFixed m)
     -- parse seconds with colons:
     rc = do
       pm <- RP.option '+' $ RP.satisfy (`elem` "-+")
       c <- RP.sepBy1 readP (RP.char ':')
-      realToFrac . (if pm == '-' then negate else id) <$> case c of
-        [s] -> return (s :: Milli)
+      Offset . MkFixed . (if pm == '-' then negate else id) <$> case c of
+        [s] -> return s
         [m, s] -> return (60*m + s)
         [h, m, s] -> return (60*(60*h + m) + s)
         [d, h, m, s] -> return (60*(60*(24*d + h) + m) + s)
         _ -> RP.pfail
 
 instance JSON.ToJSON Offset where
-  toJSON = JSON.Number . (1000 *) . realToFrac
+  toJSON = JSON.Number . fromInteger . offsetMillis
 
 instance JSON.FromJSON Offset where
-  parseJSON (JSON.Number ms) = return $ realToFrac $ ms / 1000
+  parseJSON (JSON.Number ms) | Sci.base10Exponent ms < 10 = return $ Offset $ MkFixed $ floor ms
   parseJSON (JSON.String s) = maybe (fail "Invalid offset string") return $ readMaybe $ T.unpack s
   parseJSON (JSON.Bool False) = return 0
   parseJSON _ = fail "Invalid offset"
