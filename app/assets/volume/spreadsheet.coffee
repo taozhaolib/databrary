@@ -1140,6 +1140,7 @@ app.directive 'spreadsheet', [
 
         editScope.unedit = (event) ->
           doneEdit(event, unedit(event))
+          event.stopPropagation()
           false
 
         editSelect = (event) ->
