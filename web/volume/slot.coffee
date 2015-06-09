@@ -870,7 +870,7 @@ app.controller('volume/slot', [
 
       remove: ->
         messages.clear(this)
-        slot.removeRecord(@rec, this).then (r) =>
+        slot.removeRecord(@record, this).then (r) =>
             return unless r
             records.remove(this)
             unchoose() if $scope.current == this
@@ -935,7 +935,7 @@ app.controller('volume/slot', [
 
       savePosition: () ->
         messages.clear(this)
-        slot.moveRecord(@rec, @rec.segment, this).then (r) =>
+        slot.moveRecord(@record, @rec.segment, this).then (r) =>
             if r && @empty
               records.remove(this)
               unchoose() if this == $scope.current
